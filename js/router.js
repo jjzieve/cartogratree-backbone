@@ -4,9 +4,9 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
-	'views/MapView',
-	], function($, _, Backbone, MapView) {
-		console.log(Backbone);
+	'models/Map',
+	'views/MapView'
+	], function($, _, Backbone, Map, MapView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'*actions':'defaultAction'
@@ -21,9 +21,9 @@ define([
 			
 			app_router.on('route:defaultAction', function(actions){
 				var map = new Map({zoom: 8, maxZoom: 18, minZoom: 8});
-    				map.initMap({coords: {latitude: -34.397, longitude: 150.644}});
-    				var mapView = new MapView({model: map});
-    				mapView.render();
+				map.initMap({coords: {latitude: -34.397, longitude: 150.644}});
+				var mapView = new MapView({model: map});
+				mapView.render();
 			});
 			
 			//var footerView = new FooterView();

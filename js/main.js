@@ -1,10 +1,31 @@
 //Filename: main.js
 require.config({
 	paths: {
-		//jquery: 'libs/jquery/jquery.min',
-		jquery: '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min',
-		underscore: 'libs/underscore/underscore-min',
-		backbone: 'libs/backbone/backbone-min'
+        //font: 'libs/require/font',
+        //image: 'libs/require/image',
+        //json: 'libs/require/json',
+        //noext: 'libs/require/noext',
+        //mdown: 'libs/require/mdown',
+        //markdownConverter : 'libs/Markdown.Converter'
+		// jquery: '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min',
+		// underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min',
+		// backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
+		jquery: 'libs/jquery/jquery',
+		underscore: 'libs/underscore/underscore',
+		backbone: 'libs/backbone/backbone',
+		async: 'libs/require/async',
+        goog: 'libs/require/goog',
+        propertyParser : 'libs/require/propertyParser',
+	},
+	shim: {
+		'backbone': {
+            deps: ['underscore', 'jquery'],
+            exports: 'Backbone'
+        },
+        'underscore': {
+            exports: '_'
+        },
+
 	}
 });
 
