@@ -1,29 +1,33 @@
-//Filename: Map.js
+//Filename: map.js
 define([
   'jquery',     
   'underscore',
   'backbone',
   'goog!maps,3,other_params:sensor=false'
 ], function($, _, Backbone){
-    Map = Backbone.Model.extend({
-        defaults: {
-            id: '', currentLatLng: {}, mapOptions: {}, map: {},
-            position: {}, zoom: 13, maxZoom: 16, minZoom: 12
-        },
-        initMap: function(position){
-            this.set('position', position);
-            var currentLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            this.set('currentLatLng', currentLatLng);
-            var mapOptions = {
-                zoom: this.get('zoom'),
-                minZoom: this.get('minZoom'),
-                maxZoom: this.get('maxZoom'),
-                center: currentLatLng,
-                mapTypeId: google.maps.MapTypeId.ROADMAP,
-                mapTypeControl: false
-            };
-            this.set('mapOptions', mapOptions);
+    MapModel = Backbone.Model.extend({
+        defaults : {
+            // mapOptions : {
+            //     center: new google.maps.LatLng(50.120833, -122.954444),
+            //     zoom: 12,
+            //     mapTypeId: google.maps.MapTypeId.TERRAIN
+            // }
+            mapOptions : {
+                zoom: 4,
+                minZoom: 2,
+                maxZoom: 25,
+                center: new google.maps.LatLng(38.5539,-121.7381), //Davis, CA
+                mapTypeId: 'terrain',
+                mapTypeControl: true,
+                mapTypeControlOptions: { 
+                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU 
+                },
+                navigationControl: true,
+                navigationControlOptions: { style: google.maps.NavigationControlStyle.ZOOM_PAN },
+                scrollwheel: false,
+                scaleControl: true
+            }
         }
     });
-    return Map;
+    return MapModel;
 });

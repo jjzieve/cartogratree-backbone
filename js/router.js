@@ -4,30 +4,32 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
-	'models/Map',
-	'views/MapView'
-	], function($, _, Backbone, Map, MapView) {
+	'models/map',
+	'views/map'
+	], function($, _, Backbone, MapModel, MapView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
-				'*actions':'defaultAction'
+				'(/)':'index',
+				// 'about':'about',
+				// 'contact':'contact'
 			}
 		});
 	
 		var initialize = function(){
-		
-			var app_router = new AppRouter();
-
+			console.log('router');
+			var appRouter = new AppRouter();
 			//var headerView = new HeaderView();
 			
-			app_router.on('route:defaultAction', function(actions){
-				var map = new Map({zoom: 8, maxZoom: 18, minZoom: 8});
-				map.initMap({coords: {latitude: -34.397, longitude: 150.644}});
+			appRouter.on('route:index', function(actions){
+				var map = new MapModel();
 				var mapView = new MapView({model: map});
-				mapView.render();
+				console.log(mapView.el);
+			//	mapView.render();
 			});
 			
 			//var footerView = new FooterView();
 			
+			// Backbone.history.start({pushState:true});
 			Backbone.history.start();
 		};
 		return {
