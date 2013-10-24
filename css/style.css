@@ -13,24 +13,29 @@
 }
 
 #info_tabs {
-	position:relative;
-	right:10;
-	bottom:-50;
+	position:absolute;
+	right:30;
+	bottom:-30;
 }
 
 .nav-pills li a {
   color: darkgreen;
 }
 
+/*CONTAINER*/
+#main_container {
+	width:1210;
+	margin-left:10px;
+}
+
 /* MAP */
-/*#map_container {
+#map_container {
 	float:right;
 	width:856px;
-	border:solid 1px #d0d0d0;
-	border-bottom:solid 3px darkgreen;
+	height: 500;
 }
-#map{
+#map_canvas{
 	width:856px; 
-	height:600;
+	height:500;
 }
-*/
+
