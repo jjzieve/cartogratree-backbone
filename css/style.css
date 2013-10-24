@@ -22,20 +22,47 @@
   color: darkgreen;
 }
 
-/*CONTAINER*/
+/*MAIN CONTAINER*/
 #main_container {
 	width:1210;
 	margin-left:10px;
 }
+/*SIDE BAR/DATA PANE*/
+#side_bar {
+        background-color:#efefef;
+        /*border:solid 1px #d0d0d0;*/
+        /*border-bottom:solid 3px darkgreen;*/
+}
 
-/* MAP */
+#side_bar_content {
+        font-size:12px;
+        height:500px;
+        overflow:auto;
+}
+
+/*MAP*/
 #map_container {
-	float:right;
+	/*float:right;*/
 	width:856px;
 	height: 500;
 }
 #map_canvas{
 	width:856px; 
 	height:500;
+}
+
+/*ANALYSIS PANE*/
+#analysis_pane_container {
+        /*border-top:solid 1px #d0d0d0;*/
+        /*min-height:500px;*/
+        height:500px;
+        background-color:#efefef;
+}
+
+#analysis_pane{
+        font-size:10px;
+        background-color:#efefef;
+        height:400px;
+        /*width:100%;*/
 }
 
