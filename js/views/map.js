@@ -17,6 +17,16 @@ define([
           console.log(this.model.get('mapOptions'));
           console.log(this.map.zoom);
           this.render();
+          this.markersLayer = new google.maps.FusionTablesLayer({
+            query: {
+              select: 'lat',
+              //from: '1_LQUfIWCi4TT2usHdEbttaQqofmFiuixfzkem-A'
+              from: '1ffp9_kJA4D0xeYOBIaUQ8ox7CqqIuB_6sC4Ahww'
+            },
+            map: this.map,
+            styleId: 2,
+            templateId: 2
+          });
        	},
         render: function(){
           return this;

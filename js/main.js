@@ -11,6 +11,7 @@ require.config({
 		// underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min',
 		// backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
 		jquery: 'libs/jquery/jquery',
+        treetable: 'libs/jquery/jquery.treetable',
 		underscore: 'libs/underscore/underscore',
 		backbone: 'libs/backbone/backbone',
 		async: 'libs/require/async',
