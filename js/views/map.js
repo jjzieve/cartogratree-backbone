@@ -21,12 +21,14 @@ define([
             query: {
               select: 'lat',
               //from: '1_LQUfIWCi4TT2usHdEbttaQqofmFiuixfzkem-A'
-              from: '1ffp9_kJA4D0xeYOBIaUQ8ox7CqqIuB_6sC4Ahww'
+              // from: '1ffp9_kJA4D0xeYOBIaUQ8ox7CqqIuB_6sC4Ahww'
+              from: '1jASE5L0kFRWDq2H6BBbffZ2dm4lqOBBJYtWLKGI'
             },
             map: this.map,
             styleId: 2,
             templateId: 2
           });
+          console.log('queried');
        	},
         render: function(){
           return this;
