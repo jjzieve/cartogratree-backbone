@@ -9,6 +9,7 @@ define([
     		// Pass in our Router module and call it's initialize function
    		Router.initialize();
       console.log('app.js');
+      
   		};
       return {
         initialize: initialize
