@@ -25,6 +25,7 @@ define([
 				var map = new MapModel();
 				var mapView = new MapView({model: map});
 				var dataTreeView = new DataTreeView({model: map});
+
 				console.log(mapView.el);
 			//	mapView.render();
 			});
