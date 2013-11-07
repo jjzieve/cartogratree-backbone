@@ -1,0 +1,65 @@
+{
+    "Cupressaceae": {
+        "Juniperus": [
+            "Juniperus thurifera"
+        ]
+    },
+    "Dalbergieae": {
+        "Dalbergia": [
+            "Dalbergia nigra"
+        ]
+    },
+    "Dipterocarpoideae": {
+        "Dryobalanops": [
+            "Dryobalanops lanceolata"
+        ]
+    },
+    "Fabaceae": {
+        "Millettia": [
+            "Millettia pinnata"
+        ]
+    },
+    "Fagaceae": {
+        "Quercus": [
+            "Quercus acutissima"
+        ]
+    },
+    "Jatropheae": {
+        "Jatropha": [
+            "Jatropha curcas"
+        ]
+    },
+    "Juglandaceae": {
+        "Juglans": [
+            "Juglans cinerea",
+            "Juglans regia"
+        ]
+    },
+    "Lauraceae": {
+        "Phoebe": [
+            "Phoebe bournei"
+        ]
+    },
+    "Pinaceae": {
+        "Larix": [
+            "Larix kaempferi"
+        ],
+        "Pinus": [
+            "Pinus banksiana",
+            "Pinus mugo",
+            "Pinus parviflora",
+            "Pinus taeda"
+        ]
+    },
+    "Saliceae": {
+        "Populus": [
+            "Populus trichocarpa",
+            "Populus nigra"
+        ]
+    },
+    "Verbenaceae": {
+        "Tectona": [
+            "Tectona grandis"
+        ]
+    }
+}
