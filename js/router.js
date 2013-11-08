@@ -7,8 +7,9 @@ define([
 	'models/map',
 	'models/data_tree',
 	'views/map',
-	'views/data_tree'
-	], function($, _, Backbone, MapModel, DataTreeModel, MapView, DataTreeView) {
+	'views/data_tree',
+	'views/data_table',
+	], function($, _, Backbone, MapModel, DataTreeModel, MapView, DataTreeView, DataTableView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'(/)':'index',
@@ -27,6 +28,7 @@ define([
 				var dataTreeModel = new DataTreeModel();
 				var mapView = new MapView({model: map});
 				var dataTreeView = new DataTreeView({model: dataTreeModel});
+				var dataTableView = new DataTableView({model: map});
 
 				console.log(mapView.el);
 			//	mapView.render();

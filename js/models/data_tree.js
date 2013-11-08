@@ -12,15 +12,24 @@ define([
 		// 	console.log();
 		// 	return data;
 		// }
-		initialize: function() {
-			this.set({studies: function(){
-				$.getJSON('data/studies.JSON',
-					function(data){
-						return data;
-					}
-				);
-			}});
-		},
+		// defaults: {
+		// 	id: null,
+		// 	name: null,
+		// 	description: null
+		// },
+		
+		// initialize: function() {
+		// 	console.log('init DataTreeModel');
+		// 	this.studies = 	function (){
+		// 		$.getJSON('data/studies.JSON',
+		// 			function(data){
+		// 				return data;
+		// 			}
+		// 		);
+		// 	}
+		// }
+		// 	}});
+		// },
 		// function(){
 		// 	$.getJSON('data/studies.JSON',
 		// 		function(data){

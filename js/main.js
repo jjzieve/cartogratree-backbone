@@ -12,6 +12,7 @@ require.config({
 		// backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
 		jquery: 'libs/jquery/jquery',
         treetable: 'libs/jquery/jquery.treetable',
+        dataTables: 'libs/jquery/jquery.dataTables',
 		underscore: 'libs/underscore/underscore',
 		backbone: 'libs/backbone/backbone',
 		async: 'libs/require/async',
