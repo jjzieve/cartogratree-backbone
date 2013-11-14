@@ -114,11 +114,17 @@ define([
 			},
 
 			events: {
-			    "click .branch": "highlight"
+			    "click": "highlight",
 			},
 
-  			highlight: function(){
-  				console.log($(".branch clicked"));
+  			highlight: function(e){
+  				if($(e.target).hasClass("clicked")){
+  					console.log('clicked');
+					$(e.target).removeClass("clicked");
+				}
+				else {
+  					$(e.target).addClass("clicked");
+  				}
   			},
 
 			render: function(){

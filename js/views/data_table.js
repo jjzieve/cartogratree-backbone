@@ -5,10 +5,10 @@ define([
   'jquery',     // lib/jquery/jquery
   'underscore', // lib/underscore/underscore
   'backbone',
-  'dataTables'    // lib/backbone/backbone
+  'dataTables'    
 ], function($, _, Backbone,dataTables){
 	var DataTableView = Backbone.View.extend({
-		el: '#samples_table',
+		el: '#data_table',
 		initialize: function(){
 			this.$el.dataTable();
 		}
