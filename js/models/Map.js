@@ -7,11 +7,6 @@ define([
 ], function($, _, Backbone){
     MapModel = Backbone.Model.extend({
         defaults : {
-            // mapOptions : {
-            //     center: new google.maps.LatLng(50.120833, -122.954444),
-            //     zoom: 12,
-            //     mapTypeId: google.maps.MapTypeId.TERRAIN
-            // }
             mapOptions : {
                 zoom: 4,
                 minZoom: 2,
@@ -26,6 +21,13 @@ define([
                 navigationControlOptions: { style: google.maps.NavigationControlStyle.ZOOM_PAN },
                 scrollwheel: false,
                 scaleControl: true
+            },
+            query: {
+              select: 'lat',
+              //from: '1_LQUfIWCi4TT2usHdEbttaQqofmFiuixfzkem-A'
+              // from: '1ffp9_kJA4D0xeYOBIaUQ8ox7CqqIuB_6sC4Ahww'
+              // from: '1jASE5L0kFRWDq2H6BBbffZ2dm4lqOBBJYtWLKGI'
+              from: '1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8'
             }
         }
     });

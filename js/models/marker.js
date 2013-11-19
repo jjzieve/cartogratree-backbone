@@ -6,7 +6,11 @@ define([
   'underscore', // lib/underscore/underscore
   'backbone'    // lib/backbone/backbone
 ], function($, _, Backbone){
-	var MarkerModel = Backbone.Model.extend({});
+	var MarkerModel = Backbone.Model.extend({
+		defaults : {
+			"query" : ""
+		}
+	});
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
   return {};
