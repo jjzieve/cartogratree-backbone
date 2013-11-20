@@ -1,15 +1,11 @@
 //Filename: main.js
 require.config({
 	paths: {
-        //font: 'libs/require/font',
-        //image: 'libs/require/image',
-        //json: 'libs/require/json',
-        //noext: 'libs/require/noext',
-        //mdown: 'libs/require/mdown',
-        //markdownConverter : 'libs/Markdown.Converter'
+        // ***Use these in production for speed boost*** 
 		// jquery: '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min',
 		// underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min',
 		// backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
+
 		jquery: 'libs/jquery/jquery',
         bootstrap: 'libs/bootstrap',
         treetable: 'libs/jquery/jquery.treetable',
@@ -18,7 +14,15 @@ require.config({
 		backbone: 'libs/backbone/backbone',
 		async: 'libs/require/async',
         goog: 'libs/require/goog',
+        templates: '../templates',
         propertyParser : 'libs/require/propertyParser',
+        text: 'libs/require/text',
+        //font: 'libs/require/font',
+        //image: 'libs/require/image',
+        //json: 'libs/require/json',
+        //noext: 'libs/require/noext',
+        //mdown: 'libs/require/mdown',
+        //markdownConverter : 'libs/Markdown.Converter'
 	},
 	shim: {
 		'backbone': {

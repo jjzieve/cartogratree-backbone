@@ -5,37 +5,23 @@ define([
   'jquery',     // lib/jquery/jquery
   'underscore', // lib/underscore/underscore
   'backbone',    // lib/backbone/backbone
+  'text!templates/data_button.html',
   'bootstrap'
-], function($, _, Backbone){
+], function($, _, Backbone,buttonTemplate){
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
   var DataButtonsView = Backbone.View.extend({
 			el: "#data_buttons",
+			template: _.template(buttonTemplate),
+			filters: { filters: [
+							{type: "Sequenced"},
+							{type: "Genotyped"},
+							{type: "Phenotyped"}
+						]
+			},
+
 			initialize: function(){
-				this.$el.append("<div class='btn-group' data-toggle='buttons-checkbox'> Sequenced? "+
-						  			"<button type='button' class='btn btn-success btn-sm dropdown-toggle' data-toggle='dropdown'>"+
-						    		"<span class='caret'></span></button>"+
-						  			"<ul class='dropdown-menu' role='menu'>"+
-						    			"<li><a href='#'>Yes</a></li>"+
-						   				"<li><a href='#''>No</a></li>"+
-						 			"</ul>"+
-						 		"</div>");
-				this.$el.append("<div class='btn-group'> Phenotyped? "+
-						  			"<button type='button' class='btn btn-success btn-sm dropdown-toggle' data-toggle='dropdown'>"+
-						    		"<span class='caret'></span></button>"+
-						  			"<ul class='dropdown-menu' role='menu'>"+
-						    			"<li><a href='#'>Yes</a></li>"+
-						   				"<li><a href='#''>No</a></li>"+
-						 			"</ul>"+
-						 		"</div>");
-				this.$el.append("<div class='btn-group'> Genotyped? "+
-						  			"<button type='button' class='btn btn-success btn-sm dropdown-toggle' data-toggle='dropdown'>"+
-						    		"<span class='caret'></span></button>"+
-						  			"<ul class='dropdown-menu' role='menu'>"+
-						    			"<li><a href='#'>Yes</a></li>"+
-						   				"<li><a href='#''>No</a></li>"+
-						 			"</ul>"+
-						 		"</div>");		
+				this.$el.append(this.template(this.filters));
 				$(".dropdown-menu li a").click(function(){
 			    	$(".btn:first-child").text($(this).text());
      				$(".btn:first-child").val($(this).text());

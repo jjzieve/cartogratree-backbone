@@ -27,7 +27,7 @@
 /*SIDE BAR/DATA PANE*/
 #side_bar {
     background-color:#efefef;
-    float:left;
+    /*float:left;*/
 /*    border:solid 1px #d0d0d0;*/
     /*border-bottom:solid 3px darkgreen;*/
 }
@@ -44,7 +44,7 @@
    width: 100%;
 }
 
-#data_tree .clicked {
+#data_tree td.clicked {
     background-color: green;
     color:white;
 }

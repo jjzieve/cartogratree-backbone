@@ -20,9 +20,7 @@ define([
 		});
 	
 		var initialize = function(){
-			console.log('router');
 			var appRouter = new AppRouter();
-			//var headerView = new HeaderView();
 			
 			appRouter.on('route:index', function(actions){
 				var map = new MapModel();
@@ -31,12 +29,11 @@ define([
 				var dataTreeView = new DataTreeView({model: dataTreeModel});
 				var dataButtonsView = new DataButtonsView({model: dataTreeModel});
 				var dataTableView = new DataTableView({model: map});
+				dataTreeView.render();
+				// dataButtonsView.render();
 
-				console.log(mapView.el);
-			//	mapView.render();
+				mapView.render();
 			});
-			
-			//var footerView = new FooterView();
 			
 			// Backbone.history.start({pushState:true});
 			Backbone.history.start();

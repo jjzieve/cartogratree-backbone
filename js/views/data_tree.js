@@ -14,6 +14,7 @@ define([
 			el: "#data_tree",
 
 			initialize: function(){
+				var that = this;
 				this.$el.treetable({expandable:true});
 				// var studies_root =  this.$el.treetable("node", "1");
 				// var taxa_root =  this.$el.treetable("node", "2");
@@ -37,8 +38,9 @@ define([
 						fusion_table_query_url+years_sql+fusion_table_key,
 						function(data){
 							$.each(data.rows, function(index,value){
-								var node = $("#data_tree").treetable("node", "1");
-								$('#data_tree').treetable("loadBranch",node,'<tr data-tt-parent-id="1" data-tt-id="1-'+index+'"><td>'+value[0]+'</td></tr>');
+								var node = that.$el.treetable("node", "1");
+								that.$el.treetable("loadBranch",node,'<tr data-tt-parent-id="1" data-tt-id="1-'+index+'"><td>'+value[0]+'</td></tr>');
+								
 								var grandparent_value = value[0];
 								var grandparent_index = index;
 								species_sql = "select species,count() from "+fusion_table_id+" where year='"+grandparent_value+"' group by species"
@@ -47,12 +49,10 @@ define([
 									function(data){
 										$.each(data.rows, function(index,value){
 											var node_id = "1-"+grandparent_index;
-											node = $("#data_tree").treetable("node", node_id);
-											$('#data_tree').treetable("loadBranch",node,'<tr data-tt-parent-id="'+node_id+'" data-tt-id="'+node_id+'-'+index+'"><td>'+value[0]+'</td></tr>');
+											node = that.$el.treetable("node", node_id);
+											that.$el.treetable("loadBranch",node,'<tr data-tt-parent-id="'+node_id+'" data-tt-id="'+node_id+'-'+index+'"><td>'+value[0]+'</td></tr>');
 											var parent_value = value[0];
 											var parent_index = index;
-											console.log("grandparent_value "+grandparent_value);
-											console.log("parent_value "+parent_value);
 
 											accessions_sql = "select accession, count() from "+fusion_table_id+" where year='"+grandparent_value+"' and species='"+parent_value+"' group by accession";
 											$.get(
@@ -60,14 +60,17 @@ define([
 												function(data){
 													$.each(data.rows, function(index,value){
 														node_id = node_id+"-"+parent_index;
-														node = $("#data_tree").treetable("node", node_id);
-														$('#data_tree').treetable("loadBranch",node,'<tr data-tt-parent-id="'+node_id+'" data-tt-id="'+node_id+'-'+index+'"><td>'+value[0]+'</td></tr>');
+														node = that.$el.treetable("node", node_id);
+														that.$el.treetable("loadBranch",node,'<tr data-tt-parent-id="'+node_id+'" data-tt-id="'+node_id+'-'+index+'"><td>'+value[0]+'</td></tr>');
+														that.$el.treetable("collapseNode",node_id);
 													});
 												}
 											);
+											that.$el.treetable("collapseNode",node_id);
 										});
 									}
 								);
+								that.$el.treetable("collapseNode","1");
 							});
 						}
 					);
@@ -75,8 +78,8 @@ define([
 						fusion_table_query_url+families_sql+fusion_table_key,
 						function(data){
 							$.each(data.rows, function(index,value){
-								var node = $("#data_tree").treetable("node", "2");
-								$('#data_tree').treetable("loadBranch",node,'<tr data-tt-parent-id="2" data-tt-id="2-'+index+'"><td>'+value[0]+'</td></tr>');
+								var node = that.$el.treetable("node", "2");
+								that.$el.treetable("loadBranch",node,'<tr data-tt-parent-id="2" data-tt-id="2-'+index+'"><td>'+value[0]+'</td></tr>');
 								var grandparent_value = value[0];
 								var grandparent_index = index;
 								species_sql = "select genus,count() from "+fusion_table_id+" where family='"+grandparent_value+"' group by genus"
@@ -85,33 +88,34 @@ define([
 									function(data){
 										$.each(data.rows, function(index,value){
 											var node_id = "2-"+grandparent_index;
-											node = $("#data_tree").treetable("node", node_id);
-											$('#data_tree').treetable("loadBranch",node,'<tr data-tt-parent-id="'+node_id+'" data-tt-id="'+node_id+'-'+index+'"><td>'+value[0]+'</td></tr>');
+											node = that.$el.treetable("node", node_id);
+											that.$el.treetable("loadBranch",node,'<tr data-tt-parent-id="'+node_id+'" data-tt-id="'+node_id+'-'+index+'"><td>'+value[0]+'</td></tr>');
 											var parent_value = value[0];
 											var parent_index = index;
-											console.log("grandparent_value "+grandparent_value);
-											console.log("parent_value "+parent_value);
-
+										
 											accessions_sql = "select species, count() from "+fusion_table_id+" where family='"+grandparent_value+"' and genus='"+parent_value+"' group by species";
 											$.get(
 												fusion_table_query_url+accessions_sql+fusion_table_key,
 												function(data){
 													$.each(data.rows, function(index,value){
 														node_id = node_id+"-"+parent_index;
-														node = $("#data_tree").treetable("node", node_id);
-														$('#data_tree').treetable("loadBranch",node,'<tr data-tt-parent-id="'+node_id+'" data-tt-id="'+node_id+'-'+index+'"><td>'+value[0]+'</td></tr>');
+														node = that.$el.treetable("node", node_id);
+														that.$el.treetable("loadBranch",node,'<tr data-tt-parent-id="'+node_id+'" data-tt-id="'+node_id+'-'+index+'"><td>'+value[0]+'</td></tr>');
+														that.$el.treetable("collapseNode",node_id);
 													});
 												}
 											);
+											that.$el.treetable("collapseNode",node_id);
 										});
 									}
 								);
+								that.$el.treetable("collapseNode","2");
 							});
 						}
 					);
+				// that.$el.treetable("collapseNode",node_id);
 
-				this.$el.treetable("collapseAll");
-			},
+				},
 
 			events: {
 			    "click": "highlight",
@@ -119,7 +123,6 @@ define([
 
   			highlight: function(e){
   				if($(e.target).hasClass("clicked")){
-  					console.log('clicked');
 					$(e.target).removeClass("clicked");
 				}
 				else {
