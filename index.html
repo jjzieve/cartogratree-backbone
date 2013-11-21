@@ -17,6 +17,7 @@ Updated:
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 <link type="text/css" href="css/bootstrap.css"  rel="stylesheet"/>
+<!-- <link type="text/css" href="css/jquery-ui-1.10.3.custom.css"  rel="stylesheet"/> -->
 <link type="text/css" href="css/jquery.treetable.css"  rel="stylesheet"/>
 <link type="text/css" href="css/jquery.treetable.theme.default.css" rel="stylesheet"/>
 <link type="text/css" href="css/style.css"  rel="stylesheet"/>
@@ -59,8 +60,10 @@ Updated:
 						</tr>
 					</table>
 				</div>
-				<div id="data_buttons" class="well well-sm">
+				<div class="well well-sm">
 					<h4>Filter</h4>
+					<table id="data_buttons">
+					</table>
 				</div>
 			</div>
 			<!--MAP-->
@@ -70,19 +73,44 @@ Updated:
 		</div>
 			<!--ANALYSIS PANE-->
 		<div class="row">
-			<div class="col-xs-9">
-				<table id="data_table" class="table table-borderless table-condensed table-hover">
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>Latitude</th>
-							<th>Longitude</th>
-							<th>Species</th>
-						</tr>
-					</thead>
-					<tbody>
-					</tbody>
-				</table>
+			<div class="col-xs-12">
+				<div class="well well-sm">
+					<h4>Analyze</h4>
+					<ul class="nav nav-tabs" id="data_tabs">
+						<li><a href="#markers" data-toggle="tab">Selected Markers</a></li>
+						<li><a href="#common_phenotype" data-toggle="tab">Common phenotypes</a></li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane fade in" id="markers">
+							<table id="data_table" class="table table-borderless table-condensed table-hover">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Latitude</th>
+										<th>Longitude</th>
+										<th>Species</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+						<div class="tab-pane fade" id="common_phenotype">
+							<table id="common_phenotype_table" class="table table-borderless table-condensed table-hover">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Latitude</th>
+										<th>Longitude</th>
+										<th>Species</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<!--FOOTER-->

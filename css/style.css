@@ -53,9 +53,16 @@
 #analysis_pane {
     padding-top: 20px;
 }
+/*.tab-content {
+  display: block;
+}*/
 #data_table{
     border: 0;
     background-color:#efefef;
+}
+
+.nav-tabs li a{
+    color:darkgreen;
 }
 
 .table-borderless td,

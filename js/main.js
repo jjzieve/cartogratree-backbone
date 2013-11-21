@@ -7,6 +7,7 @@ require.config({
 		// backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
 
 		jquery: 'libs/jquery/jquery',
+        // jquery_ui: 'libs/jquery/jquery-ui-1.10.3.custom',
         bootstrap: 'libs/bootstrap',
         treetable: 'libs/jquery/jquery.treetable',
         dataTables: 'libs/jquery/jquery.dataTables',

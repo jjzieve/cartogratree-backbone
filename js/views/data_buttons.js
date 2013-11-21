@@ -19,13 +19,19 @@ define([
 							{type: "Phenotyped"}
 						]
 			},
+			events : {
+				"click .dropdown-menu li a": "toggleFilter"
+			},
+
+			toggleFilter : function(e){
+				var filter = $(e.target).attr('class');//parent
+				$("#"+filter+".btn:first-child").text($(e.target).html());
+				$("#"+filter+".btn:first-child").val($(e.target).html());
+				// this.model.toggleFilter();
+			},
 
 			initialize: function(){
 				this.$el.append(this.template(this.filters));
-				$(".dropdown-menu li a").click(function(){
-			    	$(".btn:first-child").text($(this).text());
-     				$(".btn:first-child").val($(this).text());
-				});						
 			},
 			
 

@@ -1,14 +1,16 @@
 <% _.each(filters, function(filter){ %>
-	<div>
-		<%= filter.type %>:
-		<div class='btn-group' data-toggle='buttons-checkbox'>
-			<button type='button' class='btn btn-success btn-sm dropdown-toggle' data-toggle='dropdown'>
-				<span class='caret'></span>
-			</button>
-			<ul class='dropdown-menu' role='menu'>
-				<li><a href='#'>Yes</a></li>
-				<li><a href='#'>No</a></li>
-			</ul>
-		</div>
-	</div>
+		<tr>
+			<td><%= filter.type %>:</td>
+			<td>
+				<div class='btn-group' data-toggle='buttons-checkbox'>
+					<button id='<%= filter.type %>' type='button' class='btn btn-sm dropdown-toggle' data-toggle='dropdown'>
+						<span class='caret'></span>
+					</button>
+					<ul class='dropdown-menu' role='menu'>
+						<li><a class='<%= filter.type %>' href='#'>Yes</a></li>
+						<li><a class='<%= filter.type %>' href='#'>No</a></li>
+					</ul>
+				</div>
+			</td>
+		</tr>
 <% }); %>
