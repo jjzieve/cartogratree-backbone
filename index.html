@@ -17,6 +17,7 @@ Updated:
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 <link type="text/css" href="css/bootstrap.css"  rel="stylesheet"/>
+<link type="text/css" href="css/bootstrap-switch.css"  rel="stylesheet"/>
 <!-- <link type="text/css" href="css/jquery-ui-1.10.3.custom.css"  rel="stylesheet"/> -->
 <link type="text/css" href="css/jquery.treetable.css"  rel="stylesheet"/>
 <link type="text/css" href="css/jquery.treetable.theme.default.css" rel="stylesheet"/>
@@ -28,7 +29,7 @@ Updated:
 <title>CartograTree</title>
 </head>
 
-<body>
+<body data-spy="scroll" data-target="#sidebar">
 	<!--MAIN-->
 	<div class="container">
 		<!--HEADER-->
@@ -43,32 +44,65 @@ Updated:
 					<li><a href="http://dendrome.ucdavis.edu/DiversiTree/">DiversiTree</a></li>
 					<li><a href="http://loblolly.ucdavis.edu/bipod/ftp/Documentation/CartogratreeDocumentation.pdf">Documentation</a></li>
 					<li><a href="mailto:tg-help.ucdavis.edu">Contact</a>
+					<li><a href="http://dendrome.ucdavis.edu/treegenes/">Credits</a></li>
 				</ul>
 			</div>
 		</div>
 		<div class="row">
 			<!--SIDE BAR/DATA PANE-->
-			<div class="col-xs-4">
+			<div id="#sidebar" class="col-xs-4">
 				<div class="well well-sm">
-					<h4>Select</h4>
+					<h4>Select the data</h4>
 					<table id='data_tree'>
 						<tr data-tt-id="1">
-						<td>Published Studies</td>
+						<td class="tree_root">Published Studies</td>
 						</tr>
 						<tr data-tt-id="2">
-						<td>Taxa</td>
+						<td class="tree_root">Taxa</td>
 						</tr>
 					</table>
 				</div>
 				<div class="well well-sm">
-					<h4>Filter</h4>
-					<table id="data_buttons">
+					<h4>Filter the data</h4>
+					<div class="checkbox">
+					    <label>
+					      <input type="checkbox">Sequenced
+					    </label>
+					</div>
+					<div class="checkbox">
+					    <label>
+					      <input type="checkbox">Genotyped
+					    </label>
+					</div>
+					<div class="checkbox">
+					    <label>
+					      <input type="checkbox">Phenotyped
+					    </label>
+					</div>
+					<table id="gps_resolution">
+						<tr>
+							<td>GPS Resolution:</td>
+							<td>
+								<div class="make-switch" data-on-label="Exact" data-off-label="Approx" data-on="success" data-off="warning">
+									<input type="checkbox" checked>
+								</div>
+							</td>
+						</tr>
 					</table>
 				</div>
+				<!-- <div class="well well-sm">
+					<h4>Layers</h4>
+				</div>
+				<div class="well well-sm">
+					<h4>Legend</h4>
+				</div> -->
 			</div>
 			<!--MAP-->
 			<div class="col-xs-8">
 				<div id="map_canvas"></div>
+			</div>
+			<div id="legend">
+  				Legend
 			</div>
 		</div>
 			<!--ANALYSIS PANE-->

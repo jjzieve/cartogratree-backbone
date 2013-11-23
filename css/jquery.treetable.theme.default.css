@@ -52,7 +52,7 @@ table.treetable tr.expanded span.indenter a {
 }
 
 table.treetable tr.branch {
-	font-weight: bold
+	/*font-weight: bold*/
 }
 
 table.treetable tr.leaf {

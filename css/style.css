@@ -21,7 +21,7 @@
 .nav-pills li a {
   padding-top: 1cm;
   color: darkgreen;
-  font-size: 18px;
+  /*font-size: 18px;*/
 }
 
 /*SIDE BAR/DATA PANE*/
@@ -38,16 +38,29 @@
     overflow:auto;
 }
 
-/*MAP*/
-#map_canvas {
-   height: 100%;
-   width: 100%;
+.tree_root {
+    font-weight: bold;
 }
 
 #data_tree td.clicked {
     background-color: green;
     color:white;
 }
+
+/*MAP*/
+#map_canvas {
+   height: 100%;
+   width: 100%;
+}
+
+#legend {
+        font-family: Arial, sans-serif;
+        background: #fff;
+        padding: 10px;
+        margin: 10px;
+        border: 3px solid #000;
+}
+
 
 /*Analysis pane*/
 #analysis_pane {
@@ -69,6 +82,13 @@
 .table-borderless th {
     border: 0;
 }
+
+/*.data_buttons td {
+    font-size: 8px;
+}*/
+/*.btn:first-child {
+    background: green;
+}*/
 
 /*Footer*/
 #version_num{

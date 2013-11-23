@@ -9,6 +9,7 @@ require.config({
 		jquery: 'libs/jquery/jquery',
         // jquery_ui: 'libs/jquery/jquery-ui-1.10.3.custom',
         bootstrap: 'libs/bootstrap',
+        bootstrap_switch: 'libs/bootstrap-switch',
         treetable: 'libs/jquery/jquery.treetable',
         dataTables: 'libs/jquery/jquery.dataTables',
 		underscore: 'libs/underscore/underscore',
