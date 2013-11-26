@@ -4,8 +4,8 @@ define([
   'underscore',
   'backbone',
 ], function($, _, Backbone){
-    MapModel = Backbone.Model.extend({
-      
+    MapDataModel = Backbone.Model.extend({
+
     });
     return MapModel;
 });
