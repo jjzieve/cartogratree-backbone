@@ -68,16 +68,31 @@ Updated:
 					<div class="checkbox">
 					    <label>
 					      <input type="checkbox">Sequenced
+							<span id="sequenced_question" data-original-title="Sequenced samples" data-content="These tree samples have had some amount of sequencing performed on them but not necessarily genotyped" title="" data-toggle="popover">
+								<a href="#">
+									<img src='images/qmark.png'>
+								</a>
+							</span>					      
 					    </label>
 					</div>
 					<div class="checkbox">
 					    <label>
 					      <input type="checkbox">Genotyped
+					      <span id="genotyped_question" data-original-title="Genotyped samples" data-content="These tree samples have been genotyped by SNPs and/or other genetic markers" title="" data-toggle="popover">
+								<a href="#">
+									<img src='images/qmark.png'>
+								</a>
+							</span>	
 					    </label>
 					</div>
 					<div class="checkbox">
 					    <label>
 					      <input type="checkbox">Phenotyped
+					      <span id="phenotyped_question" data-original-title="Phenotyped samples" data-content="These tree samples have had phenotypes assessed for them" title="" data-toggle="popover">
+								<a href="#">
+									<img src='images/qmark.png'>
+								</a>
+							</span>	
 					    </label>
 					</div>
 					<table id="gps_resolution">
@@ -86,17 +101,22 @@ Updated:
 							<td>
 								<div class="make-switch" data-on-label="Exact" data-off-label="Approx" data-on="success" data-off="warning">
 									<input type="checkbox" checked>
+									<!-- <span id="gps_question" data-original-title="Resolution" data-content="Exact means each tree sample is independently georeferenced. Approx. means coordinates refer to a site where there may be numerous tree samples" title="" data-toggle="popover">
+										<a href="#">
+											<img src='images/qmark.png'>
+										</a>
+									</span> -->
 								</div>
 							</td>
 						</tr>
 					</table>
+					<div class="tooltip">
+						<div class="tooltip-inner">
+							Tooltip!
+						</div>
+						<div class="tooltip-arrow"></div>
+					</div>
 				</div>
-				<!-- <div class="well well-sm">
-					<h4>Layers</h4>
-				</div>
-				<div class="well well-sm">
-					<h4>Legend</h4>
-				</div> -->
 			</div>
 			<!--MAP-->
 			<div class="col-xs-8">

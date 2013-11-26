@@ -41,6 +41,9 @@ define([
 			initialize: function(){
 				this.$el.append(this.template(this.filters));
 				$('#gps_resolution').bootstrapSwitch('setSizeClass', 'switch-small');
+				$('#sequenced_question').popover('hide')
+				$('#genotyped_question').popover('hide')
+				$('#phenotyped_question').popover('hide')
 			},
 			
 
