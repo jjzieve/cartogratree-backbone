@@ -31,7 +31,7 @@ define([
             $('#data_table').dataTable().fnClearTable();
           });
 
-          this.map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(
+          this.map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
             document.getElementById('legend'));
        	},
         

@@ -64,6 +64,7 @@ Updated:
 				</div>
 				<div class="well well-sm">
 					<h4>Filter the data</h4>
+					<!-- Another implementation; http://davidstutz.github.io/bootstrap-multiselect/ -->
 					<div class="checkbox">
 					    <label>
 					      <input type="checkbox">Sequenced
@@ -100,9 +101,22 @@ Updated:
 			<!--MAP-->
 			<div class="col-xs-8">
 				<div id="map_canvas"></div>
-			</div>
-			<div id="legend">
-  				Legend
+				<div id="legend">
+		  				<table>
+		  					<thead>
+		  						<tr>
+		  							<th>Legend</th>
+		  						</tr>
+		  					</thead>
+		  					<tbody>
+			  					<tr>
+			  						<!-- http://kml4earth.appspot.com/icons.html/ -->
+			  						<td><img class="img-responsive" src="images/parks.png"></td>
+			  						<td>Gymnosperm</td>
+			  					</tr>
+		  					</tbody>
+		  				</table>
+ 				</div>
 			</div>
 		</div>
 			<!--ANALYSIS PANE-->

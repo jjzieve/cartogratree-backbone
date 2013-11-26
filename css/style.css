@@ -56,12 +56,19 @@
 #legend {
         font-family: Arial, sans-serif;
         background: #fff;
-        padding: 10px;
-        margin: 10px;
+        padding: 5px;
+        margin: 5px;
         border: 3px solid #000;
 }
 
+#legend img{
+  height:50%;
+  width:50%;
+}
 
+#legend td{
+  font-size: 12px;
+}
 /*Analysis pane*/
 #analysis_pane {
     padding-top: 20px;
