@@ -29,8 +29,8 @@ Updated:
 <title>CartograTree</title>
 </head>
 
-<body data-spy="scroll" data-target="#sidebar">
-	<!--MAIN-->
+<body>
+    <!--MAIN-->
 	<div class="container">
 		<!--HEADER-->
 		<div class="row">
@@ -51,7 +51,7 @@ Updated:
 		<div class="row">
 			<!--SIDE BAR/DATA PANE-->
 			<div id="#sidebar" class="col-xs-4">
-				<div class="well well-sm">
+				<div id="select_data" class="well well-sm">
 					<h4>Select the data</h4>
 					<table id='data_tree'>
 						<tr data-tt-id="1">
@@ -62,7 +62,8 @@ Updated:
 						</tr>
 					</table>
 				</div>
-				<div class="well well-sm">
+				
+				<div id = "filter_data" class="well well-sm">
 					<h4>Filter the data</h4>
 					<!-- Another implementation; http://davidstutz.github.io/bootstrap-multiselect/ -->
 					<div class="checkbox">
@@ -95,48 +96,47 @@ Updated:
 							</span>	
 					    </label>
 					</div>
-					<table id="gps_resolution">
+					<div class="checkbox">
+					    <label>
+					      <input type="checkbox">Exact GPS
+					      <span id="gps_resolution_exact" data-original-title="Exact samples" data-content="Each tree sample is independently georeferenced." title="" data-toggle="popover">
+								<a href="#">
+									<img src='images/qmark.png'>
+								</a>
+							</span>	
+					    </label>
+					</div>
+					<div class="checkbox">
+					    <label>
+					      <input type="checkbox">Approximate GPS
+					      <span id="gps_resolution_approx" data-original-title="Approx samples" data-content="Sites with one to many tree samples are georeferenced." title="" data-toggle="popover">
+								<a href="#">
+									<img src='images/qmark.png'>
+								</a>
+							</span>	
+					    </label>
+					</div>
+					<!-- <table id="gps_resolution">
 						<tr>
-							<td>GPS Resolution:</td>
 							<td>
 								<div class="make-switch" data-on-label="Exact" data-off-label="Approx" data-on="success" data-off="warning">
 									<input type="checkbox" checked>
-									<!-- <span id="gps_question" data-original-title="Resolution" data-content="Exact means each tree sample is independently georeferenced. Approx. means coordinates refer to a site where there may be numerous tree samples" title="" data-toggle="popover">
+									<span id="gps_question" data-original-title="Resolution" data-content="Exact means each tree sample is independently georeferenced. Approx. means coordinates refer to a site where there may be numerous tree samples" title="" data-toggle="popover">
 										<a href="#">
 											<img src='images/qmark.png'>
 										</a>
-									</span> -->
+									</span>
 								</div>
 							</td>
+							<td>GPS Resolution</td>
 						</tr>
-					</table>
-					<div class="tooltip">
-						<div class="tooltip-inner">
-							Tooltip!
-						</div>
-						<div class="tooltip-arrow"></div>
-					</div>
+					</table> -->
 				</div>
+
 			</div>
 			<!--MAP-->
 			<div class="col-xs-8">
 				<div id="map_canvas"></div>
-				<div id="legend">
-		  				<table>
-		  					<thead>
-		  						<tr>
-		  							<th>Legend</th>
-		  						</tr>
-		  					</thead>
-		  					<tbody>
-			  					<tr>
-			  						<!-- http://kml4earth.appspot.com/icons.html/ -->
-			  						<td><img class="img-responsive" src="images/parks.png"></td>
-			  						<td>Gymnosperm</td>
-			  					</tr>
-		  					</tbody>
-		  				</table>
- 				</div>
 			</div>
 		</div>
 			<!--ANALYSIS PANE-->

@@ -7,10 +7,11 @@
 	position:relative;
 } */
 
-/*#ctree_logo{
-	float:left;
-	height:80px;
-}*/
+#ctree_logo{
+    padding-bottom: 15px;
+	/*float:left;
+	height:80px;*/
+}
 
 /*#info_tabs {
 	position:absolute;
@@ -20,7 +21,7 @@
 
 .nav-pills li a {
   padding-top: 1cm;
-  color: darkgreen;
+  color: #3C746B;
   /*font-size: 18px;*/
 }
 
@@ -29,7 +30,7 @@
     background-color:#efefef;
     /*float:left;*/
 /*    border:solid 1px #d0d0d0;*/
-    /*border-bottom:solid 3px darkgreen;*/
+    /*border-bottom:solid 3px #3C746B;*/
 }
 
 #side_bar_content {
@@ -37,16 +38,31 @@
 /*    height:px;*/
     overflow:auto;
 }
+#select_data {
+    height: 477px;
+    overflow: auto;
+    padding-top: 15px;
+}
 
 .tree_root {
     font-weight: bold;
 }
 
 #data_tree td.clicked {
-    background-color: green;
+    background-color: #3C746B;
     color:white;
+    border: 1px solid #fff;
 }
 
+/*#filter_data .checkbox label{
+    margin-left: 88px;
+    width:99px;
+    height:30px;
+
+}
+#filter_data td{
+    font-size: 14px;
+}*/
 /*MAP*/
 #map_canvas {
    height: 100%;
@@ -82,7 +98,7 @@
 }
 
 .nav-tabs li a{
-    color:darkgreen;
+    color:#3C746B;
 }
 
 .table-borderless td,
@@ -94,7 +110,7 @@
     font-size: 8px;
 }*/
 /*.btn:first-child {
-    background: green;
+    background: #3C746B;
 }*/
 
 /*Footer*/

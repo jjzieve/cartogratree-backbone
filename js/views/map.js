@@ -40,6 +40,9 @@ define([
           // from: '1jASE5L0kFRWDq2H6BBbffZ2dm4lqOBBJYtWLKGI'
           from: '1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8'
         },
+        // fusion_table_id = "1Cynob736T_hpL1eKgvONNooCRM5RK1UuSL4bCGc";
+        // fusion_table_query_url = "https://www.googleapis.com/fusiontables/v1/query?sql=";
+        // fusion_table_key = "&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk";
 
         initialize: function(){
          	this.map =  new google.maps.Map(this.el, this.mapOptions);
@@ -62,6 +65,28 @@ define([
             $('#data_table').dataTable().fnClearTable();
           });
 
+          google.maps.event.addListener(this.markersLayer, 'mouseover', function(e) {
+            alert(e.row["icon_name"].value);
+            // move to template
+          //     <!--        <div id="legend">
+          //   <table>
+          //     <thead>
+          //       <tr>
+          //         <th>Legend</th>
+          //       </tr>
+          //     </thead>
+          //     <tbody>
+          //       <tr>
+          //         http://kml4earth.appspot.com/icons.html/
+          //         <td><img class="img-responsive" src="images/parks.png"></td>
+          //         <td>Gymnosperm</td>
+          //       </tr>
+          //     </tbody>
+          //   </table>
+          // </div> -->
+            });
+
+
           this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingMode: google.maps.drawing.OverlayType.MARKER,
             drawingControl: true,
@@ -75,7 +100,7 @@ define([
           this.drawingManager.setMap(this.map);
 
 
-          this.map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
+          this.map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(
             document.getElementById('legend'));
        	},
         

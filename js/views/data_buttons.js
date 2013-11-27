@@ -41,9 +41,11 @@ define([
 			initialize: function(){
 				this.$el.append(this.template(this.filters));
 				$('#gps_resolution').bootstrapSwitch('setSizeClass', 'switch-small');
-				$('#sequenced_question').popover('hide')
-				$('#genotyped_question').popover('hide')
-				$('#phenotyped_question').popover('hide')
+				$('#sequenced_question').popover({trigger:'hover'})
+				$('#genotyped_question').popover({trigger:'hover'})
+				$('#phenotyped_question').popover({trigger:'hover'})
+				$('#gps_resolution_exact').popover({trigger:'hover'})
+				$('#gps_resolution_approx').popover({trigger:'hover'})
 			},
 			
 

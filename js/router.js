@@ -32,7 +32,7 @@ define([
 				var dataTabsView = new DataTabsView({model: map});
 				var dataTableView = new DataTableView({model: map});
 				dataTreeView.render();
-				dataTabsView.render();
+				dataTabsView.render()
 				// dataButtonsView.render();
 
 				mapView.render();
