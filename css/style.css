@@ -48,7 +48,7 @@
     font-weight: bold;
 }
 
-#data_tree td.clicked {
+#data_tree td.selected {
     background-color: #3C746B;
     color:white;
     border: 1px solid #fff;
@@ -65,16 +65,17 @@
 }*/
 /*MAP*/
 #map_canvas {
-   height: 100%;
+   height: 686px;
+   /*height: 100%;*/
    width: 100%;
 }
 
 #legend {
-        font-family: Arial, sans-serif;
-        background: #fff;
-        padding: 5px;
-        margin: 5px;
-        border: 3px solid #000;
+  font-family: Arial, sans-serif;
+  background: #fff;
+  padding: 5px;
+  margin: 5px;
+  border: 3px solid #000;
 }
 
 #legend img{
