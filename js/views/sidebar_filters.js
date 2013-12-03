@@ -32,6 +32,10 @@ define([
 				// 	$("#"+filter+".btn:first-child").html("<span class='caret'></span>");
 				// 	$("#"+filter+".btn:first-child").val("none");
 				// }
+				var id = "#"+event.target.id
+				// $(id).prop('checked',!$(id).prop('checked'));//toggle check
+    			
+    			$(id).parents('label').toggleClass('active');// toggle class
 				this.model.toggleFilter(event);
 			},
 

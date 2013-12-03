@@ -109,15 +109,12 @@ define([
        	},
 
         render: function(){
-          console.log("render");
-          console.log(this.model.get("query").attributes);
-          console.log(this.markersLayer);
           this.markersLayer.setOptions({
             query: this.model.get("query").attributes,
-            styleId: 2,
-            templateId: 2,
+            // styleId: 2,
+            // templateId: 2,
+            // map: this.map
           });
-          this.markersLayer.setMap(this.map);
           return this;
         }
     	});

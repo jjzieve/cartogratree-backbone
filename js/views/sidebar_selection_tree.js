@@ -7,11 +7,10 @@ define([
   'backbone',    // lib/backbone/backbone
   'treetable',
   'models/map'
-  // 'models/map',
   // 'goog!maps,3,other_params:sensor=false'
 ], function($, _, Backbone, MapModel){//MapModel){
-		var DataTreeView = Backbone.View.extend({
-			el: "#data_tree",
+		var SelectionTreeView = Backbone.View.extend({
+			el: "#selection_tree",
 
 			loadBranch: function(data,node_num,index){
 				var that = this;
@@ -73,6 +72,6 @@ define([
 				return this
 			}
 	});
-  return DataTreeView;
+  return SelectionTreeView;
   // What we return here will be used by other modules
 });

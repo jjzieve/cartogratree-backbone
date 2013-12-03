@@ -48,7 +48,7 @@
     font-weight: bold;
 }
 
-#data_tree td.selected {
+#selection_tree td.selected {
     background-color: #3C746B;
     color:white;
     border: 1px solid #fff;

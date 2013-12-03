@@ -12,17 +12,23 @@ define([
 		    this.set("fusion_table_key","&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk");
 		    this.set("fusion_table_id","1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8");
 		    this.set("query",new QueryModel());
-		    // 		select: "lat",
-		    // 		from: "1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8"
-		    // 	})
-		    // );
-		    	// JSON.stringify(new QueryModel()));
 	    },
+	    toggleSelection: function(event){
+	    	var id = event.target.id;
+	    	var whereClause = "";
+	    },
+	
 	    toggleFilter: function(event){
-	       	var clause = "where '" + event.target.id + "' is not equal to 'No'" 
-	    	this.get("query").set({"where":clause});
-	    	this.trigger('change');
-	    	console.log(this.changedAttributes());
+	    	var id = event.target.id;
+	    	var label = $('#'+id).parents('label');	    	
+	    	var whereClause = "";
+
+	    	if (label.hasClass('active')){
+	    		whereClause += "'"+id+"' not equal to 'No'";
+	    	}
+
+	    	this.get("query").set({"where":whereClause});
+	    	this.trigger('change'); //not sure why this is needed
 	    }
     });
     return MapModel;
