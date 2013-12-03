@@ -6,10 +6,10 @@ define([
   'underscore', // lib/underscore/underscore
   'backbone',    // lib/backbone/backbone
   'treetable',
-  'models/data_tree'
+  'models/map'
   // 'models/map',
   // 'goog!maps,3,other_params:sensor=false'
-], function($, _, Backbone, DataTreeModel){//MapModel){
+], function($, _, Backbone, MapModel){//MapModel){
 		var DataTreeView = Backbone.View.extend({
 			el: "#data_tree",
 

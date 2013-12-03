@@ -11,6 +11,7 @@ define([
 
   	var MapView = Backbone.View.extend({
         el : '#map_canvas',
+        model: MapModel,
         template: _.template(legendTemplate),
         //var self = this;
         mapOptions : {
@@ -35,25 +36,16 @@ define([
           scaleControl: true,
 
         },
-        query: {
-          select: 'lat',
-          //from: '1_LQUfIWCi4TT2usHdEbttaQqofmFiuixfzkem-A'
-          // from: '1ffp9_kJA4D0xeYOBIaUQ8ox7CqqIuB_6sC4Ahww'
-          // from: '1jASE5L0kFRWDq2H6BBbffZ2dm4lqOBBJYtWLKGI'
-          from: '1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8'
-        },
-        // fusion_table_id = "1Cynob736T_hpL1eKgvONNooCRM5RK1UuSL4bCGc";
-        // fusion_table_query_url = "https://www.googleapis.com/fusiontables/v1/query?sql=";
-        // fusion_table_key = "&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk";
 
         initialize: function(){
           var that = this;
          	this.map =  new google.maps.Map(this.el, this.mapOptions);
           this.markersLayer = new google.maps.FusionTablesLayer({
-            query: this.query,
+            query: this.model.get("query").attributes,
             map: this.map,
             styleId: 2,
-            templateId: 2
+            templateId: 2,
+            suppressInfoWindows: true
           });
           google.maps.event.addListener(this.markersLayer, 'click', function(e){
             if(infowindow){
@@ -115,9 +107,17 @@ define([
           // this.map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(
           //   document.getElementById('legend'));
        	},
-        
 
         render: function(){
+          console.log("render");
+          console.log(this.model.get("query").attributes);
+          console.log(this.markersLayer);
+          this.markersLayer.setOptions({
+            query: this.model.get("query").attributes,
+            styleId: 2,
+            templateId: 2,
+          });
+          this.markersLayer.setMap(this.map);
           return this;
         }
     	});

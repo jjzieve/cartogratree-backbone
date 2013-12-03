@@ -5,13 +5,12 @@ define([
 	'underscore',
 	'backbone',
 	'models/map',
-	'models/data_tree',
 	'views/map',
 	'views/data_tree',
-	'views/data_buttons',
+	'views/sidebar_filters',
 	'views/data_tabs',
 	'views/data_table'
-	], function($, _, Backbone, MapModel, DataTreeModel, MapView, DataTreeView, DataButtonsView, DataTabsView, DataTableView) {
+	], function($, _, Backbone, MapModel, MapView, DataTreeView, FiltersView, DataTabsView, DataTableView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'(/)':'index',
@@ -25,17 +24,12 @@ define([
 			
 			appRouter.on('route:index', function(actions){
 				var map = new MapModel();
-				var dataTreeModel = new DataTreeModel();
 				var mapView = new MapView({model: map});
-				var dataTreeView = new DataTreeView({model: dataTreeModel});
-				var dataButtonsView = new DataButtonsView({model: dataTreeModel});
+				var dataTreeView = new DataTreeView({model: map});
+				var filtersView = new FiltersView({model: map});
 				var dataTabsView = new DataTabsView({model: map});
 				var dataTableView = new DataTableView({model: map});
-				dataTreeView.render();
-				dataTabsView.render()
-				// dataButtonsView.render();
-
-				mapView.render();
+				mapView.listenTo(map,"change",mapView.render);
 			});
 			
 			// Backbone.history.start({pushState:true});
