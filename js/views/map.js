@@ -4,11 +4,14 @@ define([
   'underscore',
   'backbone',
   'models/map',
+  'text!templates/legend.html',
   'goog!maps,3,other_params:libraries=drawing&sensor=false',
-], function($,_, Backbone, MapModel){
+    // 'fusiontips'
+], function($,_, Backbone, MapModel,legendTemplate){
 
   	var MapView = Backbone.View.extend({
         el : '#map_canvas',
+        template: _.template(legendTemplate),
         //var self = this;
         mapOptions : {
           zoom: 4,
@@ -30,8 +33,7 @@ define([
           },
           scrollwheel: false,
           scaleControl: true,
-          // draggableCursor : "url(http://s3.amazonaws.com/besport.com_images/status-pin.png), auto"
-          // draggableCursor: 'crosshair'
+
         },
         query: {
           select: 'lat',
@@ -45,6 +47,7 @@ define([
         // fusion_table_key = "&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk";
 
         initialize: function(){
+          var that = this;
          	this.map =  new google.maps.Map(this.el, this.mapOptions);
           this.markersLayer = new google.maps.FusionTablesLayer({
             query: this.query,
@@ -53,42 +56,51 @@ define([
             templateId: 2
           });
           google.maps.event.addListener(this.markersLayer, 'click', function(e){
-            var id = e.row["tree_id"].value;
-            var lat = e.row["lat"].value;
-            var lng = e.row["lng"].value;
-            var species= e.row["species"].value;
+            if(infowindow){
+              infowindow.close();
+            }
+            else{
+              var infowindow = new google.maps.InfoWindow();
+              infowindow.setContent(
+                that.template({
+                  icon_name: e.row["icon_name"].value,
+                  icon_type: e.row["type"].value
+                  })
+              );
+              infowindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
+              infowindow.open(that.map);
+            }
+            
             $('#data_table').dataTable().fnAddData([
-              id,lat,lng,species]);
+              e.row["tree_id"].value,
+              e.row["lat"].value,
+              e.row["lng"].value,
+              e.row["species"].value,
+             ]);
+
           });
 
           google.maps.event.addListener(this.map, 'click', function(){
             $('#data_table').dataTable().fnClearTable();
           });
 
-          google.maps.event.addListener(this.markersLayer, 'mouseover', function(e) {
-            alert(e.row["icon_name"].value);
-            // move to template
-          //     <!--        <div id="legend">
-          //   <table>
-          //     <thead>
-          //       <tr>
-          //         <th>Legend</th>
-          //       </tr>
-          //     </thead>
-          //     <tbody>
-          //       <tr>
-          //         http://kml4earth.appspot.com/icons.html/
-          //         <td><img class="img-responsive" src="images/parks.png"></td>
-          //         <td>Gymnosperm</td>
-          //       </tr>
-          //     </tbody>
-          //   </table>
-          // </div> -->
-            });
+          // this.markersLayer.enableMapTips({
+          //   select: "'icon_name','lat'",
+          //   from: '1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8',
+          //   key: 'AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk',
+          //   geometryColumn: 'icon_name', // geometry column name
+          //   suppressMapTips: false, // optional, whether to show map tips. default false
+          //   delay: 200, // milliseconds mouse pause before send a server query. default 300.
+          //   tolerance: 8 // tolerance in pixel around mouse. default is 6.
 
+
+          // });
+
+          // google.maps.event.addListener(this.markersLayer, 'mouseover', function(e) {
+          //  // console.log(e.row["icon_name"].value);
+          // });
 
           this.drawingManager = new google.maps.drawing.DrawingManager({
-            drawingMode: google.maps.drawing.OverlayType.MARKER,
             drawingControl: true,
             drawingControlOptions: {
               position: google.maps.ControlPosition.TOP_CENTER,
@@ -100,8 +112,8 @@ define([
           this.drawingManager.setMap(this.map);
 
 
-          this.map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(
-            document.getElementById('legend'));
+          // this.map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(
+          //   document.getElementById('legend'));
        	},
         
 

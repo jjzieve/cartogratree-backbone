@@ -19,6 +19,7 @@ require.config({
         templates: '../templates',
         propertyParser : 'libs/require/propertyParser',
         text: 'libs/require/text',
+        // fusiontips:'libs/fusiontips',
         //font: 'libs/require/font',
         //image: 'libs/require/image',
         //json: 'libs/require/json',
@@ -34,6 +35,9 @@ require.config({
         'underscore': {
             exports: '_'
         },
+        // 'fusiontips': {
+        //     deps: ['goog!maps,3,other_params:libraries=drawing&sensor=false']
+        // }
 
 	}
 });
