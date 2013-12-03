@@ -12,7 +12,7 @@ define([
 		var SelectionTreeView = Backbone.View.extend({
 			el: "#selection_tree",
 
-			loadBranch: function(data,node_num,index){
+			loadBranch: function(data,node_num,index){ //need to add type genus, year, species, accession,etc.
 				var that = this;
 				if( (typeof data) != "object"){//base case
 					var parent_node = that.$el.treetable("node", node_num);
@@ -56,16 +56,12 @@ define([
 			},
 
 			events: {
-			    "click": "highlight",
+			    "click": "toggleSelection",
 			},
 
-  			highlight: function(e){
-  				if($(e.target).hasClass("selected")){
-					$(e.target).removeClass("selected");
-				}
-				else {
-  					$(e.target).addClass("selected");
-  				}
+  			toggleSelection: function(event){
+  				$(event.target).toggleClass('selected');
+  				this.model.toggleSelection(event);
   			},
 
 			render: function(){

@@ -14,22 +14,32 @@ define([
 		    this.set("query",new QueryModel());
 	    },
 	    toggleSelection: function(event){
-	    	var id = event.target.id;
-	    	var whereClause = "";
+	    	// console.log($(event.target).text());
+	    	var whereClause = [];
+	    	var node = $(event.target)
+	    	if(node.hasClass('selected') && node.text().length > 1){
+	    		console.log(node.text());
+	    		console.log(node.text().length);
+	    		whereClause.push("'species' = '"+node.text()+"'")
+	    	}
+	    	this.updateMap(whereClause);
 	    },
-	
+	   
 	    toggleFilter: function(event){
 	    	var id = event.target.id;
 	    	var label = $('#'+id).parents('label');	    	
-	    	var whereClause = "";
-
+	    	var whereClause = [];
 	    	if (label.hasClass('active')){
-	    		whereClause += "'"+id+"' not equal to 'No'";
+	    		whereClause.push("'"+id+"' not equal to 'No'");
 	    	}
+	    	this.updateMap(whereClause);	    	
+	    },
 
-	    	this.get("query").set({"where":whereClause});
+	     updateMap: function(whereClause){
+	    	this.get("query").set({"where":whereClause.join(' and ')});
 	    	this.trigger('change'); //not sure why this is needed
 	    }
+	
     });
     return MapModel;
 });

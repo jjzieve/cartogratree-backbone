@@ -49,13 +49,15 @@ define([
 							$.getJSON(that.fusion_table_query_url+filter.query+that.fusion_table_key).success(function(result){
 								filter.count = result.rows[0][0];
 								that.$el.append(that.template({"filter": filter}));
+								$('#sequenced_qmark').popover({trigger:'hover'});
+								$('#genotyped_qmark').popover({trigger:'hover'});
+								$('#phenotyped_qmark').popover({trigger:'hover'});
+								$('#exact_gps_qmark').popover({trigger:'hover'});
+								$('#approx_gps_qmark').popover({trigger:'hover'});	
 							});
+
 						});
-						$('#sequenced_qmark').popover({trigger:'hover'});
-						$('#genotyped_qmark').popover({trigger:'hover'});
-						$('#phenotyped_qmark').popover({trigger:'hover'});
-						$('#exact_gps_qmark').popover({trigger:'hover'});
-						$('#approx_gps_qmark').popover({trigger:'hover'});						
+											
 					}
 				);
 			},

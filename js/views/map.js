@@ -45,7 +45,7 @@ define([
             map: this.map,
             styleId: 2,
             templateId: 2,
-            suppressInfoWindows: true
+            // suppressInfoWindows: true
           });
           google.maps.event.addListener(this.markersLayer, 'click', function(e){
             if(infowindow){
