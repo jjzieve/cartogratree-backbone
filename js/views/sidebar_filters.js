@@ -22,20 +22,8 @@ define([
 			},
 
 			toggleFilter : function(event){
-				// var filter = $(e.target).attr('class');//parent
-				// console.log($(e.target).html());
-				// if ($(e.target).html() == "Yes" || $(e.target).html() == "No"){
-				// 	$("#"+filter+".btn:first-child").text($(e.target).html());
-				// 	$("#"+filter+".btn:first-child").val($(e.target).html());
-				// }
-				// else{
-				// 	$("#"+filter+".btn:first-child").html("<span class='caret'></span>");
-				// 	$("#"+filter+".btn:first-child").val("none");
-				// }
 				var id = "#"+event.target.id
-				// $(id).prop('checked',!$(id).prop('checked'));//toggle check
-    			
-    			$(id).parents('label').toggleClass('active');// toggle class
+    			$(id).parents('label').toggleClass('active');
 				this.model.toggleFilter(event);
 			},
 

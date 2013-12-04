@@ -4,7 +4,7 @@ define([
   'underscore',
   'backbone',
   'models/map',
-  'text!templates/legend.html',
+  'text!templates/infowindow.html',
   'goog!maps,3,other_params:libraries=drawing&sensor=false',
     // 'fusiontips'
 ], function($,_, Backbone, MapModel,legendTemplate){
@@ -45,23 +45,40 @@ define([
             map: this.map,
             styleId: 2,
             templateId: 2,
-            // suppressInfoWindows: true
+            suppressInfoWindows: true
           });
+          var infoWindow = new google.maps.InfoWindow({maxWidth:250});
           google.maps.event.addListener(this.markersLayer, 'click', function(e){
-            if(infowindow){
-              infowindow.close();
-            }
-            else{
-              var infowindow = new google.maps.InfoWindow();
-              infowindow.setContent(
+              if (e.row["type"].value == "gymno"){
+                var type = "Gymnosperm";
+              }
+              else{
+                var type = "Angiosperm";
+              }
+              if (e.row["data_source"].value == "tgdr"){
+
+                var accession = e.row["tree_id"].value.substr(0,7);
+              }
+              else{
+                var accession = "";
+              }
+              infoWindow.setContent(
                 that.template({
                   icon_name: e.row["icon_name"].value,
-                  icon_type: e.row["type"].value
+                  icon_type: type,
+                  family: e.row["family"].value,
+                  species: e.row["species"].value,
+                  elev: e.row["elev"].value,
+                  lat: e.row["lat"].value,
+                  lng: e.row["lng"].value,
+                  sequenced: e.row["sequenced"].value,
+                  genotyped: e.row["genotyped"].value,
+                  phenotype: e.row["phenotype"].value,
+                  accession: accession
                   })
               );
-              infowindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
-              infowindow.open(that.map);
-            }
+              infoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
+              infoWindow.open(that.map);
             
             $('#data_table').dataTable().fnAddData([
               e.row["tree_id"].value,
@@ -73,24 +90,9 @@ define([
           });
 
           google.maps.event.addListener(this.map, 'click', function(){
+            infoWindow.close();
             $('#data_table').dataTable().fnClearTable();
           });
-
-          // this.markersLayer.enableMapTips({
-          //   select: "'icon_name','lat'",
-          //   from: '1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8',
-          //   key: 'AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk',
-          //   geometryColumn: 'icon_name', // geometry column name
-          //   suppressMapTips: false, // optional, whether to show map tips. default false
-          //   delay: 200, // milliseconds mouse pause before send a server query. default 300.
-          //   tolerance: 8 // tolerance in pixel around mouse. default is 6.
-
-
-          // });
-
-          // google.maps.event.addListener(this.markersLayer, 'mouseover', function(e) {
-          //  // console.log(e.row["icon_name"].value);
-          // });
 
           this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingControl: true,
@@ -103,17 +105,11 @@ define([
             });
           this.drawingManager.setMap(this.map);
 
-
-          // this.map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(
-          //   document.getElementById('legend'));
        	},
 
         render: function(){
           this.markersLayer.setOptions({
             query: this.model.get("query").attributes,
-            // styleId: 2,
-            // templateId: 2,
-            // map: this.map
           });
           return this;
         }

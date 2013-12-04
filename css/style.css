@@ -1,3 +1,8 @@
+/*GLOBAL*/
+a{
+  color: #3C746B;
+}
+
 /*--HEADER CSS--*/
 
 /*#header {
@@ -21,8 +26,6 @@
 
 .nav-pills li a {
   padding-top: 1cm;
-  color: #3C746B;
-  /*font-size: 18px;*/
 }
 
 /*SIDE BAR/DATA PANE*/
@@ -78,13 +81,13 @@
   border: 3px solid #000;
 }
 
-#legend img{
-  height:50%;
-  width:50%;
+#infowindow img{
+  height:25%;
+  width:25%;
 }
 
-#legend td{
-  font-size: 12px;
+#infowindow td{
+  font-size: 10px;
 }
 /*Analysis pane*/
 #analysis_pane {
@@ -98,9 +101,6 @@
     background-color:#efefef;
 }
 
-.nav-tabs li a{
-    color:#3C746B;
-}
 
 .table-borderless td,
 .table-borderless th {
