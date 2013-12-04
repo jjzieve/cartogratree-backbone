@@ -3,14 +3,18 @@ a{
   color: #3C746B;
 }
 
-/*--HEADER CSS--*/
+/*--HEADERS--*/
 
-/*#header {
-	margin:10px;
+.header {
+  /*background: none repeat scroll 0 0 #FC9453;*/
+  /*position:absolute;*/
+
+/*  left:0;*/
+	/*margin:10px;
 	width:1210;
 	height:80px;
-	position:relative;
-} */
+	position:relative;*/
+} 
 
 #ctree_logo{
     padding-bottom: 15px;
@@ -39,6 +43,7 @@ a{
 #side_bar_content {
 /*	font-size:12px;*/
 /*    height:px;*/
+  /*position: relative;*/
     overflow:auto;
 }
 #select_data {
