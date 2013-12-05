@@ -33,7 +33,9 @@ define([
 				var that = this;
 				$.getJSON('data/filters.JSON',
 					function(data){
-						$.each(data.filters,function(index,filter){
+						var sorted = data.filters.sort(function(a,b) { return parseInt(a.order) - parseInt(b.order)}); //hack to order the output of filters
+						$.each(sorted,function(index,filter){
+							console.log(filter);
 							$.getJSON(that.fusion_table_query_url+filter.query+that.fusion_table_key).success(function(result){
 								filter.count = result.rows[0][0];
 								that.$el.append(that.template({"filter": filter}));

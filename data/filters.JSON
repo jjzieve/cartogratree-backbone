@@ -1,30 +1,35 @@
 { 
 	"filters": [
 		{
+			"order": 1,
 			"type": "Sequenced",
 			"name": "sequenced",
 			"description": "These tree samples have had some amount of sequencing performed on them but not necessarily genotyped",
 			"query": "select count() from 1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8 where 'sequenced' not equal to 'No'"
 		},
 		{
+			"order": 2,
 			"type": "Genotyped",
 			"name": "genotyped",
 			"description": "These tree samples have been genotyped by SNPs and/or other genetic markers",
 			"query": "select count() from 1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8 where 'genotyped' not equal to 'No'"
 		},
 		{
+			"order": 3,
 			"type": "Phenotyped",
 			"name": "phenotyped",
 			"description": "These tree samples have had phenotypes assessed for them",
 			"query": "select count() from 1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8 where 'phenotype' not equal to ''"
 		},
 		{
+			"order": 4,
 			"type": "Exact GPS",
 			"name": "exact_gps",
 			"description": "Each tree sample is independently georeferenced",
 			"query": "select count() from 1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8 where 'gps' = 'exact'"
 		},
 		{
+			"order": 5,
 			"type": "Approximate GPS",
 			"name": "approx_gps",
 			"description": "Georeferenced sites with one to many tree samples",
