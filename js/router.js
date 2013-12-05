@@ -9,7 +9,7 @@ define([
 	'views/sidebar_selection_tree',
 	'views/sidebar_filters',
 	'views/data_tabs',
-	'views/data_table'
+	'views/data_table',
 	], function($, _, Backbone, MapModel, MapView, SelectionTreeView, FiltersView, DataTabsView, DataTableView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {

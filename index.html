@@ -50,9 +50,12 @@ Updated:
 		</div>
 		<div class="row">
 			<!--SIDE BAR/DATA PANE-->
-			<div id="#sidebar" class="col-xs-4">
-				<div id="select_data" class="well well-sm">
-					<h4 class="header">Select the data</h4>
+			<div id="sidebar" class="col-xs-4">
+				<div id="sidebar_selection" class="well well-sm">
+					<div id="select_tree_header">
+						<h4>Select the data</h4>
+					</div>
+					<div class="filler"></div>
 					<table id='selection_tree'>
 						<tr data-tt-id="1">
 						<td id="studies" class="tree_root">Published Studies</td>
@@ -64,7 +67,10 @@ Updated:
 				</div>
 				
 				<div id="filters" class="well well-sm">
-					<h4 class="header">Filter the data</h4>
+					<div id="filter_header">
+						<h4>Filter the data</h4>
+					</div>
+					<div class="filler"></div>
 					<!-- <table id="gps_resolution">
 						<tr>
 							<td>

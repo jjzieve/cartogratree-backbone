@@ -6,9 +6,9 @@ define([
   'underscore', // lib/underscore/underscore
   'backbone',    // lib/backbone/backbone
   'treetable',
-  'models/map'
+  'models/map',
   // 'goog!maps,3,other_params:sensor=false'
-], function($, _, Backbone, MapModel){//MapModel){
+], function($, _, Backbone, MapModel,stickyScroll){//MapModel){
 		var SelectionTreeView = Backbone.View.extend({
 			el: "#selection_tree",
 

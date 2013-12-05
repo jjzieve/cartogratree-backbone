@@ -3,50 +3,25 @@ a{
   color: #3C746B;
 }
 
-/*--HEADERS--*/
-
-.header {
-  /*background: none repeat scroll 0 0 #FC9453;*/
-  /*position:absolute;*/
-
-/*  left:0;*/
-	/*margin:10px;
-	width:1210;
-	height:80px;
-	position:relative;*/
-} 
+h4{
+  color: #3C746B;
+  opacity: 0.6;
+}
+/*HEADER*/
 
 #ctree_logo{
-    padding-bottom: 15px;
-	/*float:left;
-	height:80px;*/
+  padding-bottom: 15px;
 }
-
-/*#info_tabs {
-	position:absolute;
-	right:30;
-	bottom:-30;
-}*/
 
 .nav-pills li a {
   padding-top: 1cm;
 }
 
-/*SIDE BAR/DATA PANE*/
-#side_bar {
-    background-color:#efefef;
-    /*float:left;*/
-/*    border:solid 1px #d0d0d0;*/
-    /*border-bottom:solid 3px #3C746B;*/
+/*SIDE-BAR*/
+#select_tree_header {
+      position:absolute;
 }
-
-#side_bar_content {
-/*	font-size:12px;*/
-/*    height:px;*/
-  /*position: relative;*/
-    overflow:auto;
-}
-#select_data {
+#sidebar_selection {
     height: 477px;
     overflow: auto;
     padding-top: 15px;
@@ -56,25 +31,23 @@ a{
     font-weight: bold;
 }
 
+.filler{/* to give spaceing between divs with absolute position*/
+  padding: 15px;
+}
+
 #selection_tree td.selected {
     background-color: #3C746B;
     color:white;
     border: 1px solid #fff;
 }
 
-/*#filter_data .checkbox label{
-    margin-left: 88px;
-    width:99px;
-    height:30px;
-
+#filter_header {
+  position: absolute;
 }
-#filter_data td{
-    font-size: 14px;
-}*/
+
 /*MAP*/
 #map_canvas {
    height: 686px;
-   /*height: 100%;*/
    width: 100%;
 }
 
@@ -94,13 +67,12 @@ a{
 #infowindow td{
   font-size: 10px;
 }
-/*Analysis pane*/
+
+/*BOTTOM-PANEL*/
 #analysis_pane {
     padding-top: 20px;
 }
-/*.tab-content {
-  display: block;
-}*/
+
 #data_table{
     border: 0;
     background-color:#efefef;
@@ -112,14 +84,7 @@ a{
     border: 0;
 }
 
-/*.data_buttons td {
-    font-size: 8px;
-}*/
-/*.btn:first-child {
-    background: #3C746B;
-}*/
-
-/*Footer*/
+/*FOOTER*/
 #version_num{
     font-family: "Courier New";
 }
