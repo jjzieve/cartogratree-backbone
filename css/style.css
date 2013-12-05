@@ -2,6 +2,9 @@
 a{
   color: #3C746B;
 }
+a:hover{
+  color: #3C746B;
+}
 
 h4{
   color: #3C746B;
@@ -38,7 +41,7 @@ h4{
 #selection_tree td.selected {
     background-color: #3C746B;
     color:white;
-    border: 1px solid #fff;
+    border: 1px solid white;
 }
 
 #filter_header {
