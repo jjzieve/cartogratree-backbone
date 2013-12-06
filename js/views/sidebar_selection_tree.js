@@ -98,20 +98,24 @@ define([
 			// 	}
 			// },
   			toggleSelection: function(event){
-  				$(event.target).toggleClass('selected');
   				var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
-  				// var whereStatement = this.genFusionWhereStatement(event.target);
   				var column = $(event.target).attr('name');
 				var value = $(event.target).attr('value');
   				if (column && value){
-  					this.collection.add(
+  					if ($(event.target).hasClass('selected'))
   					{
-  						id: id,
-  						column: column,
-  						value: value,
-  					});
+  						this.collection.remove(id);
+  					}
+  					else {
+  						this.collection.add(
+	  					{
+	  						id: id,
+	  						column: column,
+	  						value: value,
+	  					});
+  					}
+  				$(event.target).toggleClass('selected');
   				}
-  				this.collection.trigger('change');
   			},
 
 			render: function(){

@@ -35,31 +35,14 @@ define([
           },
           scrollwheel: false,
           scaleControl: true,
-
         },
 
-        initialize: function(){
-          var that = this;
-          
-         	this.map =  new google.maps.Map(this.el, this.mapOptions);
-          var whereList = this.collection.map(function(query){
-            return query.get('where');
-          });
-          
-          this.markersLayer = new google.maps.FusionTablesLayer({
-            query: {
-              select: "lat",
-              from: "1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
-              where: whereList.join(' and '),
-            }, //this.model.get("query").attributes,
-            map: this.map,
-            styleId: 2,
-            templateId: 2,
-            suppressInfoWindows: true
-          });
-          var infoWindow = new google.maps.InfoWindow({maxWidth:250});
+        initInfoWindow: function(){
+          var that = this; //to handle closure
+          this.infoWindow = new google.maps.InfoWindow({maxWidth:250});
           google.maps.event.addListener(this.markersLayer, 'click', function(e){
-              if (e.row["type"].value == "gymno"){
+              //remove these if-else branches by reflecting it in the table
+              if (e.row["type"].value == "gymno"){ 
                 var type = "Gymnosperm";
               }
               else{
@@ -72,7 +55,7 @@ define([
               else{
                 var accession = "";
               }
-              infoWindow.setContent(
+              that.infoWindow.setContent(
                 that.template({
                   icon_name: e.row["icon_name"].value,
                   icon_type: type,
@@ -87,23 +70,12 @@ define([
                   accession: accession
                   })
               );
-              infoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
-              infoWindow.open(that.map);
-            
-            $('#data_table').dataTable().fnAddData([
-              e.row["tree_id"].value,
-              e.row["lat"].value,
-              e.row["lng"].value,
-              e.row["species"].value,
-             ]);
-
+              that.infoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
+              that.infoWindow.open(that.map);
           });
+        },
 
-          google.maps.event.addListener(this.map, 'click', function(){
-            infoWindow.close();
-            $('#data_table').dataTable().fnClearTable();
-          });
-
+        initDrawingManager: function() {
           this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingControl: true,
             drawingControlOptions: {
@@ -112,26 +84,98 @@ define([
                 google.maps.drawing.OverlayType.POLYGON,
               ]
             },
-            });
+          });
           this.drawingManager.setMap(this.map);
-          this.collection.bind('add',this.render,this);
-       	},
+        },
 
-        render: function(){
-          //_.pluck(
-          console.log(
-            this.collection.filter(this.collection,function(model) {
-              return model.attributes.column === "year";
-            }).map(this.collection.values)
-          );
-          // console.log(this.collection.pluck("column"));
-          this.markersLayer.setOptions({
+        initMap: function() {
+          this.map =  new google.maps.Map(this.el, this.mapOptions);
+        },
+
+        initMarkersLayer: function() {
+          this.markersLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
               from: "1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
               where: "",
+            }, 
+            map: this.map,
+            styleId: 2,
+            templateId: 2,
+            suppressInfoWindows: true
+          });
+        },
+
+        initialize: function(){
+          this.initMap();
+          this.initMarkersLayer();
+          this.initInfoWindow();
+          this.initDrawingManager();
+          this.collection.on('add remove',this.refreshMarkersLayer,this);
+            //need a cleaner way to do this
+            // $('#data_table').dataTable().fnAddData([
+            //   e.row["tree_id"].value,
+            //   e.row["lat"].value,
+            //   e.row["lng"].value,
+            //   e.row["species"].value,
+          // google.maps.event.addListener(this.map, 'click', function(){
+          //   infoWindow.close();
+          //   $('#data_table').dataTable().fnClearTable();
+          // });
+       	},
+
+        getColumn: function(column){
+          return (this.collection.filter(function(query){return query.get("column") === column}).map(function(query){return query.get("value")}));
+        },
+
+        genQuery: function(years,families,genuses,species,accessions){
+          yearsQuery = "";
+          familiesQuery = "";
+          genusesQuery = "";
+          speciesQuery = "";
+          accessionsQuery = "";
+          if (years.length > 0){
+            yearsQuery = "'year' IN ('"+years.join("','")+"')";
+          }
+          if (families.length > 0){
+            familiesQuery = "'family' IN ('"+families.join("','")+"')";
+          }
+          if (genuses.length > 0){
+            genusesQuery = "'genus' IN ('"+genuses.join("','")+"')";
+          }
+          if (species.length > 0){
+            speciesQuery = "'species' IN ('"+species.join("','")+"')";
+          }
+          if (accessions.length > 0){ // uncomment when fusion table is fixed
+            accessionsQuery = "'accessions' IN ('"+years.join("','")+"')";
+          }
+          return _.filter([
+            yearsQuery,
+            familiesQuery,
+            genusesQuery,
+            speciesQuery,
+            accessionsQuery],function(string){ return string != ""}).join(' AND ');          
+        },
+
+        refreshMarkersLayer: function(){
+          var years = this.getColumn("year");
+          var families = this.getColumn("family");
+          var genuses = this.getColumn("genus");
+          var species = this.getColumn("species");
+          // var accessions = this.getColumn("accession"); // uncomment when fusion table is fixed
+          var accessions = []; // delete when fusion table is fixed
+          var whereClause = this.genQuery(years,families,genuses,species,accessions);  
+          console.log(whereClause);        
+          this.markersLayer.setOptions({
+            query: {
+              select: "lat",
+              from: "1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
+              where: whereClause
             }
           });
+        },
+
+        render: function(){
           return this;
     	   }
       });

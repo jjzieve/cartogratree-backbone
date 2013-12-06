@@ -34,7 +34,6 @@ define([
 				var filters = new FiltersView({model: map});
 				var dataTabs = new DataTabsView({model: map});
 				var dataTable = new DataTableView({model: map});
-				mapView.listenTo(queries,"add",mapView.render);
 			});
 			
 			// Backbone.history.start({pushState:true});
