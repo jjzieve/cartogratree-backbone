@@ -7,36 +7,63 @@ define([
   'backbone',    // lib/backbone/backbone
   'treetable',
   'models/map',
+  'collections/queries'
   // 'goog!maps,3,other_params:sensor=false'
-], function($, _, Backbone, MapModel,stickyScroll){//MapModel){
+], function($, _, Backbone, MapModel,QueriesCollection){
 		var SelectionTreeView = Backbone.View.extend({
 			el: "#selection_tree",
-
-			loadBranch: function(data,node_num,index){ //need to add type genus, year, species, accession,etc.
+			collection: QueriesCollection,
+			loadBranch: function(data,node_num,index,depth,branch_name){ //need to add type genus, year, species, accession,etc.
 				var that = this;
 				if( (typeof data) != "object"){//base case
 					var parent_node = that.$el.treetable("node", node_num);
-					var new_node_num = node_num+'-'+index
-					that.$el.treetable("loadBranch",parent_node,'<tr data-tt-parent-id="'+node_num+'" data-tt-id="'+new_node_num+'"><td>'+data+'</td></tr>');
+					var new_node_num = node_num+'-'+index;
+					var type = that.convertDepthToType(depth,branch_name);
+					that.$el.treetable("loadBranch",parent_node,'<tr data-tt-parent-id="'+node_num+'" data-tt-id="'+new_node_num+'"><td name="'+type+'" value="'+data+'">'+data+'</td></tr>');
 					that.$el.treetable("collapseNode",node_num);
 				}
 				else{
-					index = 0;
+					depth++;
 					$.each(data,function(value,object){
 						if( (typeof object) != "object"){
-							that.loadBranch(object,node_num,index++);//throw to base case
+							that.loadBranch(object,node_num,index++,depth,branch_name);//throw to base case
 						}
 						else{
 							var parent_node = that.$el.treetable("node", node_num);
-							var new_node_num = node_num+'-'+index
-							that.$el.treetable("loadBranch",parent_node,'<tr data-tt-parent-id="'+node_num+'" data-tt-id="'+new_node_num+'"><td>'+value+'</td></tr>');
-							that.loadBranch(object,new_node_num,index++);//recurse
+							var new_node_num = node_num+'-'+index;
+							var type = that.convertDepthToType(depth,branch_name);
+							that.$el.treetable("loadBranch",parent_node,'<tr data-tt-parent-id="'+node_num+'" data-tt-id="'+new_node_num+'"><td name="'+type+'" value="'+value+'">'+value+'</td></tr>');
+							that.loadBranch(object,new_node_num,index++,depth,branch_name);//recurse
 						}
 					});
 					that.$el.treetable("collapseNode",node_num);
 				}
+
 			},
-    			
+    		convertDepthToType: function(depth,branch_name){
+    			if (branch_name == "taxa"){
+    				if (depth == 1){
+    					return "family";
+    				}
+    				else if (depth == 2){
+    					return "genus";
+    				}
+    				else{ //depth = 3
+    					return "species";
+    				}
+    			}
+    			else { //branch_name is studies
+    				if (depth == 1){
+    					return "year";
+    				}
+    				if (depth == 2){
+    					return "species";
+    				}
+    				else{ //depth = 3
+    					return "accession";
+    				}
+    			}
+    		},
 
 			initialize: function(){
 				var that = this;
@@ -44,14 +71,15 @@ define([
 
 				$.getJSON('data/studies.JSON',
 					function(data){
-						that.loadBranch(data,"1");
+						that.loadBranch(data,"1-1",0,0,"studies");
 					}
 				);
 				$.getJSON('data/taxa.JSON',
 					function(data){
-						that.loadBranch(data,"2");
+						that.loadBranch(data,"1-2",0,0,"taxa");
 					}
-				);				
+				);
+				$("#all").toggleClass('selected');				
 
 			},
 
@@ -59,9 +87,31 @@ define([
 			    "click": "toggleSelection",
 			},
 
+			// genFusionWhereStatement: function(target){
+			// 	var column = $(target).attr('name');
+			// 	var value = $(target).attr('value');
+			// 	if (column && value){
+			// 		return "'"+column+"' = '"+value+"'";
+			// 	}
+			// 	else {
+			// 		return "";
+			// 	}
+			// },
   			toggleSelection: function(event){
   				$(event.target).toggleClass('selected');
-  				this.model.toggleSelection(event);
+  				var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
+  				// var whereStatement = this.genFusionWhereStatement(event.target);
+  				var column = $(event.target).attr('name');
+				var value = $(event.target).attr('value');
+  				if (column && value){
+  					this.collection.add(
+  					{
+  						id: id,
+  						column: column,
+  						value: value,
+  					});
+  				}
+  				this.collection.trigger('change');
   			},
 
 			render: function(){

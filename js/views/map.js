@@ -4,16 +4,17 @@ define([
   'underscore',
   'backbone',
   'models/map',
+  'collections/queries',
   'text!templates/infowindow.html',
   'goog!maps,3,other_params:libraries=drawing&sensor=false',
-    // 'fusiontips'
-], function($,_, Backbone, MapModel,legendTemplate){
+
+], function($,_, Backbone, MapModel, QueriesCollection, legendTemplate){
 
   	var MapView = Backbone.View.extend({
         el : '#map_canvas',
         model: MapModel,
+        collection: QueriesCollection,
         template: _.template(legendTemplate),
-        //var self = this;
         mapOptions : {
           zoom: 4,
           minZoom: 2,
@@ -39,9 +40,18 @@ define([
 
         initialize: function(){
           var that = this;
+          
          	this.map =  new google.maps.Map(this.el, this.mapOptions);
+          var whereList = this.collection.map(function(query){
+            return query.get('where');
+          });
+          
           this.markersLayer = new google.maps.FusionTablesLayer({
-            query: this.model.get("query").attributes,
+            query: {
+              select: "lat",
+              from: "1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
+              where: whereList.join(' and '),
+            }, //this.model.get("query").attributes,
             map: this.map,
             styleId: 2,
             templateId: 2,
@@ -104,15 +114,26 @@ define([
             },
             });
           this.drawingManager.setMap(this.map);
-
+          this.collection.bind('add',this.render,this);
        	},
 
         render: function(){
+          //_.pluck(
+          console.log(
+            this.collection.filter(this.collection,function(model) {
+              return model.attributes.column === "year";
+            }).map(this.collection.values)
+          );
+          // console.log(this.collection.pluck("column"));
           this.markersLayer.setOptions({
-            query: this.model.get("query").attributes,
+            query: {
+              select: "lat",
+              from: "1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
+              where: "",
+            }
           });
           return this;
-        }
-    	});
+    	   }
+      });
     	return MapView;
   });
