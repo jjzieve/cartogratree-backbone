@@ -6,21 +6,31 @@ define([
   'underscore', // lib/underscore/underscore
   'backbone',    // lib/backbone/backbone
   'treetable',
-  'models/map',
-  'collections/queries'
+  'models/tree_node',
+  'collections/queries',
+  'text!templates/tree_node.html',
   // 'goog!maps,3,other_params:sensor=false'
-], function($, _, Backbone, MapModel,QueriesCollection){
+], function($, _, Backbone, TreeNodeModel , QueriesCollection,treeNodeTemplate){
 		var SelectionTreeView = Backbone.View.extend({
 			el: "#selection_tree",
+			template: _.template('<tr data-tt-parent-id="<%= node_num %>" data-tt-id="<%= new_node_num %>"><td name="<%= type %>" value="<%= value %>"><%= value %></td></tr>'),
+			// template: _.template(treeNodeTemplate),
+			model: TreeNodeModel,
 			collection: QueriesCollection,
-			loadBranch: function(data,node_num,index,depth,branch_name){ //need to add type genus, year, species, accession,etc.
+
+			loadBranch: function(data,node_num,index,depth,branch_name){ //can modularize more
 				var that = this;
 				if( (typeof data) != "object"){//base case
 					var parent_node = that.$el.treetable("node", node_num);
 					var new_node_num = node_num+'-'+index;
 					var type = that.convertDepthToType(depth,branch_name);
-					that.$el.treetable("loadBranch",parent_node,'<tr data-tt-parent-id="'+node_num+'" data-tt-id="'+new_node_num+'"><td name="'+type+'" value="'+data+'">'+data+'</td></tr>');
-					that.$el.treetable("collapseNode",node_num);
+					this.model.clear();
+					this.model.set("node_num",node_num);
+					this.model.set("new_node_num",new_node_num);
+					this.model.set("type",type);
+					this.model.set("value",data);
+					this.$el.treetable("loadBranch",parent_node,that.template(this.model.toJSON()));
+					this.$el.treetable("collapseNode",node_num);
 				}
 				else{
 					depth++;
@@ -32,7 +42,12 @@ define([
 							var parent_node = that.$el.treetable("node", node_num);
 							var new_node_num = node_num+'-'+index;
 							var type = that.convertDepthToType(depth,branch_name);
-							that.$el.treetable("loadBranch",parent_node,'<tr data-tt-parent-id="'+node_num+'" data-tt-id="'+new_node_num+'"><td name="'+type+'" value="'+value+'">'+value+'</td></tr>');
+							that.model.clear();
+							that.model.set("node_num",node_num);
+							that.model.set("new_node_num",new_node_num);
+							that.model.set("type",type);
+							that.model.set("value",value);
+							that.$el.treetable("loadBranch",parent_node,that.template(that.model.toJSON()));
 							that.loadBranch(object,new_node_num,index++,depth,branch_name);//recurse
 						}
 					});
@@ -66,6 +81,7 @@ define([
     		},
 
 			initialize: function(){
+				console.log(treeNodeTemplate);
 				var that = this;
 				this.$el.treetable({expandable:true});
 
@@ -87,16 +103,6 @@ define([
 			    "click": "toggleSelection",
 			},
 
-			// genFusionWhereStatement: function(target){
-			// 	var column = $(target).attr('name');
-			// 	var value = $(target).attr('value');
-			// 	if (column && value){
-			// 		return "'"+column+"' = '"+value+"'";
-			// 	}
-			// 	else {
-			// 		return "";
-			// 	}
-			// },
   			toggleSelection: function(event){
   				var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
   				var column = $(event.target).attr('name');
