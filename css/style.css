@@ -8,7 +8,7 @@ a:hover{
 
 h4{
   color: #3C746B;
-  opacity: 0.6;
+  /*opacity: 0.6;*/
 }
 /*HEADER*/
 
@@ -24,11 +24,11 @@ h4{
 #select_tree_header {
       position:absolute;
 }
-#sidebar_selection {
+/*#sidebar_selection {
     height: 477px;
     overflow: auto;
     padding-top: 15px;
-}
+}*/
 
 .root {
     font-weight: bold;
@@ -37,7 +37,10 @@ h4{
 .filler{/* to give spaceing between divs with absolute position*/
   padding: 15px;
 }
-
+#selection_tree_container {
+  overflow:auto;
+  height: 427px;
+}
 #selection_tree td.selected {
     background-color: #3C746B;
     color:white;

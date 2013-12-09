@@ -56,16 +56,18 @@ Updated:
 						<h4>Select the data</h4>
 					</div>
 					<div class="filler"></div>
-					<table id='selection_tree'>
-						<tr data-tt-id="1" class="root">
-							<td id="all" name="all">All</td>
-						<tr data-tt-id="1-1" data-tt-parent-id="1">
-							<td name="studies" value="tgdr">Published Studies</td>
-						</tr>
-						<tr data-tt-id="1-2" data-tt-parent-id="1">
-							<td name="taxa" value="taxa">Taxa</td>
-						</tr>
-					</table>
+					<div id="selection_tree_container">
+						<table id="selection_tree">
+							<tr data-tt-id="1" class="root">
+								<td id="all" name="all">All</td>
+							<tr data-tt-id="1-1" data-tt-parent-id="1">
+								<td name="studies" value="tgdr">Published Studies</td>
+							</tr>
+							<tr data-tt-id="1-2" data-tt-parent-id="1">
+								<td name="taxa" value="taxa">Taxa</td>
+							</tr>
+						</table>
+					</div>
 				</div>
 				
 				<div id="filters" class="well well-sm">
@@ -85,7 +87,7 @@ Updated:
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="well well-sm">
-					<h4>Analyze</h4>
+					<h4>Analyze the data</h4>
 					<ul class="nav nav-tabs" id="data_tabs">
 						<li><a href="#markers" data-toggle="tab">Selected Markers</a></li>
 						<li><a href="#common_phenotype" data-toggle="tab">Common phenotypes</a></li>

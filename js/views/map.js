@@ -96,7 +96,7 @@ define([
           this.markersLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
-              from: "1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
+              from: this.model.get("fusion_table_id"),//"1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
               where: "",
             }, 
             map: this.map,
@@ -128,12 +128,17 @@ define([
           return (this.collection.filter(function(query){return query.get("column") === column}).map(function(query){return query.get("value")}));
         },
 
-        genQuery: function(years,families,genuses,species,accessions){
+        genQuery: function(years,families,genuses,species,accessions,filters){
           yearsQuery = "";
           familiesQuery = "";
           genusesQuery = "";
           speciesQuery = "";
           accessionsQuery = "";
+          sequencedQuery = "";
+          genotypedQuery = "";
+          phenotypedQuery = "";
+          gpsQuery = "";
+          console.log(filters);
           if (years.length > 0){
             yearsQuery = "'year' IN ('"+years.join("','")+"')";
           }
@@ -147,29 +152,61 @@ define([
             speciesQuery = "'species' IN ('"+species.join("','")+"')";
           }
           if (accessions.length > 0){ // uncomment when fusion table is fixed
-            accessionsQuery = "'accessions' IN ('"+years.join("','")+"')";
+            accessionsQuery = "'accession' IN ('"+years.join("','")+"')";
           }
+          if (filters.indexOf("sequenced") != -1) {
+            sequencedQuery = "'sequenced' NOT EQUAL TO 'No'";
+          }
+          if (filters.indexOf("genotyped") != -1) {
+            genotypedQuery = "'genotyped' NOT EQUAL TO 'No'";
+          }
+          if (filters.indexOf("phenotyped") != -1) {
+            phenotypedQuery = "'phenotype' NOT EQUAL TO ''";
+          }
+          if (filters.indexOf("exact_gps") != -1) {
+            if (gpsQuery == ""){
+              gpsQuery = "'gps' = 'exact'";
+            }
+            else {
+              gpsQuery = "'gps' IN ('exact','estimate')";
+            }
+          }
+          if (filters.indexOf("approx_gps") != -1) {
+            if (gpsQuery == ""){
+              gpsQuery = "'gps' = 'estimate'";
+            }
+            else {
+              gpsQuery = "'gps' IN ('exact','estimate')";
+            }
+          }
+                              
           return _.filter([
             yearsQuery,
             familiesQuery,
             genusesQuery,
             speciesQuery,
-            accessionsQuery],function(string){ return string != ""}).join(' AND ');          
+            accessionsQuery,
+            sequencedQuery,
+            genotypedQuery,
+            phenotypedQuery,
+            gpsQuery],function(string){ return string != ""}).join(' AND ');          
         },
+
 
         refreshMarkersLayer: function(){
           var years = this.getColumn("year");
           var families = this.getColumn("family");
           var genuses = this.getColumn("genus");
           var species = this.getColumn("species");
+          var filters = this.collection.pluck("filter");
           // var accessions = this.getColumn("accession"); // uncomment when fusion table is fixed
           var accessions = []; // delete when fusion table is fixed
-          var whereClause = this.genQuery(years,families,genuses,species,accessions);  
+          var whereClause = this.genQuery(years,families,genuses,species,accessions,filters);
           console.log(whereClause);        
           this.markersLayer.setOptions({
             query: {
               select: "lat",
-              from: "1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
+              from: this.model.get("fusion_table_id"), 
               where: whereClause
             }
           });

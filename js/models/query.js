@@ -12,7 +12,8 @@ define([
     defaults: {
       column: "",//year,species,genus,family,accession
       value: "",//(e.g. "Pinus taeda")
-      dependent: false//so far this only applies to studies
+      dependent: false,//so far this only applies to studies
+      filter: "", //so it doesn't have to be searched by the selection pane
     }
   });
   return QueryModel; 

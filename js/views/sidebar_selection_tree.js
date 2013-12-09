@@ -13,8 +13,10 @@ define([
 ], function($, _, Backbone, TreeNodeModel , QueriesCollection,treeNodeTemplate){
 		var SelectionTreeView = Backbone.View.extend({
 			el: "#selection_tree",
-			template: _.template('<tr data-tt-parent-id="<%= node_num %>" data-tt-id="<%= new_node_num %>"><td name="<%= type %>" value="<%= value %>"><%= value %></td></tr>'),
-			// template: _.template(treeNodeTemplate),
+			template: _.template('<tr data-tt-parent-id="<%= node_num %>"'+
+			 					'data-tt-id="<%= new_node_num %>"><td name="<%= type %>"'+
+			 					'value="<%= value %>"><%= value %></td></tr>'),
+			// template: _.template(treeNodeTemplate), // can't get this to load right
 			model: TreeNodeModel,
 			collection: QueriesCollection,
 
@@ -81,7 +83,7 @@ define([
     		},
 
 			initialize: function(){
-				console.log(treeNodeTemplate);
+				// console.log(treeNodeTemplate.text);
 				var that = this;
 				this.$el.treetable({expandable:true});
 
