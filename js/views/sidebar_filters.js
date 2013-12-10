@@ -39,30 +39,59 @@ define([
     			}
 			},
 
+			refreshCounts: function(){
+				var that = this;
+				var countQuery = "";
+				this.$el.children().each(function(){
+				if($(this).hasClass("checkbox")){
+					var id = $(this).find("input").attr("id");
+					var fusion_table_column = id;
+					var notCase = "No" //default for genotyped and sequenced
+					if (id == "phenotyped") {
+						fusion_table_column = "phenotype"
+						notCase = "";
+					}
+					if (id == "exact_gps") {
+						fusion_table_column = "gps";
+						notCase = "estimate";
+					}
+					if (id == "approx_gps") {
+						fusion_table_column = "gps";
+						notCase = "exact";
+					}
+					console.log(that.collection.meta("currentQuery"));
+					if (that.collection.meta("currentQuery")) {
+						countQuery = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
+						" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"' AND "+
+						that.collection.meta("currentQuery");
+					}
+					else {
+						countQuery = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
+						" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"'";
+					}
+					console.log(countQuery);
+					$.getJSON(that.model.get("fusion_table_query_url")+
+						countQuery+
+						that.model.get("fusion_table_key")).success(function(result){
+							if(result.rows){
+								$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,result.rows[0][0]));	
+							}
+							else{
+								$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
+							}
+						});
+					}
+				});
+			},
   		
 			initialize: function(){
-				var that = this;
-				$.getJSON('data/filters.JSON',
-					function(data){
-						var sorted = data.filters.sort(function(a,b) { return parseInt(a.order) - parseInt(b.order)}); //hack to order the output of filters
-						$.each(sorted,function(index,filter){
-							$.getJSON(
-								that.model.get("fusion_table_query_url")+
-								filter.query+
-								that.model.get("fusion_table_key")).success(function(result){
-									filter.count = result.rows[0][0];
-									that.$el.append(that.template({"filter": filter}));
-									$('#sequenced_qmark').popover({trigger:'hover'});
-									$('#genotyped_qmark').popover({trigger:'hover'});
-									$('#phenotyped_qmark').popover({trigger:'hover'});
-									$('#exact_gps_qmark').popover({trigger:'hover'});
-									$('#approx_gps_qmark').popover({trigger:'hover'});	
-								});
-
-						});
-											
-					}
-				);
+				$('#sequenced_qmark').popover({trigger:'hover'});
+				$('#genotyped_qmark').popover({trigger:'hover'});
+				$('#phenotyped_qmark').popover({trigger:'hover'});
+				$('#exact_gps_qmark').popover({trigger:'hover'});
+				$('#approx_gps_qmark').popover({trigger:'hover'});
+				this.refreshCounts();
+				this.collection.on('add remove',this.refreshCounts,this);	
 			},
 			
 			render: function(){

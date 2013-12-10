@@ -5,10 +5,21 @@ define([
   'jquery',     // lib/jquery/jquery
   'underscore', // lib/underscore/underscore
   'backbone',    // lib/backbone/backbone
-  'models/filter'
+  'models/query'
 ], function($, _, Backbone,QueryModel){
 	var QueriesCollection = Backbone.Collection.extend({
-		model: QueryModel,
+    initialize: function() {
+      this._meta = {};
+    },      
+    model: QueryModel,
+    meta: function(prop, value) { // so we can store the query text
+      if (value === undefined) {
+        return this._meta[prop]
+      } 
+      else {
+        this._meta[prop] = value;
+      }
+    },
 	});
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope

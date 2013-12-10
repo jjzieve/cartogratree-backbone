@@ -138,7 +138,6 @@ define([
           genotypedQuery = "";
           phenotypedQuery = "";
           gpsQuery = "";
-          console.log(filters);
           if (years.length > 0){
             yearsQuery = "'year' IN ('"+years.join("','")+"')";
           }
@@ -202,7 +201,8 @@ define([
           // var accessions = this.getColumn("accession"); // uncomment when fusion table is fixed
           var accessions = []; // delete when fusion table is fixed
           var whereClause = this.genQuery(years,families,genuses,species,accessions,filters);
-          console.log(whereClause);        
+          console.log(whereClause);
+          this.collection.meta("currentQuery",whereClause);        
           this.markersLayer.setOptions({
             query: {
               select: "lat",
