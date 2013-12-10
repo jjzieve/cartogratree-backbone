@@ -104,6 +104,26 @@ define([
             templateId: 2,
             suppressInfoWindows: true
           });
+           this.trydbLayer = new google.maps.FusionTablesLayer({
+            query: {
+              select: "lat",
+              from: "1spNwsogd3q7p04Dt26mSAbM6owaPIeFnKBrRM00",//"1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
+              where: "",
+            }, 
+            map: this.map,
+            styleId: 2,
+            templateId: 2,
+          });
+          this.amerifluxLayer = new google.maps.FusionTablesLayer({
+            query: {
+              select: "lat",
+              from: "1xr5d5jXjzWZtDxoIOOwXhMQ5yg8_9wn050FkJf0",//"1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
+              where: "",
+            }, 
+            map: this.map,
+            styleId: 2,
+            templateId: 2,
+          });
         },
 
         initialize: function(){
