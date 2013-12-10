@@ -5,17 +5,17 @@ define([
   'jquery',     // lib/jquery/jquery
   'underscore', // lib/underscore/underscore
   'backbone',    // lib/backbone/backbone
-  'models/map',
+  'models/query',
   'collections/queries',
   'text!templates/filters.html',
   'bootstrap',
-], function($, _, Backbone,MapModel,QueriesCollection,filtersTemplate){
+], function($, _, Backbone,QueryModel,QueriesCollection,filtersTemplate){
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
   var FiltersView = Backbone.View.extend({
 			el: "#filters",
 			template: _.template(filtersTemplate),
-			model: MapModel,
+			model: QueryModel,
 			collection: QueriesCollection,
         				
 			events : {
@@ -35,9 +35,11 @@ define([
     						filter: filter
     					});
     				}
-    				$('#'+filter).parents('label').toggleClass('active');
     			}
-			},
+    			$('#'+filter).parents('label').toggleClass('active');
+    			 
+      			$('#'+filter).attr('checked', !$('#'+filter).attr('checked'));
+    		},
 
 			refreshCounts: function(){
 				var that = this;
@@ -82,6 +84,7 @@ define([
 						});
 					}
 				});
+
 			},
   		
 			initialize: function(){

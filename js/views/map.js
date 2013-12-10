@@ -3,16 +3,16 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'models/map',
+  'models/query',
   'collections/queries',
   'text!templates/infowindow.html',
   'goog!maps,3,other_params:libraries=drawing&sensor=false',
 
-], function($,_, Backbone, MapModel, QueriesCollection, legendTemplate){
+], function($,_, Backbone, QueryModel, QueriesCollection, legendTemplate){
 
   	var MapView = Backbone.View.extend({
         el : '#map_canvas',
-        model: MapModel,
+        model: QueryModel,
         collection: QueriesCollection,
         template: _.template(legendTemplate),
         mapOptions : {
