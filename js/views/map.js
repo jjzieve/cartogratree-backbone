@@ -104,26 +104,26 @@ define([
             templateId: 2,
             suppressInfoWindows: true
           });
-           this.trydbLayer = new google.maps.FusionTablesLayer({
-            query: {
-              select: "lat",
-              from: "1spNwsogd3q7p04Dt26mSAbM6owaPIeFnKBrRM00",//"1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
-              where: "",
-            }, 
-            map: this.map,
-            styleId: 2,
-            templateId: 2,
-          });
-          this.amerifluxLayer = new google.maps.FusionTablesLayer({
-            query: {
-              select: "lat",
-              from: "1xr5d5jXjzWZtDxoIOOwXhMQ5yg8_9wn050FkJf0",//"1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
-              where: "",
-            }, 
-            map: this.map,
-            styleId: 2,
-            templateId: 2,
-          });
+          //  this.trydbLayer = new google.maps.FusionTablesLayer({
+          //   query: {
+          //     select: "lat",
+          //     from: "1spNwsogd3q7p04Dt26mSAbM6owaPIeFnKBrRM00",
+          //     where: "",
+          //   }, 
+          //   map: this.map,
+          //   styleId: 2,
+          //   templateId: 2,
+          // });
+          // this.amerifluxLayer = new google.maps.FusionTablesLayer({
+          //   query: {
+          //     select: "lat",
+          //     from: "1xr5d5jXjzWZtDxoIOOwXhMQ5yg8_9wn050FkJf0",
+          //     where: "",
+          //   }, 
+          //   map: this.map,
+          //   styleId: 2,
+          //   templateId: 2,
+          // });
         },
 
         initialize: function(){
@@ -157,6 +157,7 @@ define([
           sequencedQuery = "";
           genotypedQuery = "";
           phenotypedQuery = "";
+          console.log(accessions);
           gpsQuery = "";
           if (years.length > 0){
             yearsQuery = "'year' IN ('"+years.join("','")+"')";
@@ -171,7 +172,7 @@ define([
             speciesQuery = "'species' IN ('"+species.join("','")+"')";
           }
           if (accessions.length > 0){ // uncomment when fusion table is fixed
-            accessionsQuery = "'accession' IN ('"+years.join("','")+"')";
+            accessionsQuery = "'accession' IN ('"+accessions.join("','")+"')";
           }
           if (filters.indexOf("sequenced") != -1) {
             sequencedQuery = "'sequenced' NOT EQUAL TO 'No'";
@@ -218,8 +219,7 @@ define([
           var genuses = this.getColumn("genus");
           var species = this.getColumn("species");
           var filters = this.collection.pluck("filter");
-          // var accessions = this.getColumn("accession"); // uncomment when fusion table is fixed
-          var accessions = []; // delete when fusion table is fixed
+          var accessions = this.getColumn("accession"); // uncomment when fusion table is fixed
           var whereClause = this.genQuery(years,families,genuses,species,accessions,filters);
           console.log(whereClause);
           this.collection.meta("currentQuery",whereClause);        

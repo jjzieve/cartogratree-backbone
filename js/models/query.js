@@ -16,7 +16,7 @@ define([
       filter: "", //so it doesn't have to be searched by the selection pane
       fusion_table_query_url: "https://www.googleapis.com/fusiontables/v1/query?sql=",
       fusion_table_key: "&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk",
-      fusion_table_id: "1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8"
+      fusion_table_id: "1820Dc_O7v7aFsf8_3yrVWyuh73o0lmJ4OnUE2Co"
     }
   });
   return QueryModel; 
