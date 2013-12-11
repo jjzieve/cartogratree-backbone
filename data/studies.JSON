@@ -1,61 +1,20 @@
 {
-    "2013": {
-        "Dalbergia nigra": [
-            "TGDR012"
-        ],
-        "Jatropha curcas": [
-            "TGDR005"
-        ],
-        "Juglans cinerea": [
-            "TGDR007"
-        ],
-        "Juglans regia": [
-            "TGDR017"
-        ],
-        "Juniperus thurifera": [
-            "TGDR011"
-        ],
-        "Larix kaempferi": [
-            "TGDR013"
-        ],
-        "Phoebe bournei": [
-            "TGDR015"
-        ],
-        "Pinus banksiana": [
-            "TGDR008"
-        ],
-        "Pinus mugo": [
-            "TGDR016"
-        ],
-        "Populus nigra": [
-            "TGDR014"
-        ],
-        "Tectona grandis": [
-            "TGDR010"
+    "2010": {
+        "Populus trichocarpa": [
+            "TGDR001"
         ]
     },
     "2012": {
-        "Dryobalanops lanceolata": [
-            "TGDR004"
-        ],
         "Millettia pinnata": [
             "TGDR009"
         ],
         "Pinus parviflora": [
             "TGDR003"
-        ],
-        "Pinus taeda": [
-            "TGDR006"
-        ],
-        "Quercus acutissima": [
-            "TGDR002"
         ]
     },
-    "2010": {
-        "Populus trichocarpa": [
-            "TGDR001"
+    "2013": {
+        "Jatropha curcas": [
+            "TGDR005"
         ]
     }
-   
-    
 }

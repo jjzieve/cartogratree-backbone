@@ -1,17 +1,7 @@
 {
     "Cupressaceae": {
-        "Juniperus": [
-            "Juniperus thurifera"
-        ]
-    },
-    "Dalbergieae": {
-        "Dalbergia": [
-            "Dalbergia nigra"
-        ]
-    },
-    "Dipterocarpoideae": {
-        "Dryobalanops": [
-            "Dryobalanops lanceolata"
+        "Sequoia": [
+            "Sequoia sempervirens"
         ]
     },
     "Fabaceae": {
@@ -20,8 +10,8 @@
         ]
     },
     "Fagaceae": {
-        "Quercus": [
-            "Quercus acutissima"
+        "Fagus": [
+            "Fagus grandifolia"
         ]
     },
     "Jatropheae": {
@@ -29,37 +19,45 @@
             "Jatropha curcas"
         ]
     },
-    "Juglandaceae": {
-        "Juglans": [
-            "Juglans cinerea",
-            "Juglans regia"
-        ]
-    },
-    "Lauraceae": {
-        "Phoebe": [
-            "Phoebe bournei"
-        ]
-    },
     "Pinaceae": {
+        "Abies": [
+            "Abies alba"
+        ],
+        "Cedrus": [
+            "Cedrus deodara"
+        ],
         "Larix": [
-            "Larix kaempferi"
+            "Larix decidua"
+        ],
+        "Picea": [
+            "Picea abies",
+            "Picea engelmannii",
+            "Picea breweriana"
         ],
         "Pinus": [
-            "Pinus banksiana",
+            "Pinus cembroides",
+            "Pinus longaeva",
             "Pinus mugo",
+            "Pinus flexilis",
+            "Pinus albicaulis",
+            "Pinus lambertiana",
             "Pinus parviflora",
+            "Pinus aristata",
+            "Pinus monticola",
+            "Pinus cembra",
+            "Pinus balfouriana",
             "Pinus taeda"
+        ],
+        "Pseudotsuga": [
+            "Pseudotsuga menziesii"
         ]
     },
     "Saliceae": {
         "Populus": [
             "Populus trichocarpa",
-            "Populus nigra"
-        ]
-    },
-    "Verbenaceae": {
-        "Tectona": [
-            "Tectona grandis"
+            "Populus alba",
+            "Populus nigra",
+            "Populus fremontii/fremontii S.Watson"
         ]
     }
 }
