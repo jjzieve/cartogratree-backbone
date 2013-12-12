@@ -223,11 +223,12 @@ define([
             query: {
               select: "lat",
               from: this.model.get("fusion_table_id"), 
+
             }
           });
+          console.log('allOn');
           this.phenotypesOn();
           this.environmentalOn();
-          console.log('allOn');
         },
         allOff: function(){
           this.markersLayer.setOptions({
@@ -237,8 +238,8 @@ define([
               where: "species = ''"
             }
           });
-          this.phenotypesOff();
-          this.environmentalOn();
+          // this.phenotypesOff();
+          // this.environmentalOff();
           console.log('allOff');
         },
         phenotypesOn: function(){
@@ -280,52 +281,63 @@ define([
           console.log('environmentalOff');
         },
 
+        toggleEnvironmentAndPhenotypes:function(environmental,phenotypes,ameriflux,try_db){
+           if (environmental.length > 0 || ameriflux.length > 0){// may change if we get more than ameriflux sites
+                this.environmentalOn();
+              }
+              else {
+                this.environmentalOff();
+              }
+              if (phenotypes.length > 0 || try_db.length > 0){
+                this.phenotypesOn();
+              }
+              else {
+                this.phenotypesOff();
+              }
+        },
 
         refreshMarkersLayer: function(){
           var all = this.getColumn("all");
-          if (all.length > 0){
-            this.allOn();
+          var environmental = this.getColumn("environmental");
+          var phenotypes = this.getColumn("phenotypes");
+          var ameriflux = this.getColumn("ameriflux");
+          var try_db = this.getColumn("try_db");
+          var studies = this.getColumn("studies");
+          var taxa = this.getColumn("taxa");
+          var years = this.getColumn("year");
+          var families = this.getColumn("family");
+          var genuses = this.getColumn("genus");
+          var species = this.getColumn("species");
+          var filters = this.collection.pluck("filter");
+          var accessions = this.getColumn("accession"); // uncomment when fusion table is fixed
+          var whereClause = this.genQuery(studies,taxa,years,families,genuses,species,accessions,filters);
+          
+          if (!whereClause){//essentially nothing is selected
+            if (all.length > 0){
+              this.allOn();
+              this.collection.add({
+                id: "1",
+                column: "all",
+                value: "all"
+              });   
+
+            }
+            else {
+              this.collection.remove("1");
+              this.allOff();
+              this.toggleEnvironmentAndPhenotypes(environmental,phenotypes,ameriflux,try_db);
+            }
           }
           else {
-            var environmental = this.getColumn("environmental");
-            var phenotypes = this.getColumn("phenotypes");
-            var ameriflux = this.getColumn("ameriflux");
-            var try_db = this.getColumn("try_db");
-            var studies = this.getColumn("studies");
-            var taxa = this.getColumn("taxa");
-            var years = this.getColumn("year");
-            var families = this.getColumn("family");
-            var genuses = this.getColumn("genus");
-            var species = this.getColumn("species");
-            var filters = this.collection.pluck("filter");
-            var accessions = this.getColumn("accession"); // uncomment when fusion table is fixed
-            var whereClause = this.genQuery(studies,taxa,years,families,genuses,species,accessions,filters);
-            if (whereClause == ""){//essentially nothing is selected
-              this.allOff();
-            }
-            else {
-              console.log(whereClause);
-              this.collection.meta("currentQuery",whereClause);        
-              this.markersLayer.setOptions({
-                query: {
-                  select: "lat",
-                  from: this.model.get("fusion_table_id"), 
-                  where: whereClause
-                }
-              });
-            }
-            if (environmental.length > 0 || ameriflux.length > 0){// may change if we get more than ameriflux sites
-              this.environmentalOn();
-            }
-            else {
-              this.environmentalOff();
-            }
-            if (phenotypes.length > 0 || try_db.length > 0){
-              this.phenotypesOn();
-            }
-            else {
-              this.phenotypesOff();
-            }
+            this.collection.meta("currentQuery",whereClause);        
+            this.markersLayer.setOptions({
+              query: {
+                select: "lat",
+                from: this.model.get("fusion_table_id"), 
+                where: whereClause
+              }
+            });
+            this.toggleEnvironmentAndPhenotypes(environmental,phenotypes,ameriflux,try_db);
           }
          
         },

@@ -98,11 +98,11 @@ define([
 				);
 				this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default	
 				this.collection.add({
-					id: "1",
-					column: "all",
-					value: "all"
-				});		
-
+                	id: "1",
+                	column: "all",
+               		value: "all"
+              	});  
+				
 			},
 
 			events: {
@@ -113,19 +113,21 @@ define([
   				var column = $(event.target).attr('name');
 				var value = $(event.target).attr('value');
 				if(column && value){//ensures it doesn't deselect on branch expansion
-					if ($(this).hasClass('selected'))
+					$(event.target).toggleClass('selected');
+					this.collection.meta("currentQuery",""); 
+					if ($(event.target).hasClass('selected'))
 					{
-						$(this).removeClass("selected");
-						this.collection.remove(id);
-					}
-					else {
 						this.collection.add({
 							id: id,
 							column: column,
 							value: value,
 						});
 					}
-	  				$(event.target).toggleClass('selected');
+					else {
+						this.collection.remove(id);
+					}
+					console.log(this.collection);
+	  				
 	  			}
 			},
 
@@ -140,15 +142,12 @@ define([
 			  		var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
 	  				var column = $(event.target).attr('name');
 					var value = $(event.target).attr('value');
-
 	  				if (column && value){
 		  				this.collection.reset();
 		  				this.collection.meta("currentQuery",""); 
 		  				$(event.target).toggleClass('selected');
 		  				if ($(event.target).hasClass('selected'))
 	  					{
-	  						console.log(column);
-							console.log(value);
 							this.collection.add(
 		  					{
 		  						id: id,
