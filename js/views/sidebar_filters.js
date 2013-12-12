@@ -7,14 +7,12 @@ define([
   'backbone',    // lib/backbone/backbone
   'models/query',
   'collections/queries',
-  'text!templates/filters.html',
   'bootstrap',
-], function($, _, Backbone,QueryModel,QueriesCollection,filtersTemplate){
+], function($, _, Backbone,QueryModel,QueriesCollection){
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
   var FiltersView = Backbone.View.extend({
 			el: "#filters",
-			template: _.template(filtersTemplate),
 			model: QueryModel,
 			collection: QueriesCollection,
         				

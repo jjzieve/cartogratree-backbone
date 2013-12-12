@@ -8,9 +8,8 @@ define([
   'treetable',
   'models/tree_node',
   'collections/queries',
-  'text!templates/tree_node.html',
   // 'goog!maps,3,other_params:sensor=false'
-], function($, _, Backbone, TreeNodeModel , QueriesCollection,treeNodeTemplate){
+], function($, _, Backbone, TreeNodeModel , QueriesCollection){
 		var SelectionTreeView = Backbone.View.extend({
 			el: "#selection_tree",
 			template: _.template('<tr data-tt-parent-id="<%= node_num %>"'+
@@ -97,7 +96,12 @@ define([
 						that.loadBranch(data,"1-2",0,0,"taxa");
 					}
 				);
-				this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default			
+				this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default	
+				this.collection.add({
+					id: "1",
+					column: "all",
+					value: "all"
+				});		
 
 			},
 
@@ -108,22 +112,21 @@ define([
 				var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
   				var column = $(event.target).attr('name');
 				var value = $(event.target).attr('value');
-  				if (column && value){
-  					if ($(this).hasClass('selected'))
-  					{
-  						$(this).removeClass("selected");
-  						this.collection.remove(id);
-  					}
-  					else {
-  						this.collection.add(
-	  					{
-	  						id: id,
-	  						column: column,
-	  						value: value,
-	  					});
-  					}
-  				}
-  				$(event.target).toggleClass('selected');
+				if(column && value){//ensures it doesn't deselect on branch expansion
+					if ($(this).hasClass('selected'))
+					{
+						$(this).removeClass("selected");
+						this.collection.remove(id);
+					}
+					else {
+						this.collection.add({
+							id: id,
+							column: column,
+							value: value,
+						});
+					}
+	  				$(event.target).toggleClass('selected');
+	  			}
 			},
 
   			toggleSelection: function(event){
@@ -138,24 +141,25 @@ define([
 	  				var column = $(event.target).attr('name');
 					var value = $(event.target).attr('value');
 
-	  				// if (column && value){
-	  				this.collection.reset();
-	  				this.collection.meta("currentQuery",""); 
-	  				$(event.target).toggleClass('selected');
-	  				if ($(event.target).hasClass('selected'))
-  					{
-  						console.log(column);
-						console.log(value);
-						this.collection.add(
+	  				if (column && value){
+		  				this.collection.reset();
+		  				this.collection.meta("currentQuery",""); 
+		  				$(event.target).toggleClass('selected');
+		  				if ($(event.target).hasClass('selected'))
 	  					{
-	  						id: id,
-	  						column: column,
-	  						value: value,
-	  					});
-  					}
-  					console.log(this.collection);
-		  			$(".selected").not(event.target).removeClass("selected");
-	  			}
+	  						console.log(column);
+							console.log(value);
+							this.collection.add(
+		  					{
+		  						id: id,
+		  						column: column,
+		  						value: value,
+		  					});
+	  					}
+	  					console.log(this.collection);
+			  			$(".selected").not(event.target).removeClass("selected");
+		  			}
+	  		}
 	  				
 	  				// $(event.target).toggleClass('selected');
 		  		// }  				
