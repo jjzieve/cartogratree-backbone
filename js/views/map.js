@@ -104,26 +104,26 @@ define([
             templateId: 2,
             suppressInfoWindows: true
           });
-          //  this.trydbLayer = new google.maps.FusionTablesLayer({
-          //   query: {
-          //     select: "lat",
-          //     from: "1spNwsogd3q7p04Dt26mSAbM6owaPIeFnKBrRM00",
-          //     where: "",
-          //   }, 
-          //   map: this.map,
-          //   styleId: 2,
-          //   templateId: 2,
-          // });
-          // this.amerifluxLayer = new google.maps.FusionTablesLayer({
-          //   query: {
-          //     select: "lat",
-          //     from: "1xr5d5jXjzWZtDxoIOOwXhMQ5yg8_9wn050FkJf0",
-          //     where: "",
-          //   }, 
-          //   map: this.map,
-          //   styleId: 2,
-          //   templateId: 2,
-          // });
+           this.trydbLayer = new google.maps.FusionTablesLayer({
+            query: {
+              select: "lat",
+              from: "1spNwsogd3q7p04Dt26mSAbM6owaPIeFnKBrRM00",
+              where: "",
+            }, 
+            map: this.map,
+            styleId: 2,
+            templateId: 2,
+          });
+          this.amerifluxLayer = new google.maps.FusionTablesLayer({
+            query: {
+              select: "lat",
+              from: "1xr5d5jXjzWZtDxoIOOwXhMQ5yg8_9wn050FkJf0",
+              where: "",
+            }, 
+            map: this.map,
+            styleId: 2,
+            templateId: 2,
+          });
         },
 
         initialize: function(){
@@ -131,7 +131,7 @@ define([
           this.initMarkersLayer();
           this.initInfoWindow();
           this.initDrawingManager();
-          this.collection.on('add remove',this.refreshMarkersLayer,this);
+          this.collection.on('add remove reset',this.refreshMarkersLayer,this);
             //need a cleaner way to do this
             // $('#data_table').dataTable().fnAddData([
             //   e.row["tree_id"].value,
@@ -157,7 +157,6 @@ define([
           sequencedQuery = "";
           genotypedQuery = "";
           phenotypedQuery = "";
-          console.log(accessions);
           gpsQuery = "";
           if (years.length > 0){
             yearsQuery = "'year' IN ('"+years.join("','")+"')";

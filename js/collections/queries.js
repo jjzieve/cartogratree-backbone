@@ -20,6 +20,12 @@ define([
         this._meta[prop] = value;
       }
     },
+    // reset: function(){
+    //   if (this._meta["currentQuery"]){
+    //     this._meta["currentQuery"] = "";
+    //   }
+    //   this.Backbone.View.Prototype.reset.call(this);
+    // }
 	});
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope

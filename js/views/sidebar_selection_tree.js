@@ -97,7 +97,7 @@ define([
 						that.loadBranch(data,"1-2",0,0,"taxa");
 					}
 				);
-				$("#all").toggleClass('selected');				
+				this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default			
 
 			},
 
@@ -109,7 +109,7 @@ define([
   				var column = $(event.target).attr('name');
 				var value = $(event.target).attr('value');
   				if (column && value){
-  					if ($(event.target).hasClass('selected'))
+  					if ($(this).hasClass('selected'))
   					{
   						$(this).removeClass("selected");
   						this.collection.remove(id);
@@ -137,18 +137,28 @@ define([
 			  		var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
 	  				var column = $(event.target).attr('name');
 					var value = $(event.target).attr('value');
-	  				if (column && value){
-	  					this.collection.reset();
-	  					this.collection.add(
-		  				{
-		  					id: id,
-		  					column: column,
-		  					value: value,
-		  				});
-	  				}
-	  				$(".selected").not(this).removeClass("selected");
+
+	  				// if (column && value){
+	  				this.collection.reset();
+	  				this.collection.meta("currentQuery",""); 
 	  				$(event.target).toggleClass('selected');
-		  		}  				
+	  				if ($(event.target).hasClass('selected'))
+  					{
+  						console.log(column);
+						console.log(value);
+						this.collection.add(
+	  					{
+	  						id: id,
+	  						column: column,
+	  						value: value,
+	  					});
+  					}
+  					console.log(this.collection);
+		  			$(".selected").not(event.target).removeClass("selected");
+	  			}
+	  				
+	  				// $(event.target).toggleClass('selected');
+		  		// }  				
   			},
 
 			render: function(){

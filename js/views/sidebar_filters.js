@@ -61,7 +61,7 @@ define([
 						fusion_table_column = "gps";
 						notCase = "exact";
 					}
-					console.log(that.collection.meta("currentQuery"));
+					// console.log(that.collection.meta("currentQuery"));
 					if (that.collection.meta("currentQuery")) {
 						countQuery = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
 						" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"' AND "+
@@ -71,7 +71,7 @@ define([
 						countQuery = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
 						" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"'";
 					}
-					console.log(countQuery);
+					// console.log(countQuery);
 					$.getJSON(that.model.get("fusion_table_query_url")+
 						countQuery+
 						that.model.get("fusion_table_key")).success(function(result){
