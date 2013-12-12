@@ -104,14 +104,14 @@ define([
 			events: {
 			    "click": "toggleSelection",
 			},
-
-  			toggleSelection: function(event){
-  				var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
+			ctrlSelect: function(event) {
+				var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
   				var column = $(event.target).attr('name');
 				var value = $(event.target).attr('value');
   				if (column && value){
   					if ($(event.target).hasClass('selected'))
   					{
+  						$(this).removeClass("selected");
   						this.collection.remove(id);
   					}
   					else {
@@ -122,8 +122,33 @@ define([
 	  						value: value,
 	  					});
   					}
-  				$(event.target).toggleClass('selected');
   				}
+  				$(event.target).toggleClass('selected');
+			},
+
+  			toggleSelection: function(event){
+  				if (event.ctrlKey || event.metaKey) { //meta for "command" on macs
+		  			this.ctrlSelect(event);
+		  		}
+		  		else if (event.shiftKey) { 
+		  			console.log("shift");
+		  		}
+		  		else {
+			  		var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
+	  				var column = $(event.target).attr('name');
+					var value = $(event.target).attr('value');
+	  				if (column && value){
+	  					this.collection.reset();
+	  					this.collection.add(
+		  				{
+		  					id: id,
+		  					column: column,
+		  					value: value,
+		  				});
+	  				}
+	  				$(".selected").not(this).removeClass("selected");
+	  				$(event.target).toggleClass('selected');
+		  		}  				
   			},
 
 			render: function(){
