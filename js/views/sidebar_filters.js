@@ -23,6 +23,7 @@ define([
 			toggleFilter : function(event){
     			var filter = event.target.id;
     			if (filter) {
+    				this.collection.meta("currentQuery","");
     				if ($('#'+filter).parents('label').hasClass('active')) {
     					this.collection.remove(filter);
     				}
@@ -35,8 +36,7 @@ define([
     				}
     			}
     			$('#'+filter).parents('label').toggleClass('active');
-    			 
-      			$('#'+filter).attr('checked', !$('#'+filter).attr('checked'));
+    			$('#'+filter).attr('checked', !$('#'+filter).attr('checked'));
     		},
     		countQuery: function(query,id){
     			$.getJSON(this.model.get("fusion_table_query_url")+
@@ -53,6 +53,7 @@ define([
 
 			refreshCounts: function(){
 				console.log("refreshCounts");
+				console.log(this.collection);
 				var that = this;
 				this.$el.children().each(function(){
 					if($(this).hasClass("checkbox")){
