@@ -10,9 +10,9 @@ define([
 	'views/map',
 	'views/sidebar_selection_tree',
 	'views/sidebar_filters',
-	'views/data_tabs',
-	'views/data_table',
-	], function($, _, Backbone, QueryModel, TreeNodeModel, QueriesCollection, MapView, SelectionTreeView, FiltersView,DataTabsView, DataTableView) {
+	'views/bottom_tabs',
+	'views/bottom_table',
+	], function($, _, Backbone, QueryModel, TreeNodeModel, QueriesCollection, MapView, SelectionTreeView, FiltersView, BottomTabsView, BottomTableView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'(/)':'index',
@@ -28,11 +28,11 @@ define([
 				var query = new QueryModel();
 				var queries = new QueriesCollection();
  				var treeNode = new TreeNodeModel();
-				var mapView = new MapView({collection: queries,model: query}); //get rid of generic endings "view,map"
+				var map = new MapView({collection: queries,model: query}); //get rid of generic endings "view,map"
 				var selectionTree = new SelectionTreeView({collection: queries, model: treeNode});
 				var filters = new FiltersView({collection: queries,model: query});
-				var dataTabs = new DataTabsView({model: query});
-				var dataTable = new DataTableView({model: query});
+				var tabs = new BottomTabsView({collection: queries,model: query});
+				var table = new BottomTableView({collection: queries,model: query});
 			});
 			
 			// Backbone.history.start({pushState:true});

@@ -6,15 +6,17 @@ define([
   'models/query',
   'collections/queries',
   'text!templates/infowindow.html',
+  'text!templates/infowindow_ameriflux.html',
   'goog!maps,3,other_params:libraries=drawing&sensor=false',
 
-], function($,_, Backbone, QueryModel, QueriesCollection, legendTemplate){
+], function($,_, Backbone, QueryModel, QueriesCollection, legendTemplate,amerifluxInfoWindow){
 
   	var MapView = Backbone.View.extend({
         el : '#map_canvas',
         model: QueryModel,
         collection: QueriesCollection,
         template: _.template(legendTemplate),
+        templateAmeriflux: _.template(amerifluxInfoWindow),
         mapOptions : {
           zoom: 4,
           minZoom: 2,
@@ -37,9 +39,10 @@ define([
           scaleControl: true,
         },
 
-        initInfoWindow: function(){
+        initInfoWindows: function(){
           var that = this; //to handle closure
           this.infoWindow = new google.maps.InfoWindow({maxWidth:250});
+          this.infoWindowAmeriflux = new google.maps.InfoWindow({maxWidth:250});
           google.maps.event.addListener(this.markersLayer, 'click', function(e){
               //remove these if-else branches by reflecting it in the table
               if (e.row["type"].value == "gymno"){ 
@@ -48,16 +51,9 @@ define([
               else{
                 var type = "Angiosperm";
               }
-              if (e.row["data_source"].value == "tgdr"){
-
-                var accession = e.row["tree_id"].value.substr(0,7);
-              }
-              else{
-                var accession = "";
-              }
               that.infoWindow.setContent(
                 that.template({
-                  icon_name: e.row["icon_name"].value,
+                  icon_name: e.row["icon_name"].value,//for icon images -> http://kml4earth.appspot.com/icons.html
                   icon_type: type,
                   family: e.row["family"].value,
                   species: e.row["species"].value,
@@ -67,11 +63,27 @@ define([
                   sequenced: e.row["sequenced"].value,
                   genotyped: e.row["genotyped"].value,
                   phenotype: e.row["phenotype"].value,
-                  accession: accession
+                  accession: e.row["accession"].value
                   })
               );
               that.infoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
               that.infoWindow.open(that.map);
+          });
+          google.maps.event.addListener(this.amerifluxLayer, 'click', function(e){
+              //remove these if-else branches by reflecting it in the table
+              that.infoWindowAmeriflux.setContent(
+                that.templateAmeriflux({
+                  icon_name: e.row["icon_name"].value,//for icon images -> http://kml4earth.appspot.com/icons.html
+                  site_id: e.row["site_id"].value,
+                  src_url: e.row["src_url"].value,
+                  site_name: e.row["site_name"].value,
+                  type: e.row["type"].value,
+                  lat: e.row["lat"].value,
+                  lng: e.row["lng"].value,
+                  })
+              );
+              that.infoWindowAmeriflux.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
+              that.infoWindowAmeriflux.open(that.map);
           });
         },
 
@@ -86,13 +98,14 @@ define([
             },
           });
           this.drawingManager.setMap(this.map);
+          google.maps.event.addListen
         },
 
         initMap: function() {
           this.map =  new google.maps.Map(this.el, this.mapOptions);
         },
 
-        initMarkersLayer: function() {
+        initLayers: function() {
           this.markersLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
@@ -111,6 +124,7 @@ define([
             map: this.map,
             styleId: 2,
             templateId: 2,
+            suppressInfoWindows: true
           });
           this.amerifluxLayer = new google.maps.FusionTablesLayer({
             query: {
@@ -120,26 +134,20 @@ define([
             map: this.map,
             styleId: 2,
             templateId: 2,
+            suppressInfoWindows: true
           });
         },
 
         initialize: function(){
           this.initMap();
-          this.initMarkersLayer();
-          this.initInfoWindow();
+          this.initLayers();
+          this.initInfoWindows();
           this.initDrawingManager();
           this.collection.on('add remove reset',this.refreshMarkersLayer,this);
-            //need a cleaner way to do this
-            // $('#data_table').dataTable().fnAddData([
-            //   e.row["tree_id"].value,
-            //   e.row["lat"].value,
-            //   e.row["lng"].value,
-            //   e.row["species"].value,
-          // google.maps.event.addListener(this.map, 'click', function(){
-          //   infoWindow.close();
-          //   $('#data_table').dataTable().fnClearTable();
-          // });
-       	},
+          google.maps.event.addListener(this.map, 'click', function(){
+            $('#data_table').dataTable().fnClearTable();
+          });
+        },
 
         getColumn: function(column){
           return (this.collection.filter(function(query){return query.get("column") === column}).map(function(query){return query.get("value")}));
