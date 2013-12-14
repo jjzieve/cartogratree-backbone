@@ -51,17 +51,18 @@ table.treetable tr.expanded span.indenter a {
   background-image: url(../images/collapse.png);
 }
 
-table.treetable tr.branch {
-	/*font-weight: bold*/
-}
-
 table.treetable tr.leaf {
 	font-size: .8em
 }
 
-table.treetable tr.selected {
-  background-color: green;
-  color: white;
+table.treetable tr.expanded{
+  background-color: white;
+}
+
+table.treetable td.selected {
+    background-color: #3C746B;
+    color:white;
+    border: 1px solid white;
 }
 
 table.treetable tr.collapsed.selected span.indenter a {
