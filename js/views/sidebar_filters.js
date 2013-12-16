@@ -56,8 +56,9 @@ define([
 				console.log(this.collection);
 				var that = this;
 				this.$el.children().each(function(){
-					if($(this).hasClass("checkbox")){
+					if($(this).find("input").attr("id")){
 						var id = $(this).find("input").attr("id");
+						console.log(id);
 						var fusion_table_column = id;
 						var notCase = "No" //default for genotyped and sequenced
 						// var defaultQuery = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
