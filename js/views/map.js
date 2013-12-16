@@ -116,6 +116,8 @@ define([
             templateId: 2,
             suppressInfoWindows: true
           });
+          //tgdr layer: 1qRTTgMTi-SjcTT50qc4vIlP8cMbMPsNNwKlk4PI
+          //sts_is_iss layer: 
            this.trydbLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
