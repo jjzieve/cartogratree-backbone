@@ -195,6 +195,11 @@ define([
         },
 
         initLayers: function() {
+          //new layers:
+          //ameriflux: 1Z_m0uQ3EGpzwVLFq0EwoZ2jwmzdFev4YSN-U8NQ
+          //try_db: 1h-KVbQdplul76b2dmVP33E7tEtt3oag44Oeu3oA
+          //sts_is: 1lgtcA2ya1n7-3SiF20HNpT0olf00r-UJom9jvkI
+          //tgdr: 14bPuIDSr745vX0YjjM4LUr_6eFV45pbbaiKxs98
           this.markersLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
@@ -205,8 +210,6 @@ define([
             templateId: 2,
             suppressInfoWindows: true
           });
-          //tgdr layer: 1qRTTgMTi-SjcTT50qc4vIlP8cMbMPsNNwKlk4PI
-          //sts_is_iss layer: 
            this.trydbLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
