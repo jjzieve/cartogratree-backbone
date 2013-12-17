@@ -200,10 +200,30 @@ define([
           //try_db: 1h-KVbQdplul76b2dmVP33E7tEtt3oag44Oeu3oA
           //sts_is: 1lgtcA2ya1n7-3SiF20HNpT0olf00r-UJom9jvkI
           //tgdr: 14bPuIDSr745vX0YjjM4LUr_6eFV45pbbaiKxs98
+          // this.tgdrLayer = new google.maps.FusionTablesLayer({
+          //   query: {
+          //     select: "lat",
+          //     from: "14bPuIDSr745vX0YjjM4LUr_6eFV45pbbaiKxs98"
+          //   }, 
+          //   map: this.map,
+          //   styleId: 2,
+          //   templateId: 2,
+          //   suppressInfoWindows: true
+          // });
+          // this.sts_isLayer = new google.maps.FusionTablesLayer({
+          //   query: {
+          //     select: "lat",
+          //     from: "1lgtcA2ya1n7-3SiF20HNpT0olf00r-UJom9jvkI"
+          //   }, 
+          //   map: this.map,
+          //   styleId: 2,
+          //   templateId: 2,
+          //   suppressInfoWindows: true
+          // });
           this.markersLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
-              from: this.model.get("fusion_table_id")//"1AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8", 
+              from: this.model.get("fusion_table_id")
             }, 
             map: this.map,
             styleId: 2,
@@ -213,7 +233,7 @@ define([
            this.trydbLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
-              from: "1spNwsogd3q7p04Dt26mSAbM6owaPIeFnKBrRM00",
+              from: "1h-KVbQdplul76b2dmVP33E7tEtt3oag44Oeu3oA",
             }, 
             map: this.map,
             styleId: 2,
@@ -223,7 +243,7 @@ define([
           this.amerifluxLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
-              from: "1xr5d5jXjzWZtDxoIOOwXhMQ5yg8_9wn050FkJf0",
+              from: "1Z_m0uQ3EGpzwVLFq0EwoZ2jwmzdFev4YSN-U8NQ",
             }, 
             map: this.map,
             styleId: 2,
