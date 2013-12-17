@@ -14,9 +14,9 @@ define([
   var BottomTabsView = Backbone.View.extend({
     el: "#data_tabs",
 
-    // initialize: function(){
-    //   this.$('a[data-toggle="tab"]:first').tab('show');
-    // },
+    initialize: function(){
+      this.$("a:first").tab('show');
+    },
 
     // events : {
     //   "click .nav_tabs li a":"show"
@@ -28,7 +28,7 @@ define([
     // },
 
     render: function(){
-      this.$("a:first").tab('show');
+      return this;
     }
 
   });

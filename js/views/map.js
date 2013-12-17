@@ -8,8 +8,58 @@ define([
   'text!templates/infowindow.html',
   'text!templates/infowindow_ameriflux.html',
   'goog!maps,3,other_params:libraries=drawing&sensor=false',
-
 ], function($,_, Backbone, QueryModel, QueriesCollection, legendTemplate,amerifluxInfoWindow){
+
+  google.maps.Polygon.prototype.Contains = function(point) {
+        // ray casting alogrithm http://rosettacode.org/wiki/Ray-casting_algorithm
+        var crossings = 0,
+            path = this.getPath();
+
+        // for each edge
+        for (var i=0; i < path.getLength(); i++) {
+            var a = path.getAt(i),
+                j = i + 1;
+            if (j >= path.getLength()) {
+                j = 0;
+            }
+            var b = path.getAt(j);
+            if (rayCrossesSegment(point, a, b)) {
+                crossings++;
+            }
+        }
+
+        // odd number of crossings?
+        return (crossings % 2 == 1);
+
+        function rayCrossesSegment(point, a, b) {
+            var px = point.lng(),
+                py = point.lat(),
+                ax = a.lng(),
+                ay = a.lat(),
+                bx = b.lng(),
+                by = b.lat();
+            if (ay > by) {
+                ax = b.lng();
+                ay = b.lat();
+                bx = a.lng();
+                by = a.lat();
+            }
+            // alter longitude to cater for 180 degree crossings
+            if (px < 0) { px += 360 };
+            if (ax < 0) { ax += 360 };
+            if (bx < 0) { bx += 360 };
+
+            if (py == ay || py == by) py += 0.00000001;
+            if ((py > by || py < ay) || (px > Math.max(ax, bx))) return false;
+            if (px < Math.min(ax, bx)) return true;
+
+            var red = (ax != bx) ? ((by - ay) / (bx - ax)) : Infinity;
+            var blue = (ax != px) ? ((py - ay) / (px - ax)) : Infinity;
+            return (blue >= red);
+
+        }
+
+     };
 
   	var MapView = Backbone.View.extend({
         el : '#map_canvas',
@@ -88,6 +138,7 @@ define([
         },
 
         initDrawingManager: function() {
+          var that = this;
           this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingControl: true,
             drawingControlOptions: {
@@ -97,9 +148,47 @@ define([
               ]
             },
           });
+
           this.drawingManager.setMap(this.map);
-          google.maps.event.addListen
+
+          google.maps.event.addListener(this.drawingManager,'polygoncomplete', function(polygon){
+            if(that.polygon){
+              that.polygon.setMap(null);
+              $('#data_table').dataTable().fnClearTable();
+            }
+            that.polygon = polygon;
+            var points = [];
+            if (that.collection.meta("currentQuery")){
+              $.getJSON(that.model.get("fusion_table_query_url")+
+                "SELECT tree_id,lat,lng FROM "+that.model.get("fusion_table_id")+" WHERE "+that.collection.meta("currentQuery")
+                +that.model.get("fusion_table_key")
+                ).success(function(result){
+                  _.each(result.rows,function(coord){
+                    var point = new google.maps.LatLng(coord[1],coord[2]);
+                    if(polygon.Contains(point)) {
+                      points.push(coord[0]);
+                    }
+                  });
+                  _.each(points,function(point){
+                    $("#data_table").dataTable().fnAddData([
+                    point,
+                    '',
+                    '',
+                    '',
+                  ]);
+                  console.log(points);
+
+                  });
+              });
+            }
+            // google.maps.event.addListener(that.map,'click',function(){
+            //   console.log(polygon);
+            //   polygon.setMap(null);
+            // });
+          });
+
         },
+         
 
         initMap: function() {
           this.map =  new google.maps.Map(this.el, this.mapOptions);
@@ -141,6 +230,7 @@ define([
         },
 
         initialize: function(){
+          var that = this;
           this.initMap();
           this.initLayers();
           this.initInfoWindows();
@@ -148,6 +238,10 @@ define([
           this.collection.on('add remove reset',this.refreshMarkersLayer,this);
           google.maps.event.addListener(this.map, 'click', function(){
             $('#data_table').dataTable().fnClearTable();
+            if(that.polygon){
+              console.log(that.polygon);
+              that.polygon.setMap(null);
+            }
           });
         },
 
