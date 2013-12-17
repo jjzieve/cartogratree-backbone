@@ -32,19 +32,19 @@ Updated:
 <body>
     <!--MAIN-->
 	<div class="container">
-		<!--HEADER-->
-		<div class="row">
+		<!--NAVBAR/HEADER-->
+		<div id="navbar" class="row">
 			<div class="col-xs-4">
 				<a href="#"><img class="img-responsive" id="ctree_logo" src="images/logo_cartogratree_v2.png"></a>
 			</div>
 			<div class="col-xs-7 col-xs-offset-1">
 				<ul class="nav nav-pills">
-					<li><a href="#">About</a></li>
+					<li><a href="about.html">About</a></li>
 					<li><a href="http://dendrome.ucdavis.edu/treegenes/" >TreeGenes</a></li>
 					<li><a href="http://dendrome.ucdavis.edu/DiversiTree/">DiversiTree</a></li>
 					<li><a href="http://loblolly.ucdavis.edu/bipod/ftp/Documentation/CartogratreeDocumentation.pdf">Documentation</a></li>
 					<li><a href="mailto:tg-help.ucdavis.edu">Contact</a>
-					<li><a href="http://dendrome.ucdavis.edu/treegenes/">Credits</a></li>
+					<li><a id="credits" data-toggle="popover" data-placement="bottom" title="Credits" href="#">Credits</a></li>
 				</ul>
 			</div>
 		</div>
@@ -91,53 +91,53 @@ Updated:
 					<div class="checkbox">
 					    <label>
 					      <input type="checkbox" id="sequenced" value="Sequenced">Sequenced (0)
-							<span id="sequenced_qmark" data-original-title="Sequenced samples" data-content="These tree samples have had some amount of sequencing performed on them but not necessarily genotyped" title="" data-toggle="popover">
+					    </label>
+					    <span id="sequenced_qmark" data-original-title="Sequenced samples" data-content="These tree samples have had some amount of sequencing performed on them but not necessarily genotyped" title="" data-toggle="popover">
 								<a href="#">
 									<img src='images/qmark.png'>
 								</a>
-							</span>					      
-					    </label>
+						</span>				
 					</div>
 					<div class="checkbox">
 					    <label>
-					      <input type="checkbox" id="genotyped" value="Genotyped">Genotyped (0)
-							<span id="genotyped_qmark" data-original-title="Genotyped samples" data-content="These tree samples have been genotyped by SNPs and/or other genetic markers" title="" data-toggle="popover">
+					      <input type="checkbox" id="genotyped" value="Genotyped">Genotyped (0)	      
+					    </label>
+					    <span id="genotyped_qmark" data-original-title="Genotyped samples" data-content="These tree samples have been genotyped by SNPs and/or other genetic markers" title="" data-toggle="popover">
 								<a href="#">
 									<img src='images/qmark.png'>
 								</a>
-							</span>					      
-					    </label>
+						</span>	
 					</div>
 					<div class="checkbox">
 					    <label>
-					      <input type="checkbox" id="phenotyped" value="Phenotyped">Phenotyped (0)
-							<span id="phenotyped_qmark" data-original-title="Phenotyped samples" data-content="These tree samples have had phenotypes assessed for them" title="" data-toggle="popover">
+					      <input type="checkbox" id="phenotyped" value="Phenotyped">Phenotyped (0)					      
+					    </label>
+					    <span id="phenotyped_qmark" data-original-title="Phenotyped samples" data-content="These tree samples have had phenotypes assessed for them" title="" data-toggle="popover">
 								<a href="#">
 									<img src='images/qmark.png'>
 								</a>
-							</span>					      
-					    </label>
+						</span>	
 					</div>
 					GPS
 					<div class="checkbox gps">
 					    <label>
-					      <input type="checkbox" id="exact_gps" value="Exact GPS">Exact (0)
-							<span id="exact_gps_qmark" data-original-title="Exact GPS samples" data-content="Each tree sample is independently georeferenced" title="" data-toggle="popover">
+					      <input type="checkbox" id="exact_gps" value="Exact GPS">Exact (0)			      
+					    </label>
+					    <span id="exact_gps_qmark" data-original-title="Exact GPS samples" data-content="Each tree sample is independently georeferenced" title="" data-toggle="popover">
 								<a href="#">
 									<img src='images/qmark.png'>
 								</a>
-							</span>					      
-					    </label>
+						</span>		
 					</div>
 					<div class="checkbox gps">
 					    <label>
-					      <input type="checkbox" id="approx_gps" value="Approximate GPS">Approximate (0)
-							<span id="approx_gps_qmark" data-original-title="Approximate GPS samples" data-content="Georeferenced sites with one to many tree samples" title="" data-toggle="popover">
+					      <input type="checkbox" id="approx_gps" value="Approximate GPS">Approximate (0)					      
+					    </label>
+					    <span id="approx_gps_qmark" data-original-title="Approximate GPS samples" data-content="Georeferenced sites with one to many tree samples" title="" data-toggle="popover">
 								<a href="#">
 									<img src='images/qmark.png'>
 								</a>
-							</span>					      
-					    </label>
+						</span>	
 					</div>
 				</div>
 

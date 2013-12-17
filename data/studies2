@@ -1,0 +1,32 @@
+{
+    "2010": {
+        "Populus trichocarpa": {
+            "TGDR001": [
+                "Neale, David Brian,Tsai, Chung-jui,Davis, Mark F.,Sykes, Robert,Stanton, Brian J,Lee, Jennifer M JM,Choi, Minyoung,Eckert, Andrew J.,Wegrzyn, Jill L.",
+                "The New phytologist"
+            ]
+        }
+    },
+    "2012": {
+        "Millettia pinnata": {
+            "TGDR009": [
+                "Gowda, Balakrishna,Pavithra, H.R ,Shivanna, M.B ,Chandrika, K. ,Prasanna, K.T ",
+                "Tree Genetics & Genomes"
+            ]
+        },
+        "Pinus parviflora": {
+            "TGDR003": [
+                "Iwasaki, Takaya,Sase, Tadashi ,Takeda, Shohei ,Ohsawa, Takeshi A,Ozaki, Kemrio ,TANI, NAOKI,Ikeda, Hiroyuki ,Suzuki, Masanori ,Endo, Ryota ,Tohei, Kazuo ,Watano, Yasuyuki Y",
+                "Tree Genetics & Genomes"
+            ]
+        }
+    },
+    "2013": {
+        "Jatropha curcas": {
+            "TGDR005": [
+                "Bressan, Eduardo Andrade",
+                "Tree Genetics & Genomes"
+            ]
+        }
+    }
+}

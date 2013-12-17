@@ -176,7 +176,7 @@ define([
                     '',
                     '',
                   ]);
-                  console.log(points);
+                  // console.log(points);
 
                   });
               });
@@ -262,7 +262,7 @@ define([
           google.maps.event.addListener(this.map, 'click', function(){
             $('#data_table').dataTable().fnClearTable();
             if(that.polygon){
-              console.log(that.polygon);
+              // console.log(that.polygon);
               that.polygon.setMap(null);
             }
           });
@@ -353,7 +353,7 @@ define([
 
             }
           });
-          console.log('allOn');
+          // console.log('allOn');
           this.phenotypesOn();
           this.environmentalOn();
         },
@@ -367,7 +367,7 @@ define([
           });
           // this.phenotypesOff();
           // this.environmentalOff();
-          console.log('allOff');
+          // console.log('allOff');
         },
         phenotypesOn: function(){
           this.trydbLayer.setOptions({
@@ -376,7 +376,7 @@ define([
               from: "1spNwsogd3q7p04Dt26mSAbM6owaPIeFnKBrRM00",
             }, 
            });
-          console.log('phenotypesOn');
+          // console.log('phenotypesOn');
         },
         phenotypesOff: function(){
           this.trydbLayer.setOptions({
@@ -386,7 +386,7 @@ define([
               where: "id = ''",
             }, 
            });
-          console.log('phenotypesOff');
+          // console.log('phenotypesOff');
         },
         environmentalOn: function(){
           this.amerifluxLayer.setOptions({
@@ -395,7 +395,7 @@ define([
               from: "1xr5d5jXjzWZtDxoIOOwXhMQ5yg8_9wn050FkJf0"
             }, 
           });
-          console.log('environmentalOn');
+          // console.log('environmentalOn');
         },
         environmentalOff: function(){
           this.amerifluxLayer.setOptions({
@@ -405,7 +405,7 @@ define([
               where: "site_id = ''"
             }, 
           });
-          console.log('environmentalOff');
+          // console.log('environmentalOff');
         },
 
         toggleEnvironmentAndPhenotypes:function(environmental,phenotypes,ameriflux,try_db){

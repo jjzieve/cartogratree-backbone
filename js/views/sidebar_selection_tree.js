@@ -30,6 +30,7 @@ define([
 					this.model.set("new_node_num",new_node_num);
 					this.model.set("type",type);
 					this.model.set("value",data);
+					// console.log(data);
 					this.$el.treetable("loadBranch",parent_node,that.template(this.model.toJSON()));
 					this.$el.treetable("collapseNode",node_num);
 				}
