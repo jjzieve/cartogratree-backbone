@@ -4,7 +4,6 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
-	// 'backbone_queryparams',
 	'models/query',
 	'models/tree_node',
 	'collections/queries',
