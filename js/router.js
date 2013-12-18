@@ -4,6 +4,7 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
+	// 'backbone_queryparams',
 	'models/query',
 	'models/tree_node',
 	'collections/queries',
@@ -18,15 +19,18 @@ define([
 		NavBarView, MapView, SelectionTreeView, FiltersView, BottomTabsView, BottomTableView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
-				'(/)':'index',
+				'(/)(?tid=:tree_ids)':'index',
 				// '/about':'about',
-			}
+			},
 		});
 	
 		var initialize = function(){
 			var appRouter = new AppRouter();
 			
-			appRouter.on('route:index', function(actions){
+			appRouter.on('route:index', function(tree_ids){
+				if (tree_ids){
+					console.log(tree_ids.split(','));
+				}
 				var navbar = new NavBarView();
 				var query = new QueryModel();
 				var queries = new QueriesCollection();
@@ -38,7 +42,7 @@ define([
 				var table = new BottomTableView({collection: queries,model: query});
 			});
 			// appRouter.on('about', function(){
-   //    			this.navigate("about.php")
+   //    			this.navigate("about.html")
    //  		});
 			// Backbone.history.start({pushState:true});
 			Backbone.history.start();

@@ -158,9 +158,10 @@ define([
             }
             that.polygon = polygon;
             var points = [];
+            //  $url="https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20count()%20FROM%201AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8%20WHERE%20ST_INTERSECTS('lat',%20CIRCLE(LATLNG($lat,$lng),%2025000))&key=AIzaSyCuYOWxwU8zbT5oBvHKOAgRYE08Ouoy5Us";
             if (that.collection.meta("currentQuery")){
               $.getJSON(that.model.get("fusion_table_query_url")+
-                "SELECT tree_id,lat,lng FROM "+that.model.get("fusion_table_id")+" WHERE "+that.collection.meta("currentQuery")
+                "SELECT tree_id,lat,lng FROM "+that.model.get("fusion_table_id")+" WHERE "+that.collection.meta("currentQuery")+
                 +that.model.get("fusion_table_key")
                 ).success(function(result){
                   _.each(result.rows,function(coord){

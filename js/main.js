@@ -5,7 +5,6 @@ require.config({
 		// jquery: '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min',
 		// underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min',
 		// backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
-
 		jquery: 'libs/jquery/jquery',
         // jquery_ui: 'libs/jquery/jquery-ui-1.10.3.custom',
         bootstrap: 'libs/bootstrap',
