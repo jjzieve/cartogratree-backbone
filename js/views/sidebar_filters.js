@@ -40,18 +40,31 @@ define([
     			$('#'+filter).attr('checked', !$('#'+filter).attr('checked'));
     		},
     		countQuery: function(query){
-    			$.getJSON(this.model.get("fusion_table_query_url")+
-						query+
-						this.model.get("fusion_table_key")).success(function(result){
-							if(result.rows){
-								console.log(result.rows[0][0]);
-								return result.rows[0][0];
-							}
-							else{
-								return 0;
-							}
-						});
-			},
+    			// var newCount = 0;
+    			// $.getJSON(this.model.get("fusion_table_query_url")+
+    			// 	tgdrQuery+fusion_table_column+whereClause+
+    			// 	this.model.get("fusion_table_key")).success(function(data){
+    			// 	if(data.rows){
+    			// 		var tgdrCount = parseInt(data.rows[0][0]);
+    			// 	}
+    			// 	else{
+    			// 		var tgdrCount = 0;
+    			// 	}
+    			// 	$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount));
+
+    			// }
+    	// 		$.ajax({
+    	// 			dataType: "json",
+    	// 			async: false, //This could lead to slow load... but no other way to implement adding values from seperate ajax without nesting
+    	// 			url: this.model.get("fusion_table_query_url")+query+this.model.get("fusion_table_key"),
+    	// 			success: function(data){
+    	// 				if(data.rows){
+					// 		returnVal = parseInt(data.rows[0][0]);
+					// 	}
+					// }
+    	// 		});	
+    	// 		return returnVal;
+    		},
 
 			getColumn: function(column){//repeated from map view, not very DRY...
           		return (this.collection.filter(function(query){return query.get("column") === column}).map(function(query){return query.get("value")}));
@@ -62,22 +75,95 @@ define([
 				this.$el.children().each(function(){ //check each filter/checkbox
 					if($(this).find("input").attr("type")=="checkbox"){
 						var tgdrCount = 0;
+						var tgdrQuery = "SELECT COUNT() FROM "+that.collection.meta("tgdr_id")+" WHERE ";
 						var sts_isCount = 0;
-						var try_dbCount = 0; //ignore ameriflux
+						var sts_isQuery = "SELECT COUNT() FROM "+that.collection.meta("sts_is_id")+" WHERE ";
+						var try_dbCount = 0;
+						var try_dbQuery = "SELECT COUNT() FROM "+that.collection.meta("trydb_id");
+						//ignore ameriflux
 						var id = $(this).find("input").attr("id");
-						// if(that.getColumn("all").length>0){// if "all" node is selected
-						// 	console.log(id);
-						// 	tgdrCount = that.countQuery("SELECT COUNT() FROM 1sTp6b-8y_9Qb-rYxsW2MxofWLfNvl9p1mnSz_zk WHERE "+id+" = 'true'");
-						// 	sts_isCount = that.countQuery("SELECT COUNT() FROM 1bUCAw_3Ride-Ev-G2exxjsBomLTcN34saitmZ64 WHERE "+id+" NOT IN ('No', '')");
-						// 	try_dbCount = that.countQuery("SELECT COUNT() FROM 1h-KVbQdplul76b2dmVP33E7tEtt3oag44Oeu3oA");
-						// }
-						var newTotalCount = tgdrCount + sts_isCount + try_dbCount;
+						var fusion_table_column = "";
+						var whereClause = " > 0";
+						if (id == "phenotyped"){
+							fusion_table_column = "num_phenotypes";
+							// try_dbCount = that.countQuery(try_dbQuery);
+						}
+						if (id == "genotyped"){
+							fusion_table_column = "num_genotypes";
+						}
+						if (id == "sequenced"){
+							fusion_table_column = "num_sequences";
+						}
+						if (id == "exact_gps"){
+							fusion_table_column = "is_exact_gps_coordinate";
+							whereClause = "= 'true'";
+						} 
+						if (id == "approx_gps") {
+							fusion_table_column = "is_exact_gps_coordinate";
+							whereClause = "= 'false'";
+						}
 
-						$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,newTotalCount));//replaces the value in the DOM
+						if(that.getColumn("all").length>0){// if "all" node is selected
+							$.getJSON(that.model.get("fusion_table_query_url")+
+			    				tgdrQuery+fusion_table_column+whereClause+
+			    				that.model.get("fusion_table_key")).success(function(data){
+			    				if(data.rows){
+			    					var tgdrCount = parseInt(data.rows[0][0]);
+			    				}
+			    				else{
+			    					var tgdrCount = 0;
+			    				}
+			    				$.getJSON(that.model.get("fusion_table_query_url")+
+			    					sts_isQuery+fusion_table_column+whereClause+
+			    					that.model.get("fusion_table_key")).success(function(data){
+			    						if(data.rows){
+			    							var sts_isCount = parseInt(data.rows[0][0]);
+			    						}
+			    						else{
+			    							var sts_isCount = 0;
+			    						}
+			    						if(id == "phenotyped"){
+			    							$.getJSON(that.model.get("fusion_table_query_url")+
+					    						try_dbQuery+
+						    					that.model.get("fusion_table_key")).success(function(data){
+						    						if(data.rows){
+						    							var try_dbCount = parseInt(data.rows[0][0]);
+						    							console.log(try_dbCount);
+						    						}
+						    						else{
+						    							var try_dbCount = 0;
+						    						}
+								    				$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount+try_dbCount));
+						    					});
+						    			}
+						    			else{
+					    					$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount));
+						    			}
+			    					});
+			    				});
+
+			    		
+							// tgdrCount = that.countQuery(tgdrQuery+fusion_table_column+whereClause);
+							// sts_isCount = that.countQuery(sts_isQuery+fusion_table_column+whereClause);
+						}
+						// console.log(that.collection.meta("tgdrWhereClause"));
+						// if (that.collection.meta("tgdrWhereClause")){
+						// 	tgdrCount = that.countQuery(tgdrQuery+fusion_table_column+whereClause+' AND '+that.collection.meta("tgdrWhereClause"));
+						// }
+						// if (that.collection.meta("sts_isWhereClause")){
+						// 	sts_isCount = that.countQuery(sts_isQuery+fusion_table_column+whereClause+' AND '+that.collection.meta("sts_isWhereClause"));
+						// }
+						// if(fusion_table_column == "num_phenotypes" && that.collection.meta("phenotypesWhereClause")){
+						// 	try_dbCount = that.countQuery(try_dbQuery);
+						// }
+
+						// var newTotalCount = tgdrCount + sts_isCount + try_dbCount;
+						// console.log(newTotalCount);
+
+						//replaces the value in the DOM
 						// console.log(that.collection.meta("tgdrWhereClause"));
 						// console.log(that.collection.meta("sts_isWhereClause"));
 						// console.log(that.collection.meta("phenotypesWhereClause"));
-						console.log(that.getColumn("all"));
 						// var notCase = "No" //default for genotyped and sequenced
 						// // var defaultQuery = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
 						// // 				" WHERE '"+fusion_table_column+"' = 'false'";

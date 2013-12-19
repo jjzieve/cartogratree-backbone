@@ -11,8 +11,8 @@ define([
     initialize: function() {
       this._meta = {
         //fusion table ids
-        "tgdr_id":"1QFBOLrUSCgKC-mfcBTSAISzckHLEUyG8G6sX1Fs",
-        "sts_is_id":"1bUCAw_3Ride-Ev-G2exxjsBomLTcN34saitmZ64",
+        "tgdr_id":"1NaivbgjfiueJo4O8R-7Wy5c7OdYCWFB18PRS0fA",
+        "sts_is_id":"1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI",
         "trydb_id":"1h-KVbQdplul76b2dmVP33E7tEtt3oag44Oeu3oA",
         "ameriflux_id":"1Z_m0uQ3EGpzwVLFq0EwoZ2jwmzdFev4YSN-U8NQ"
       };

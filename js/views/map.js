@@ -278,31 +278,20 @@ define([
             speciesQuery = "'species' IN ('"+species.join("','")+"')";
           }
           if (filters.indexOf("sequenced") != -1) {
-            sequencedQuery = "'sequenced' NOT EQUAL TO 'No'";
+            sequencedQuery = "'num_sequences' > 0";
           }
           if (filters.indexOf("genotyped") != -1) {
-            genotypedQuery = "'genotyped' NOT EQUAL TO 'No'";
+            genotypedQuery = "'num_genotypes' > 0";
           }
           if (filters.indexOf("phenotyped") != -1) {
-            phenotypedQuery = "'phenotype' NOT EQUAL TO ''";
+            phenotypedQuery = "'num_phenotypes' > 0";
           }
-          if (filters.indexOf("exact_gps") != -1) {
-            if (gpsQuery == ""){
-              gpsQuery = "'gps' = 'exact'";
-            }
-            else {
-              gpsQuery = "'gps' IN ('exact','estimate')";
-            }
+          if (filters.indexOf("exact_gps") != -1 && gpsQuery == "") {//if both or none are set shows all
+            gpsQuery = "'is_exact_gps_coordinate' = 'true'";
           }
-          if (filters.indexOf("approx_gps") != -1) {
-            if (gpsQuery == ""){
-              gpsQuery = "'gps' = 'estimate'";
-            }
-            else {
-              gpsQuery = "'gps' IN ('exact','estimate')";
-            }
+          if (filters.indexOf("approx_gps") != -1 && gpsQuery == "") {
+            gpsQuery = "'is_exact_gps_coordinate' = 'false'";
           }
-                              
           return _.filter([
             familiesQuery,
             genusesQuery,
@@ -332,10 +321,10 @@ define([
             accessionsQuery = "'accession' IN ('"+accessions.join("','")+"')";
           }
           if (filters.indexOf("genotyped") != -1) {
-            genotypedQuery = "'genotyped' = 'true'";
+            genotypedQuery = "'num_genotypes' > 0";
           }
           if (filters.indexOf("phenotyped") != -1) {
-            phenotypedQuery = "'phenotyped' =  'true'";
+            phenotypedQuery = "'num_phenotypes' > 0";
           }
                              
           return _.filter([
