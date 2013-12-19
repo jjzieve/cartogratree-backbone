@@ -66,7 +66,7 @@ define([
     					return "genus";
     				}
     				else{ //depth = 3
-    					return "species";
+    					return "species_is_sts"; //must make distinction between the two species (in tgdr and in sts_is)
     				}
     			}
     			else { //branch_name is studies
@@ -74,7 +74,7 @@ define([
     					return "year";
     				}
     				if (depth == 2){
-    					return "species";
+    					return "species_tgdr";
     				}
     				else{ //depth = 3
     					return "accession";
@@ -115,7 +115,8 @@ define([
 				var value = $(event.target).attr('value');
 				if(column && value){//ensures it doesn't deselect on branch expansion
 					$(event.target).toggleClass('selected');
-					this.collection.meta("currentQuery",""); 
+					this.collection.meta("currentTGDRQuery",""); 
+					this.collection.meta("currentSTS_ISQuery",""); 
 					if ($(event.target).hasClass('selected'))
 					{
 						this.collection.add({
@@ -145,7 +146,8 @@ define([
 					var value = $(event.target).attr('value');
 	  				if (column && value){
 		  				this.collection.reset();
-		  				this.collection.meta("currentQuery",""); 
+		  				this.collection.meta("tgdrWhereClause",""); 
+						this.collection.meta("sts_isWhereClause",""); 
 		  				$(event.target).toggleClass('selected');
 		  				if ($(event.target).hasClass('selected'))
 	  					{

@@ -23,7 +23,7 @@ define([
       this.collection.on('add remove reset',this.populate,this); 
 		},
     populate: function(){
-      console.log(this.collection.meta("currentQuery"));
+      // console.log(this.collection.meta("currentQuery"));
       // var that = this;
       // if(this.collection.meta("currentQuery")){
       //   // this.$el.dataTable().fnClearTable();

@@ -54,55 +54,55 @@ define([
 			refreshCounts: function(){
 				// console.log("refreshCounts");
 				// console.log(this.collection);
-				var that = this;
-				this.$el.children().each(function(){
-					if($(this).find("input").attr("type")=="checkbox"){
-						var id = $(this).find("input").attr("id");
-						var fusion_table_column = id;
-						var notCase = "No" //default for genotyped and sequenced
-						// var defaultQuery = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
-						// 				" WHERE '"+fusion_table_column+"' = 'false'";
-						if (id == "phenotyped") {
-							fusion_table_column = "phenotype"
-							notCase = "";
-						}
-						if (id == "exact_gps") {
-							fusion_table_column = "gps";
-							notCase = "estimate";
-						}
-						if (id == "approx_gps") {
-							fusion_table_column = "gps";
-							notCase = "exact";
-						}
+				// var that = this;
+				// this.$el.children().each(function(){
+				// 	if($(this).find("input").attr("type")=="checkbox"){
+				// 		var id = $(this).find("input").attr("id");
+				// 		var fusion_table_column = id;
+				// 		var notCase = "No" //default for genotyped and sequenced
+				// 		// var defaultQuery = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
+				// 		// 				" WHERE '"+fusion_table_column+"' = 'false'";
+				// 		if (id == "phenotyped") {
+				// 			fusion_table_column = "phenotype"
+				// 			notCase = "";
+				// 		}
+				// 		if (id == "exact_gps") {
+				// 			fusion_table_column = "gps";
+				// 			notCase = "estimate";
+				// 		}
+				// 		if (id == "approx_gps") {
+				// 			fusion_table_column = "gps";
+				// 			notCase = "exact";
+				// 		}
 
-						if(that.collection.length == 0){
-							$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
-						} 
-						else if (that.collection.length == 1 && (that.collection.get("1-3") || that.collection.get("1-3-0") || that.collection.get("1-4") || that.collection.get("1-4-0"))) {
-							$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
-						}
-						else if 
-						(that.collection.length == 2 && //every combination involving only envrionmental or phenotypic, convoluted...
-						((that.collection.get("1-3") && that.collection.get("1-3-0")) ||
-						(that.collection.get("1-3") && that.collection.get("1-4")) ||
-						(that.collection.get("1-3") && that.collection.get("1-4-0")) ||
-						(that.collection.get("1-3-0") && that.collection.get("1-4-0")) ||
-						(that.collection.get("1-4") && that.collection.get("1-4-0")))) {
-							$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
-						}
-						else if (that.collection.meta("currentQuery")){
-							var query = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
-										" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"' AND "+
-										that.collection.meta("currentQuery");
-							that.countQuery(query,id);
-						}
-						else {
-							var query = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
-										" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"'";
-							that.countQuery(query,id);
-						}
-					}
-				});
+				// 		if(that.collection.length == 0){
+				// 			$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
+				// 		} 
+				// 		else if (that.collection.length == 1 && (that.collection.get("1-3") || that.collection.get("1-3-0") || that.collection.get("1-4") || that.collection.get("1-4-0"))) {
+				// 			$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
+				// 		}
+				// 		else if 
+				// 		(that.collection.length == 2 && //every combination involving only envrionmental or phenotypic, convoluted...
+				// 		((that.collection.get("1-3") && that.collection.get("1-3-0")) ||
+				// 		(that.collection.get("1-3") && that.collection.get("1-4")) ||
+				// 		(that.collection.get("1-3") && that.collection.get("1-4-0")) ||
+				// 		(that.collection.get("1-3-0") && that.collection.get("1-4-0")) ||
+				// 		(that.collection.get("1-4") && that.collection.get("1-4-0")))) {
+				// 			$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
+				// 		}
+				// 		else if (that.collection.meta("currentQuery")){
+				// 			var query = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
+				// 						" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"' AND "+
+				// 						that.collection.meta("currentQuery");
+				// 			that.countQuery(query,id);
+				// 		}
+				// 		else {
+				// 			var query = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
+				// 						" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"'";
+				// 			that.countQuery(query,id);
+				// 		}
+				// 	}
+				// });
 			},
   		
 			initialize: function(){
