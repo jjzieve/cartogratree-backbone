@@ -9,7 +9,13 @@ define([
 ], function($, _, Backbone,QueryModel){
 	var QueriesCollection = Backbone.Collection.extend({
     initialize: function() {
-      this._meta = {};
+      this._meta = {
+        //fusion table ids
+        "tgdr_id":"1QFBOLrUSCgKC-mfcBTSAISzckHLEUyG8G6sX1Fs",
+        "sts_is_id":"1bUCAw_3Ride-Ev-G2exxjsBomLTcN34saitmZ64",
+        "trydb_id":"1h-KVbQdplul76b2dmVP33E7tEtt3oag44Oeu3oA",
+        "ameriflux_id":"1Z_m0uQ3EGpzwVLFq0EwoZ2jwmzdFev4YSN-U8NQ"
+      };
     },      
     model: QueryModel,
     meta: function(prop, value) { // so we can store the query text
@@ -20,6 +26,7 @@ define([
         this._meta[prop] = value;
       }
     },
+    
     // reset: function(){
     //   if (this._meta["currentQuery"]){
     //     this._meta["currentQuery"] = "";

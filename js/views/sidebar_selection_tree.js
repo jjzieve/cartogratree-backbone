@@ -147,7 +147,7 @@ define([
 	  				if (column && value){
 		  				this.collection.reset();
 		  				this.collection.meta("tgdrWhereClause",""); 
-						this.collection.meta("sts_isWhereClause",""); 
+						this.collection.meta("sts_isWhereClause",""); //ameriflux and trydb are this by default 
 		  				$(event.target).toggleClass('selected');
 		  				if ($(event.target).hasClass('selected'))
 	  					{

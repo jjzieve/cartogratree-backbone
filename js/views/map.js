@@ -196,10 +196,11 @@ define([
         },
 
         initLayers: function() {
+          // this.collection.meta("tgdr_id","1sTp6b-8y_9Qb-rYxsW2MxofWLfNvl9p1mnSz_zk");
           this.tgdrLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
-              from: "1sTp6b-8y_9Qb-rYxsW2MxofWLfNvl9p1mnSz_zk"
+              from: this.collection.meta("tgdr_id")
             }, 
             map: this.map,
             styleId: 2,
@@ -209,7 +210,7 @@ define([
           this.sts_isLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
-              from: "1bUCAw_3Ride-Ev-G2exxjsBomLTcN34saitmZ64"
+              from: this.collection.meta("sts_is_id")
             }, 
             map: this.map,
             styleId: 2,
@@ -220,7 +221,7 @@ define([
           this.trydbLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
-              from: "1h-KVbQdplul76b2dmVP33E7tEtt3oag44Oeu3oA",
+              from: this.collection.meta("trydb_id")
             }, 
             map: this.map,
             styleId: 2,
@@ -230,7 +231,7 @@ define([
           this.amerifluxLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
-              from: "1Z_m0uQ3EGpzwVLFq0EwoZ2jwmzdFev4YSN-U8NQ",
+              from: this.collection.meta("ameriflux_id"),
             }, 
             map: this.map,
             styleId: 2,
@@ -350,7 +351,7 @@ define([
             layer.setMap(null);
           }
           else{
-            this.collection.meta(table+"WhereClause",whereClause);        
+            this.collection.meta(table+"WhereClause",whereClause); //sets the new where clause, should be implemented in collection but haven't figured out how...       
             layer.setOptions({
               query: {
                 select: "lat",
@@ -395,10 +396,10 @@ define([
           if (environmental.length > 0 || ameriflux.length > 0){
             var environmentalWhereClause = "";
           }
-          this.refreshLayer("tgdr",tgdrWhereClause,this.tgdrLayer,"1sTp6b-8y_9Qb-rYxsW2MxofWLfNvl9p1mnSz_zk");
-          this.refreshLayer("sts_is",sts_isWhereClause,this.sts_isLayer,"1bUCAw_3Ride-Ev-G2exxjsBomLTcN34saitmZ64");
-          this.refreshLayer("phenotypes",phenotypesWhereClause,this.trydbLayer,"1h-KVbQdplul76b2dmVP33E7tEtt3oag44Oeu3oA");
-          this.refreshLayer("environmental",environmentalWhereClause,this.amerifluxLayer,"1Z_m0uQ3EGpzwVLFq0EwoZ2jwmzdFev4YSN-U8NQ");       
+          this.refreshLayer("tgdr",tgdrWhereClause,this.tgdrLayer,this.collection.meta("tgdr_id"));
+          this.refreshLayer("sts_is",sts_isWhereClause,this.sts_isLayer,this.collection.meta("sts_is_id"));
+          this.refreshLayer("phenotypes",phenotypesWhereClause,this.trydbLayer,this.collection.meta("trydb_id"));
+          this.refreshLayer("environmental",environmentalWhereClause,this.amerifluxLayer,this.collection.meta("ameriflux_id"));       
         },
 
         render: function(){
