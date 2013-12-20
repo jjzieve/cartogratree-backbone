@@ -4,19 +4,9 @@
             "Sequoia sempervirens"
         ]
     },
-    "Fabaceae": {
-        "Millettia": [
-            "Millettia pinnata"
-        ]
-    },
     "Fagaceae": {
         "Fagus": [
             "Fagus grandifolia"
-        ]
-    },
-    "Jatropheae": {
-        "Jatropha": [
-            "Jatropha curcas"
         ]
     },
     "Pinaceae": {
@@ -41,7 +31,6 @@
             "Pinus flexilis",
             "Pinus albicaulis",
             "Pinus lambertiana",
-            "Pinus parviflora",
             "Pinus aristata",
             "Pinus monticola",
             "Pinus cembra",

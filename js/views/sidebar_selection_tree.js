@@ -77,7 +77,7 @@ define([
     					return "genus";
     				}
     				else{ //depth = 3
-    					return "species_is_sts"; //must make distinction between the two species (in tgdr and in sts_is)
+    					return "species_sts_is"; //must make distinction between the two species (in tgdr and in sts_is)
     				}
     			}
     			else { //branch_name is studies
@@ -147,7 +147,6 @@ define([
   					}
 		  			
 		  		}
-
 	  		},
 	  				
 			render: function(){

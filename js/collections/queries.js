@@ -13,7 +13,7 @@ define([
         //fusion table ids
         "tgdr_id":"118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M",
         "sts_is_id":"1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI",
-        "trydb_id":"14YI8zHpSO983LXFHCqjYZ3ShdPZsvr1nOQUNBuI",
+        "try_db_id":"14YI8zHpSO983LXFHCqjYZ3ShdPZsvr1nOQUNBuI",
         "ameriflux_id":"1huZ12FnVaWgeUZKaXozbLR0lZfLcxZ_y9RF2h-A"
       };
     },      
@@ -25,11 +25,6 @@ define([
       else {
         this._meta[prop] = value;
       }
-      console.log("meta called:\n"+
-                  "tgdrWhereClause:"+this._meta["tgdrWhereClause"]+"\n"+
-                  "sts_isWhereClause:"+this._meta["sts_isWhereClause"]+"\n"+
-                  "try_dbWhereClause:"+this._meta["try_dbWhereClause"]+"\n"+
-                  "amerifluxWhereClause:"+this._meta["try_dbWhereClause"]);
     },
     
     reset: function(){

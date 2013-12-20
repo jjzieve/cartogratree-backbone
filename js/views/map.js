@@ -159,9 +159,7 @@ define([
           });
 
         },
-         
-
-       
+      
 
         initLayers: function() {
           this.tgdrLayer = new google.maps.FusionTablesLayer({
@@ -188,7 +186,7 @@ define([
           this.try_dbLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
-              from: this.collection.meta("trydb_id")
+              from: this.collection.meta("try_db_id")
             }, 
             map: this.map,
             styleId: 2,
@@ -220,13 +218,13 @@ define([
           }
 
           var convertIconToInfoWindowOutput = function(icon_name){
-            if (icon_name = 'small_green'){
+            if (icon_name == 'small_green'){
               return 'Exact GPS';
             }
-            else if (icon_name = 'small_yellow'){
+            else if (icon_name == 'small_yellow'){
               return 'Approximate GPS';
             }
-            else if (icon_name = 'parks'){
+            else if (icon_name == 'parks'){
               return 'TRY-DB';
             }
             else{
@@ -359,10 +357,10 @@ define([
             phenotypedQuery = "'num_phenotypes' > 0";
           }
           if (filters.indexOf("exact_gps") != -1 && gpsQuery == "") {//if both or none are set shows all
-            gpsQuery = "'is_exact_gps_rowinate' = 'true'";
+            gpsQuery = "'is_exact_gps_coordinate' = 'true'";
           }
           if (filters.indexOf("approx_gps") != -1 && gpsQuery == "") {
-            gpsQuery = "'is_exact_gps_rowinate' = 'false'";
+            gpsQuery = "'is_exact_gps_coordinate' = 'false'";
           }
           return _.filter([
             familiesQuery,
@@ -374,23 +372,38 @@ define([
             gpsQuery],function(string){ return string != ""}).join(' AND ');          
         },
 
-        genQueryTGDR: function(years,species,accessions,filters){
+        genQuery: function(table,years,families,genuses,species_tgdr,species_sts_is,accessions,filters){
           var studiesQuery = "";
           var yearsQuery = "";
-          var speciesQuery = "";
+          var familiesQuery = "";
+          var genusesQuery = "";
+          var speciesTGDRQuery = "";
+          var speciesSTS_ISQuery = "";
           var accessionsQuery = "";
-          // var sequencedQuery = ""; // no samples are sequenced in tgdr, may change in future
+          var sequencedQuery = ""; // no samples are sequenced in tgdr, may change in future
           var genotypedQuery = "";
           var phenotypedQuery = "";
-          // var gpsQuery = ""; // all samples are exact in tgdr, may change in future
+          var gpsQuery = ""; // all samples are exact in tgdr, may change in future
           if (years.length > 0){
             yearsQuery = "'year' IN ('"+years.join("','")+"')";
           }
-          if (species.length > 0){
-            speciesQuery = "'species' IN ('"+species.join("','")+"')";
+          if (families.length > 0){
+            familiesQuery = "'family' IN ('"+families.join("','")+"')";
+          }
+          if (genuses.length > 0){
+            genusesQuery = "'genus' IN ('"+genuses.join("','")+"')";
+          }
+          if (species_tgdr.length > 0){
+            speciesTGDRQuery = "'species' IN ('"+species_tgdr.join("','")+"')";
+          }
+          if (species_sts_is.length > 0){
+            speciesSTS_ISQuery = "'species' IN ('"+species_sts_is.join("','")+"')";
           }
           if (accessions.length > 0){ 
             accessionsQuery = "'accession' IN ('"+accessions.join("','")+"')";
+          }
+          if (filters.indexOf("sequenced") != -1) {
+            sequencedQuery = "'num_sequences' > 0";
           }
           if (filters.indexOf("genotyped") != -1) {
             genotypedQuery = "'num_genotypes' > 0";
@@ -398,21 +411,30 @@ define([
           if (filters.indexOf("phenotyped") != -1) {
             phenotypedQuery = "'num_phenotypes' > 0";
           }
-                             
-          return _.filter([
-            yearsQuery,
-            speciesQuery,
-            accessionsQuery,
-            genotypedQuery,
-            phenotypedQuery],function(string){ return string != ""}).join(' AND ');          
+          if (filters.indexOf("exact_gps") != -1 && gpsQuery == "") {//if both or none are set shows all
+            gpsQuery = "'is_exact_gps_coordinate' = 'true'";
+          }
+          if (filters.indexOf("approx_gps") != -1 && gpsQuery == "") {
+            gpsQuery = "'is_exact_gps_coordinate' = 'false'";
+          }
+          if (table == "tgdr"){
+            return _.filter([yearsQuery,speciesTGDRQuery,accessionsQuery,sequencedQuery,genotypedQuery,phenotypedQuery,gpsQuery],function(string){ return string != ""}).join(' AND '); 
+          } 
+          else if (table == "sts_is"){
+            return _.filter([familiesQuery, genusesQuery, speciesSTS_ISQuery, sequencedQuery, genotypedQuery, phenotypedQuery, gpsQuery],function(string){ return string != ""}).join(' AND '); 
+          }
+          else {//try_db or ameriflux
+            return _.filter([sequencedQuery, genotypedQuery, phenotypedQuery, gpsQuery],function(string){ return string != ""}).join(' AND '); 
+          }     
         },
+
 
         refreshLayer: function(table,whereClause,layer,layer_id){
           if(typeof(whereClause) === "undefined"){
             layer.setMap(null);
           }
           else{
-            this.collection.meta(table+"WhereClause",whereClause); //sets the new where clause, should be implemented in collection but haven't figured out how...       
+            this.collection.meta(table+"WhereClause",whereClause); //sets the new where clause
             layer.setOptions({
               query: {
                 select: "lat",
@@ -422,9 +444,11 @@ define([
             });
             layer.setMap(this.map);
           }
+
         },
 
         refreshLayers: function(){
+          //tree nodes
           var all = this.getColumn("all");
           var environmental = this.getColumn("environmental");
           var phenotypes = this.getColumn("phenotypes");
@@ -436,31 +460,33 @@ define([
           var families = this.getColumn("family");
           var genuses = this.getColumn("genus");
           var species_tgdr = this.getColumn("species_tgdr");
-          var species_is_sts = this.getColumn("species_is_sts");
+          var species_sts_is = this.getColumn("species_sts_is");
+          var accessions = this.getColumn("accession");
           var filters = this.collection.pluck("filter");
-          var accessions = this.getColumn("accession"); // uncomment when fusion table is fixed
-          if (all.length > 0){
-            var tgdrWhereClause = "";
-            var sts_isWhereClause = "";
-            var try_dbWhereClause = "";
-            var amerifluxWhereClause = "";
+          
+
+          if (all.length > 0 || studies.length > 0 || years.length > 0 || species_tgdr.length > 0 || accessions.length > 0 || filters > 0){
+            var tgdrWhereClause = this.genQuery("tgdr",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
           }
-          if (studies.length > 0 || years.length > 0 || species_tgdr.length > 0 || accessions.length > 0){
-            var tgdrWhereClause = this.genQueryTGDR(years,species_tgdr,accessions,filters);
-          }  
-          if (taxa.length > 0 || families.length > 0 || genuses.length > 0 || species_is_sts.length > 0){
-            var sts_isWhereClause = this.genQuerySTS_IS(families,genuses,species_is_sts,filters);
+          if (all.length > 0 || taxa.length > 0 || families.length > 0 || genuses.length > 0 || species_sts_is.length > 0 || filters > 0){
+            var sts_isWhereClause = this.genQuery("sts_is",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
           }
-          if (phenotypes.length > 0 || try_db.length > 0){
-            var try_dbWhereClause = "";
+          if (all.length > 0 || phenotypes.length > 0 || try_db.length > 0 || filters > 0){
+            var try_dbWhereClause = this.genQuery("try_db",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
           }
-          if (environmental.length > 0 || ameriflux.length > 0){
-            var amerifluxWhereClause = "";
+          if (all.length > 0 || environmental.length > 0 || ameriflux.length > 0 || filters > 0){
+            var amerifluxWhereClause = this.genQuery("ameriflux",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
           }
+
           this.refreshLayer("tgdr",tgdrWhereClause,this.tgdrLayer,this.collection.meta("tgdr_id"));
           this.refreshLayer("sts_is",sts_isWhereClause,this.sts_isLayer,this.collection.meta("sts_is_id"));
-          this.refreshLayer("try_db",try_dbWhereClause,this.try_dbLayer,this.collection.meta("trydb_id"));
-          this.refreshLayer("ameriflux",amerifluxWhereClause,this.amerifluxLayer,this.collection.meta("ameriflux_id"));       
+          this.refreshLayer("try_db",try_dbWhereClause,this.try_dbLayer,this.collection.meta("try_db_id"));
+          this.refreshLayer("ameriflux",amerifluxWhereClause,this.amerifluxLayer,this.collection.meta("ameriflux_id"));    
+          //debug
+          console.log("tgdrWhereClause:"+this.collection.meta("tgdrWhereClause")+"\n"+
+                  "sts_isWhereClause:"+this.collection.meta("sts_isWhereClause")+"\n"+
+                  "try_dbWhereClause:"+this.collection.meta("try_dbWhereClause")+"\n"+
+                  "amerifluxWhereClause:"+this.collection.meta("amerifluxWhereClause"));   
         },
 
         render: function(){
