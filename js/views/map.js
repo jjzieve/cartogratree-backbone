@@ -442,8 +442,8 @@ define([
           if (all.length > 0){
             var tgdrWhereClause = "";
             var sts_isWhereClause = "";
-            var phenotypesWhereClause = "";
-            var environmentalWhereClause = "";
+            var try_dbWhereClause = "";
+            var amerifluxWhereClause = "";
           }
           if (studies.length > 0 || years.length > 0 || species_tgdr.length > 0 || accessions.length > 0){
             var tgdrWhereClause = this.genQueryTGDR(years,species_tgdr,accessions,filters);
@@ -452,15 +452,15 @@ define([
             var sts_isWhereClause = this.genQuerySTS_IS(families,genuses,species_is_sts,filters);
           }
           if (phenotypes.length > 0 || try_db.length > 0){
-            var phenotypesWhereClause = "";
+            var try_dbWhereClause = "";
           }
           if (environmental.length > 0 || ameriflux.length > 0){
-            var environmentalWhereClause = "";
+            var amerifluxWhereClause = "";
           }
           this.refreshLayer("tgdr",tgdrWhereClause,this.tgdrLayer,this.collection.meta("tgdr_id"));
           this.refreshLayer("sts_is",sts_isWhereClause,this.sts_isLayer,this.collection.meta("sts_is_id"));
-          this.refreshLayer("phenotypes",phenotypesWhereClause,this.try_dbLayer,this.collection.meta("trydb_id"));
-          this.refreshLayer("environmental",environmentalWhereClause,this.amerifluxLayer,this.collection.meta("ameriflux_id"));       
+          this.refreshLayer("try_db",try_dbWhereClause,this.try_dbLayer,this.collection.meta("trydb_id"));
+          this.refreshLayer("ameriflux",amerifluxWhereClause,this.amerifluxLayer,this.collection.meta("ameriflux_id"));       
         },
 
         render: function(){

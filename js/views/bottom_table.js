@@ -19,7 +19,7 @@ define([
    //      "bServerSide": true,
    //      "sAjaxSource": this.populate
    //    });
-    console.log("init");
+    // console.log("init");
     // $.extend( $.fn.dataTableExt.oStdClasses, {
     //   "sSortAsc": "header headerSortDown",
     //   "sSortDesc": "header headerSortUp",

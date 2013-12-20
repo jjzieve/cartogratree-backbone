@@ -120,63 +120,36 @@ define([
 			events: {
 			    "click": "toggleSelection",
 			},
-			ctrlSelect: function(event) {
-				var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
+
+			toggleSelection: function(event){
+		  		var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
   				var column = $(event.target).attr('name');
 				var value = $(event.target).attr('value');
-				if(column && value){//ensures it doesn't deselect on branch expansion
+  				if (column && value){
+  					if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the queries
+  						this.collection.reset();
+  					}
 					$(event.target).toggleClass('selected');
-					this.collection.meta("tgdrWhereClause",""); 
-					this.collection.meta("sts_isWhereClause",""); 
-					if ($(event.target).hasClass('selected'))
-					{
-						this.collection.add({
-							id: id,
-							column: column,
-							value: value,
-						});
-					}
-					else {
+	  				if ($(event.target).hasClass('selected'))
+  					{
+						this.collection.add(
+	  					{
+	  						id: id,
+	  						column: column,
+	  						value: value,
+	  					});
+  					}
+  					else {
 						this.collection.remove(id);
 					}
-					console.log(this.collection);
-	  				
-	  			}
-			},
-
-  			toggleSelection: function(event){
-  				if (event.ctrlKey || event.metaKey) { //meta for "command" on macs
-		  			this.ctrlSelect(event);
+  					if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the selected classes (i.e. highlighted rows)
+  						$(".selected").not(event.target).removeClass("selected");
+  					}
+		  			
 		  		}
-		  		else if (event.shiftKey) { 
-		  			console.log("shift");
-		  		}
-		  		else {
-			  		var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
-	  				var column = $(event.target).attr('name');
-					var value = $(event.target).attr('value');
-	  				if (column && value){
-		  				this.collection.reset();
-		  				this.collection.meta("tgdrWhereClause",""); 
-						this.collection.meta("sts_isWhereClause",""); //ameriflux and trydb are this by default 
-		  				$(event.target).toggleClass('selected');
-		  				if ($(event.target).hasClass('selected'))
-	  					{
-							this.collection.add(
-		  					{
-		  						id: id,
-		  						column: column,
-		  						value: value,
-		  					});
-	  					}
-			  			$(".selected").not(event.target).removeClass("selected");
-		  			}
-	  		}
-	  				
-	  				// $(event.target).toggleClass('selected');
-		  		// }  				
-  			},
 
+	  		},
+	  				
 			render: function(){
 				return this
 			}

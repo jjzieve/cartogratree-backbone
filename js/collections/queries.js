@@ -11,7 +11,7 @@ define([
     initialize: function() {
       this._meta = {
         //fusion table ids
-        "tgdr_id":"1NaivbgjfiueJo4O8R-7Wy5c7OdYCWFB18PRS0fA",
+        "tgdr_id":"118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M",
         "sts_is_id":"1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI",
         "trydb_id":"14YI8zHpSO983LXFHCqjYZ3ShdPZsvr1nOQUNBuI",
         "ameriflux_id":"1huZ12FnVaWgeUZKaXozbLR0lZfLcxZ_y9RF2h-A"
@@ -25,14 +25,28 @@ define([
       else {
         this._meta[prop] = value;
       }
+      console.log("meta called:\n"+
+                  "tgdrWhereClause:"+this._meta["tgdrWhereClause"]+"\n"+
+                  "sts_isWhereClause:"+this._meta["sts_isWhereClause"]+"\n"+
+                  "try_dbWhereClause:"+this._meta["try_dbWhereClause"]+"\n"+
+                  "amerifluxWhereClause:"+this._meta["try_dbWhereClause"]);
     },
     
-    // reset: function(){
-    //   if (this._meta["currentQuery"]){
-    //     this._meta["currentQuery"] = "";
-    //   }
-    //   this.Backbone.View.Prototype.reset.call(this);
-    // }
+    reset: function(){
+      if (typeof(this._meta["tgdrWhereClause"]) != undefined){
+        delete this._meta["tgdrWhereClause"];
+      }
+      if (typeof(this._meta["sts_isWhereClause"]) != undefined){
+        delete this._meta["sts_isWhereClause"];
+      }
+      if (typeof(this._meta["try_dbWhereClause"]) != undefined){
+        delete this._meta["try_dbWhereClause"];
+      }
+      if (typeof(this._meta["amerifluxWhereClause"]) != undefined){
+        delete this._meta["amerifluxWhereClause"];
+      }
+      Backbone.Collection.prototype.reset.call(this);
+    }
 	});
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
