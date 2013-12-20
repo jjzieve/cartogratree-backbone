@@ -19,7 +19,18 @@ define([
    //      "bServerSide": true,
    //      "sAjaxSource": this.populate
    //    });
-      this.$el.dataTable();
+    console.log("init");
+    // $.extend( $.fn.dataTableExt.oStdClasses, {
+    //   "sSortAsc": "header headerSortDown",
+    //   "sSortDesc": "header headerSortUp",
+    //   "sSortable": "header"
+    // });
+    this.$el.dataTable({
+      "sDom": "<'row'<'span8'l><'span8'f>r>t<'row'<'span8'i><'span8'p>>",
+      "sScrollY": "200px",
+      "bPaginate": false,
+      "bScrollCollapse": true
+    });
       this.collection.on('add remove reset',this.populate,this); 
 		},
     populate: function(){
