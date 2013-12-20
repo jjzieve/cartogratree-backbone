@@ -39,31 +39,46 @@ define([
     			$('#'+filter).parents('label').toggleClass('active');
     			$('#'+filter).attr('checked', !$('#'+filter).attr('checked'));
     		},
-    		countQuery: function(query){
-    			// var newCount = 0;
-    			// $.getJSON(this.model.get("fusion_table_query_url")+
-    			// 	tgdrQuery+fusion_table_column+whereClause+
-    			// 	this.model.get("fusion_table_key")).success(function(data){
-    			// 	if(data.rows){
-    			// 		var tgdrCount = parseInt(data.rows[0][0]);
-    			// 	}
-    			// 	else{
-    			// 		var tgdrCount = 0;
-    			// 	}
-    			// 	$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount));
 
-    			// }
-    	// 		$.ajax({
-    	// 			dataType: "json",
-    	// 			async: false, //This could lead to slow load... but no other way to implement adding values from seperate ajax without nesting
-    	// 			url: this.model.get("fusion_table_query_url")+query+this.model.get("fusion_table_key"),
-    	// 			success: function(data){
-    	// 				if(data.rows){
-					// 		returnVal = parseInt(data.rows[0][0]);
-					// 	}
-					// }
-    	// 		});	
-    	// 		return returnVal;
+
+    		countQuery: function(id,url,key,tgdrQuery,sts_isQuery,try_dbQuery,amerifluxQuery){// this ugly nested ajax call is only way to load asyncronously
+    			$.getJSON(url+tgdrQuery+key).success(function(data){
+    				if(data.rows){
+    					var tgdrCount = parseInt(data.rows[0][0]);
+    				}
+    				else{
+    					var tgdrCount = 0;
+    				}
+    				// console.log(tgdrQuery +"\ttgdr\t"+ tgdrCount);
+    				$.getJSON(url+sts_isQuery+key).success(function(data){
+						if(data.rows){
+							var sts_isCount = parseInt(data.rows[0][0]);
+						}
+						else{
+							var sts_isCount = 0;
+						}
+						// console.log(sts_isQuery+"\tsts_is\t" + sts_isCount);
+						$.getJSON(url+try_dbQuery+key).success(function(data){
+    						if(data.rows){
+    							var try_dbCount = parseInt(data.rows[0][0]);
+    						}
+    						else{
+    							var try_dbCount = 0;
+    						}
+    						// console.log(try_dbQuery+"\ttry_db\t"+try_dbCount);
+    						$.getJSON(url+amerifluxQuery+key).success(function(data){
+    							if(data.rows){
+    								var amerifluxCount = parseInt(data.rows[0][0]);
+	    						}
+	    						else{
+	    							var amerifluxCount = 0;
+	    						}
+	    						// console.log(amerifluxQuery+"\tameriflux\t"+amerifluxCount);
+    							$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount+try_dbCount+amerifluxCount));
+	    					});
+    					});
+		 			});
+				});
     		},
 
 			getColumn: function(column){//repeated from map view, not very DRY...
@@ -74,138 +89,54 @@ define([
 				var that = this;
 				this.$el.children().each(function(){ //check each filter/checkbox
 					if($(this).find("input").attr("type")=="checkbox"){
-						var tgdrCount = 0;
+
 						var tgdrQuery = "SELECT COUNT() FROM "+that.collection.meta("tgdr_id")+" WHERE ";
-						var sts_isCount = 0;
+						var tgdrWhereClause = " > 0";
+
 						var sts_isQuery = "SELECT COUNT() FROM "+that.collection.meta("sts_is_id")+" WHERE ";
-						var try_dbCount = 0;
-						var try_dbQuery = "SELECT COUNT() FROM "+that.collection.meta("trydb_id");
+						var sts_isWhereClause = " > 0";
+
+						var try_dbQuery = "SELECT COUNT() FROM "+that.collection.meta("trydb_id")+" WHERE ";
+						var try_dbWhereClause = " > 0";
+
+						var amerifluxQuery = "SELECT COUNT() FROM "+that.collection.meta("ameriflux_id")+" WHERE ";
+						var amerifluxWhereClause = " > 0";
 						//ignore ameriflux
 						var id = $(this).find("input").attr("id");
-						var fusion_table_column = "";
-						var whereClause = " > 0";
+						var column = "";
+						
 						if (id == "phenotyped"){
-							fusion_table_column = "num_phenotypes";
-							// try_dbCount = that.countQuery(try_dbQuery);
+							column = "num_phenotypes";
 						}
 						if (id == "genotyped"){
-							fusion_table_column = "num_genotypes";
+							column = "num_genotypes";
 						}
 						if (id == "sequenced"){
-							fusion_table_column = "num_sequences";
+							column = "num_sequences";
 						}
 						if (id == "exact_gps"){
-							fusion_table_column = "is_exact_gps_coordinate";
-							whereClause = "= 'true'";
+							column = "is_exact_gps_coordinate";
+							tgdrWhereClause = "= 'true'";
+							sts_isWhereClause = "= 'true'";
+							try_dbWhereClause = "= 'true'";
+							amerifluxWhereClause = "= 'true'";
 						} 
 						if (id == "approx_gps") {
-							fusion_table_column = "is_exact_gps_coordinate";
-							whereClause = "= 'false'";
+							column = "is_exact_gps_coordinate";
+							tgdrWhereClause = "= 'false'";
+							sts_isWhereClause = "= 'false'";
+							try_dbWhereClause = "= 'false'";
+							amerifluxWhereClause = "= 'false'";
 						}
 
+						tgdrQuery = tgdrQuery + column + tgdrWhereClause;
+						sts_isQuery = sts_isQuery + column + sts_isWhereClause;
+						try_dbQuery = try_dbQuery + column + try_dbWhereClause;
+						amerifluxQuery = amerifluxQuery + column + amerifluxWhereClause;
 						if(that.getColumn("all").length>0){// if "all" node is selected
-							$.getJSON(that.model.get("fusion_table_query_url")+
-			    				tgdrQuery+fusion_table_column+whereClause+
-			    				that.model.get("fusion_table_key")).success(function(data){
-			    				if(data.rows){
-			    					var tgdrCount = parseInt(data.rows[0][0]);
-			    				}
-			    				else{
-			    					var tgdrCount = 0;
-			    				}
-			    				$.getJSON(that.model.get("fusion_table_query_url")+
-			    					sts_isQuery+fusion_table_column+whereClause+
-			    					that.model.get("fusion_table_key")).success(function(data){
-			    						if(data.rows){
-			    							var sts_isCount = parseInt(data.rows[0][0]);
-			    						}
-			    						else{
-			    							var sts_isCount = 0;
-			    						}
-			    						if(id == "phenotyped"){
-			    							$.getJSON(that.model.get("fusion_table_query_url")+
-					    						try_dbQuery+
-						    					that.model.get("fusion_table_key")).success(function(data){
-						    						if(data.rows){
-						    							var try_dbCount = parseInt(data.rows[0][0]);
-						    							console.log(try_dbCount);
-						    						}
-						    						else{
-						    							var try_dbCount = 0;
-						    						}
-								    				$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount+try_dbCount));
-						    					});
-						    			}
-						    			else{
-					    					$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount));
-						    			}
-			    					});
-			    				});
-
-			    		
-							// tgdrCount = that.countQuery(tgdrQuery+fusion_table_column+whereClause);
-							// sts_isCount = that.countQuery(sts_isQuery+fusion_table_column+whereClause);
+							that.countQuery(id,that.model.get("fusion_table_query_url"),that.model.get("fusion_table_key"),tgdrQuery,sts_isQuery,try_dbQuery,amerifluxQuery);
 						}
-						// console.log(that.collection.meta("tgdrWhereClause"));
-						// if (that.collection.meta("tgdrWhereClause")){
-						// 	tgdrCount = that.countQuery(tgdrQuery+fusion_table_column+whereClause+' AND '+that.collection.meta("tgdrWhereClause"));
-						// }
-						// if (that.collection.meta("sts_isWhereClause")){
-						// 	sts_isCount = that.countQuery(sts_isQuery+fusion_table_column+whereClause+' AND '+that.collection.meta("sts_isWhereClause"));
-						// }
-						// if(fusion_table_column == "num_phenotypes" && that.collection.meta("phenotypesWhereClause")){
-						// 	try_dbCount = that.countQuery(try_dbQuery);
-						// }
 
-						// var newTotalCount = tgdrCount + sts_isCount + try_dbCount;
-						// console.log(newTotalCount);
-
-						//replaces the value in the DOM
-						// console.log(that.collection.meta("tgdrWhereClause"));
-						// console.log(that.collection.meta("sts_isWhereClause"));
-						// console.log(that.collection.meta("phenotypesWhereClause"));
-						// var notCase = "No" //default for genotyped and sequenced
-						// // var defaultQuery = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
-						// // 				" WHERE '"+fusion_table_column+"' = 'false'";
-						// if (id == "phenotyped") {
-						// 	fusion_table_column = "phenotype"
-						// 	notCase = "";
-						// }
-						// if (id == "exact_gps") {
-						// 	fusion_table_column = "gps";
-						// 	notCase = "estimate";
-						// }
-						// if (id == "approx_gps") {
-						// 	fusion_table_column = "gps";
-						// 	notCase = "exact";
-						// }
-
-						// if(that.collection.length == 0){
-						// 	$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
-						// } 
-						// else if (that.collection.length == 1 && (that.collection.get("1-3") || that.collection.get("1-3-0") || that.collection.get("1-4") || that.collection.get("1-4-0"))) {
-						// 	$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
-						// }
-						// else if 
-						// (that.collection.length == 2 && //every combination involving only envrionmental or phenotypic, convoluted...
-						// ((that.collection.get("1-3") && that.collection.get("1-3-0")) ||
-						// (that.collection.get("1-3") && that.collection.get("1-4")) ||
-						// (that.collection.get("1-3") && that.collection.get("1-4-0")) ||
-						// (that.collection.get("1-3-0") && that.collection.get("1-4-0")) ||
-						// (that.collection.get("1-4") && that.collection.get("1-4-0")))) {
-						// 	$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,0));
-						// }
-						// else if (that.collection.meta("currentQuery")){
-						// 	var query = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
-						// 				" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"' AND "+
-						// 				that.collection.meta("currentQuery");
-						// 	that.countQuery(query,id);
-						// }
-						// else {
-						// 	var query = "SELECT COUNT() FROM "+that.model.get("fusion_table_id")+
-						// 				" WHERE '"+fusion_table_column+"' NOT EQUAL TO '"+notCase+"'";
-						// 	that.countQuery(query,id);
-						// }
 					}
 				});
 			},

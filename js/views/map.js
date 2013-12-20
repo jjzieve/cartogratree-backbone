@@ -5,10 +5,12 @@ define([
   'backbone',
   'models/query',
   'collections/queries',
-  'text!templates/infowindow.html',
-  'text!templates/infowindow_ameriflux.html',
+  'text!templates/tgdr_infowindow.html',
+  'text!templates/sts_is_infowindow.html',
+  'text!templates/try_db_infowindow.html',
+  'text!templates/ameriflux_infowindow.html',
   'goog!maps,3,other_params:libraries=drawing&sensor=false',
-], function($,_, Backbone, QueryModel, QueriesCollection, legendTemplate, amerifluxInfoWindow){
+], function($,_, Backbone, QueryModel, QueriesCollection, tgdrInfoWindow, sts_isInfoWindow, try_dbInfoWindow, amerifluxInfoWindow){
 
   google.maps.Polygon.prototype.Contains = function(point) {
         // ray casting alogrithm http://rosettacode.org/wiki/Ray-casting_algorithm
@@ -65,8 +67,11 @@ define([
         el : '#map_canvas',
         model: QueryModel,
         collection: QueriesCollection,
-        template: _.template(legendTemplate),
-        templateAmeriflux: _.template(amerifluxInfoWindow),
+        tgdrInfoWindowTemplate: _.template(tgdrInfoWindow),
+        sts_isInfoWindowTemplate: _.template(sts_isInfoWindow),
+        try_dbInfoWindowTemplate: _.template(try_dbInfoWindow),
+        amerifluxInfoWindowTemplate: _.template(amerifluxInfoWindow),
+
         mapOptions : {
           zoom: 4,
           minZoom: 2,
@@ -89,114 +94,76 @@ define([
           scaleControl: true,
         },
 
-        initInfoWindows: function(){
-          // var that = this; //to handle closure
-          // this.infoWindow = new google.maps.InfoWindow({maxWidth:250});
-          // this.infoWindowAmeriflux = new google.maps.InfoWindow({maxWidth:250});
-          // google.maps.event.addListener(this.markersLayer, 'click', function(e){
-          //     //remove these if-else branches by reflecting it in the table
-          //     if (e.row["type"].value == "gymno"){ 
-          //       var type = "Gymnosperm";
-          //     }
-          //     else{
-          //       var type = "Angiosperm";
-          //     }
-          //     that.infoWindow.setContent(
-          //       that.template({
-          //         icon_name: e.row["icon_name"].value,//for icon images -> http://kml4earth.appspot.com/icons.html
-          //         icon_type: type,
-          //         family: e.row["family"].value,
-          //         species: e.row["species"].value,
-          //         elev: e.row["elev"].value,
-          //         lat: e.row["lat"].value,
-          //         lng: e.row["lng"].value,
-          //         sequenced: e.row["sequenced"].value,
-          //         genotyped: e.row["genotyped"].value,
-          //         phenotype: e.row["phenotype"].value,
-          //         accession: e.row["accession"].value
-          //         })
-          //     );
-          //     that.infoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
-          //     that.infoWindow.open(that.map);
-          // });
-          // google.maps.event.addListener(this.amerifluxLayer, 'click', function(e){
-          //     //remove these if-else branches by reflecting it in the table
-          //     that.infoWindowAmeriflux.setContent(
-          //       that.templateAmeriflux({
-          //         icon_name: e.row["icon_name"].value,//for icon images -> http://kml4earth.appspot.com/icons.html
-          //         site_id: e.row["site_id"].value,
-          //         src_url: e.row["src_url"].value,
-          //         site_name: e.row["site_name"].value,
-          //         type: e.row["type"].value,
-          //         lat: e.row["lat"].value,
-          //         lng: e.row["lng"].value,
-          //         })
-          //     );
-          //     that.infoWindowAmeriflux.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
-          //     that.infoWindowAmeriflux.open(that.map);
-          // });
+
+         initMap: function() {
+          this.map =  new google.maps.Map(this.el, this.mapOptions);
         },
+        
 
         initDrawingManager: function() {
-          // var that = this;
-          // this.drawingManager = new google.maps.drawing.DrawingManager({
-          //   drawingControl: true,
-          //   drawingControlOptions: {
-          //     position: google.maps.ControlPosition.TOP_CENTER,
-          //     drawingModes: [
-          //       google.maps.drawing.OverlayType.POLYGON,
-          //     ]
-          //   },
-          // });
+          var that = this;
+          this.drawingManager = new google.maps.drawing.DrawingManager({
+            drawingControl: true,
+            drawingControlOptions: {
+              position: google.maps.ControlPosition.TOP_CENTER,
+              drawingModes: [
+                google.maps.drawing.OverlayType.POLYGON,
+              ]
+            },
+          });
 
-          // this.drawingManager.setMap(this.map);
+          this.drawingManager.setMap(this.map);
 
-          // google.maps.event.addListener(this.drawingManager,'polygoncomplete', function(polygon){
-          //   if(that.polygon){
-          //     that.polygon.setMap(null);
-          //     $('#data_table').dataTable().fnClearTable();
-          //   }
-          //   that.polygon = polygon;
-          //   var points = [];
-          //   //  $url="https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20count()%20FROM%201AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8%20WHERE%20ST_INTERSECTS('lat',%20CIRCLE(LATLNG($lat,$lng),%2025000))&key=AIzaSyCuYOWxwU8zbT5oBvHKOAgRYE08Ouoy5Us";
-          //   if (that.collection.meta("currentQuery")){
-          //     $.getJSON(that.model.get("fusion_table_query_url")+
-          //       "SELECT tree_id,lat,lng FROM "+that.model.get("fusion_table_id")+" WHERE "+that.collection.meta("currentQuery")+
-          //       +that.model.get("fusion_table_key")
-          //       ).success(function(result){
-          //         _.each(result.rows,function(coord){
-          //           var point = new google.maps.LatLng(coord[1],coord[2]);
-          //           if(polygon.Contains(point)) {
-          //             points.push(coord[0]);
-          //           }
-          //         });
-          //         _.each(points,function(point){
-          //           $("#data_table").dataTable().fnAddData([
-          //           point,
-          //           '',
-          //           '',
-          //           '',
-          //         ]);
-          //         // console.log(points);
+          google.maps.event.addListener(this.drawingManager,'polygoncomplete', function(polygon){
+            if(that.polygon){
+              that.polygon.setMap(null);
+              $('#data_table').dataTable().fnClearTable();
+            }
+            that.polygon = polygon;
+            var markersInPolygon = [];
+            //  $url="https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20count()%20FROM%201AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8%20WHERE%20ST_INTERSECTS('lat',%20CIRCLE(LATLNG($lat,$lng),%2025000))&key=AIzaSyCuYOWxwU8zbT5oBvHKOAgRYE08Ouoy5Us";
+            if (that.collection.meta("tgdrWhereClause")){
+              $.getJSON(
+                that.model.get("fusion_table_query_url")+
+                "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+
+                that.collection.meta("tgdr_id")+" WHERE "+
+                that.collection.meta("tgdrWhereClause")+that.model.get("fusion_table_key")
+                ).success(function(result){
+                  _.each(result.rows,function(row){
+                    // console.log(row);
+                    var point = new google.maps.LatLng(row[2],row[3]);
+                    if(polygon.Contains(point)) {
+                      markersInPolygon.push(row);
+                    }
+                  });
+                  _.each(markersInPolygon,function(marker){
+                    icon_name =  marker[0];
+                    tree_id =  marker[1];
+                    lat =  marker[2];
+                    lng =  marker[3];
+                    num_sequences =  marker[4];
+                    num_genotypes =  marker[5];
+                    species =  marker[6];
+                    $("#data_table").dataTable().fnAddData([
+                     icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species
+                  ]);
+                  // console.log(points);
 
-          //         });
-          //     });
-          //   }
-            // google.maps.event.addListener(that.map,'click',function(){
-            //   console.log(polygon);
-            //   polygon.setMap(null);
-            // });
-          // });
+                  });
+              });
+            }
+            google.maps.event.addListener(that.map,'click',function(){
+              console.log(polygon);
+              polygon.setMap(null);
+            });
+          });
 
         },
          
 
-        initMap: function() {
-          this.map =  new google.maps.Map(this.el, this.mapOptions);
-        },
+       
 
         initLayers: function() {
-          // this.collection.meta("tgdr_id","1sTp6b-8y_9Qb-rYxsW2MxofWLfNvl9p1mnSz_zk");
           this.tgdrLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
@@ -218,7 +185,7 @@ define([
             suppressInfoWindows: true
           });
 
-          this.trydbLayer = new google.maps.FusionTablesLayer({
+          this.try_dbLayer = new google.maps.FusionTablesLayer({
             query: {
               select: "lat",
               from: this.collection.meta("trydb_id")
@@ -240,6 +207,111 @@ define([
           });
         },
 
+        initInfoWindows: function(){
+          var that = this; //to handle closure
+
+          var convertNumToInfoWindowOutput = function(number){
+            if (number > 0){
+              return "Yes ("+number+")";
+            }
+            else{
+              return "No";
+            }
+          }
+
+          var convertIconToInfoWindowOutput = function(icon_name){
+            if (icon_name = 'small_green'){
+              return 'Exact GPS';
+            }
+            else if (icon_name = 'small_yellow'){
+              return 'Approximate GPS';
+            }
+            else if (icon_name = 'parks'){
+              return 'TRY-DB';
+            }
+            else{
+              return 'Ameriflux';
+            }
+          }
+
+
+          this.tgdrInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+          this.sts_isInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+          this.try_dbInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+          this.amerifluxInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+          google.maps.event.addListener(this.tgdrLayer, 'click', function(e){
+              that.tgdrInfoWindow.setContent(
+                that.tgdrInfoWindowTemplate({
+                  icon_name: e.row["icon_name"].value,//for icon images -> http://kml4earth.appspot.com/icons.html
+                  icon_type: convertIconToInfoWindowOutput(e.row["icon_name"].value),
+                  tree_id: e.row["tree_id"].value,
+                  species: e.row["species"].value,
+                  lat: e.row["lat"].value,
+                  lng: e.row["lng"].value,
+                  sequenced: convertNumToInfoWindowOutput(e.row["num_sequences"].value),
+                  genotyped: convertNumToInfoWindowOutput(e.row["num_genotypes"].value),
+                  phenotyped: convertNumToInfoWindowOutput(e.row["num_phenotypes"].value),
+                  accession: e.row["accession"].value,
+                  title: e.row["title"].value,
+                  authors: e.row["authors"].value
+                  })
+              );
+              that.tgdrInfoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
+              that.tgdrInfoWindow.open(that.map);
+          });
+          google.maps.event.addListener(this.sts_isLayer, 'click', function(e){
+              that.sts_isInfoWindow.setContent(
+                that.sts_isInfoWindowTemplate({
+                  icon_name: e.row["icon_name"].value,
+                  icon_type: convertIconToInfoWindowOutput(e.row["icon_name"].value),
+                  tree_id: e.row["tree_id"].value,
+                  family: e.row["family"].value,
+                  genus: e.row["genus"].value,
+                  species: e.row["species"].value,
+                  lat: e.row["lat"].value,
+                  lng: e.row["lng"].value,
+                  sequenced: convertNumToInfoWindowOutput(e.row["num_sequences"].value),
+                  genotyped: convertNumToInfoWindowOutput(e.row["num_genotypes"].value),
+                  phenotyped: convertNumToInfoWindowOutput(e.row["num_phenotypes"].value),
+                  })
+              );
+              that.sts_isInfoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
+              that.sts_isInfoWindow.open(that.map);
+          });
+          google.maps.event.addListener(this.try_dbLayer, 'click', function(e){
+              that.try_dbInfoWindow.setContent(
+                that.try_dbInfoWindowTemplate({
+                  icon_name: e.row["icon_name"].value,
+                  icon_type: convertIconToInfoWindowOutput(e.row["icon_name"].value),
+                  angio_gymno: e.row["class"].value,
+                  institution: e.row["institution"].value,
+                  species: e.row["species"].value,
+                  lat: e.row["lat"].value,
+                  lng: e.row["lng"].value,
+                  phenotyped: convertNumToInfoWindowOutput(e.row["num_phenotypes"].value),
+                  dataset: e.row["dataset"].value,
+                  })
+              );
+              that.try_dbInfoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
+              that.try_dbInfoWindow.open(that.map);
+          });
+          google.maps.event.addListener(this.amerifluxLayer, 'click', function(e){
+              that.amerifluxInfoWindow.setContent(
+                that.amerifluxInfoWindowTemplate({
+                  icon_name: e.row["icon_name"].value,
+                  site_id: e.row["site_id"].value,
+                  src_url: e.row["src_url"].value,
+                  site_name: e.row["site_name"].value,
+                  type: e.row["type"].value,
+                  lat: e.row["lat"].value,
+                  lng: e.row["lng"].value,
+                  })
+              );
+              that.amerifluxInfoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
+              that.amerifluxInfoWindow.open(that.map);
+          });
+        },
+
         initialize: function(){
           var that = this;
           this.initMap();
@@ -247,13 +319,13 @@ define([
           this.initInfoWindows();
           this.initDrawingManager();
           this.collection.on('add remove reset',this.refreshLayers,this);
-          // google.maps.event.addListener(this.map, 'click', function(){
-          //   $('#data_table').dataTable().fnClearTable();
-          //   if(that.polygon){
-          //     // console.log(that.polygon);
-          //     that.polygon.setMap(null);
-          //   }
-          // });
+          google.maps.event.addListener(this.map, 'click', function(){
+            $('#data_table').dataTable().fnClearTable();
+            if(that.polygon){
+              // console.log(that.polygon);
+              that.polygon.setMap(null);
+            }
+          });
         },
 
         getColumn: function(column){
@@ -287,10 +359,10 @@ define([
             phenotypedQuery = "'num_phenotypes' > 0";
           }
           if (filters.indexOf("exact_gps") != -1 && gpsQuery == "") {//if both or none are set shows all
-            gpsQuery = "'is_exact_gps_coordinate' = 'true'";
+            gpsQuery = "'is_exact_gps_rowinate' = 'true'";
           }
           if (filters.indexOf("approx_gps") != -1 && gpsQuery == "") {
-            gpsQuery = "'is_exact_gps_coordinate' = 'false'";
+            gpsQuery = "'is_exact_gps_rowinate' = 'false'";
           }
           return _.filter([
             familiesQuery,
@@ -387,7 +459,7 @@ define([
           }
           this.refreshLayer("tgdr",tgdrWhereClause,this.tgdrLayer,this.collection.meta("tgdr_id"));
           this.refreshLayer("sts_is",sts_isWhereClause,this.sts_isLayer,this.collection.meta("sts_is_id"));
-          this.refreshLayer("phenotypes",phenotypesWhereClause,this.trydbLayer,this.collection.meta("trydb_id"));
+          this.refreshLayer("phenotypes",phenotypesWhereClause,this.try_dbLayer,this.collection.meta("trydb_id"));
           this.refreshLayer("environmental",environmentalWhereClause,this.amerifluxLayer,this.collection.meta("ameriflux_id"));       
         },
 

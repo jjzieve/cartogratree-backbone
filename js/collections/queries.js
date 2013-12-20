@@ -13,8 +13,8 @@ define([
         //fusion table ids
         "tgdr_id":"1NaivbgjfiueJo4O8R-7Wy5c7OdYCWFB18PRS0fA",
         "sts_is_id":"1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI",
-        "trydb_id":"1h-KVbQdplul76b2dmVP33E7tEtt3oag44Oeu3oA",
-        "ameriflux_id":"1Z_m0uQ3EGpzwVLFq0EwoZ2jwmzdFev4YSN-U8NQ"
+        "trydb_id":"14YI8zHpSO983LXFHCqjYZ3ShdPZsvr1nOQUNBuI",
+        "ameriflux_id":"1huZ12FnVaWgeUZKaXozbLR0lZfLcxZ_y9RF2h-A"
       };
     },      
     model: QueryModel,

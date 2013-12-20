@@ -14,7 +14,7 @@ define([
 			el: "#selection_tree",
 			template: _.template('<tr data-tt-parent-id="<%= node_num %>"'+
 			 					'data-tt-id="<%= new_node_num %>"><td name="<%= type %>"'+
-			 					'value="<%= value %>"><%= value %></td></tr>'),
+			 					'value="<%= value %>"><%= display %></td></tr>'),
 			// template: _.template(treeNodeTemplate), // can't get this to load right
 			model: TreeNodeModel,
 			collection: QueriesCollection,
@@ -29,8 +29,18 @@ define([
 					this.model.set("node_num",node_num);
 					this.model.set("new_node_num",new_node_num);
 					this.model.set("type",type);
-					this.model.set("value",data);
-					// console.log(data);
+					if(type == "accession"){ // hack to show author names and journals
+						this.model.set("value",data.split("|")[0]);
+						this.model.set("display",data.split("|")[1]);
+					}
+					else{
+						this.model.set("value",data);
+						this.model.set("display",data);
+					}
+					
+
+					
+					// console.log(type);
 					this.$el.treetable("loadBranch",parent_node,that.template(this.model.toJSON()));
 					this.$el.treetable("collapseNode",node_num);
 				}
@@ -49,6 +59,7 @@ define([
 							that.model.set("new_node_num",new_node_num);
 							that.model.set("type",type);
 							that.model.set("value",value);
+							that.model.set("display",value);
 							that.$el.treetable("loadBranch",parent_node,that.template(that.model.toJSON()));
 							that.loadBranch(object,new_node_num,index++,depth,branch_name);//recurse
 						}
@@ -103,7 +114,7 @@ define([
                 	column: "all",
                		value: "all"
               	});  
-				
+			
 			},
 
 			events: {
@@ -115,8 +126,8 @@ define([
 				var value = $(event.target).attr('value');
 				if(column && value){//ensures it doesn't deselect on branch expansion
 					$(event.target).toggleClass('selected');
-					this.collection.meta("currentTGDRQuery",""); 
-					this.collection.meta("currentSTS_ISQuery",""); 
+					this.collection.meta("tgdrWhereClause",""); 
+					this.collection.meta("sts_isWhereClause",""); 
 					if ($(event.target).hasClass('selected'))
 					{
 						this.collection.add({
@@ -158,7 +169,6 @@ define([
 		  						value: value,
 		  					});
 	  					}
-	  					console.log(this.collection);
 			  			$(".selected").not(event.target).removeClass("selected");
 		  			}
 	  		}
