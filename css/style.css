@@ -98,7 +98,7 @@ h4{
 .table-borderless th {
     border: 0;
 }
-/*
+
 div.dataTables_length label {
   width: 460px;
   float: left;
@@ -126,7 +126,7 @@ div.dataTables_paginate {
 table {
   margin: 1em 0;
   clear: both;
-}*/
+}
 
 /*FOOTER*/
 #version_num{

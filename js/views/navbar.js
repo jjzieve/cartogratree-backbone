@@ -14,7 +14,7 @@ define([
       $('#credits').popover({
           trigger:'click',
           html:'true',
-          content:'<ul><li>Google Fusion Table and Maps API</li><li>Bootstrap</li><li>Backbone.js</li></ul>'
+          content:'<ul><li>Google Fusion Table and Maps API</li><li>Bootstrap</li><li>Backbone</li><li>TreeTable</li><li>jQuery</li></ul>'
       });
       
     }

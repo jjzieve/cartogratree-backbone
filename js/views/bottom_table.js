@@ -20,16 +20,21 @@ define([
    //      "sAjaxSource": this.populate
    //    });
     // console.log("init");
-    // $.extend( $.fn.dataTableExt.oStdClasses, {
-    //   "sSortAsc": "header headerSortDown",
-    //   "sSortDesc": "header headerSortUp",
-    //   "sSortable": "header"
+    // $.extend( true, $.fn.dataTable.defaults,{
+    //   "sDom": "<'row'<'col-6'f><'col-6'l>r>t<'row'<'col-6'i><'col-6'p>>",
+    //   "sPaginationType": "bootstrap",
+    //   "oLanguage": {
+    //     "sLengthMenu": "Show _MENU_ Rows",
+    //             "sSearch": ""
+    //   }
     // });
+
     this.$el.dataTable({
-      "sDom": "<'row'<'span8'l><'span8'f>r>t<'row'<'span8'i><'span8'p>>",
+      "sDom": "<'row'<'col-2'f><'col-2'l>r>t<'row'<'col-2'i><'col-2'p>>",
       "sScrollY": "200px",
       "bPaginate": false,
-      "bScrollCollapse": true
+      "bScrollCollapse": true,
+      "bInfo": false
     });
       this.collection.on('add remove reset',this.populate,this); 
 		},
