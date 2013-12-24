@@ -13,24 +13,24 @@ define([
 		el: '#data_table',
     model: QueryModel,
     collection: QueriesCollection,
-    fusionTableObjectToArray : function (aElements) { 
-      return function ( sSource, aaData, fnCallback ) {
-            $.ajax({
-              "dataType":"json",
-              "type":"GET",
-              "url":sSource,
-              "data":aaData,
-              "success": function(json){
-                var a = [];
-                $.each(json["rows"], function(index, item) {  
-                  a.push(item);
-                });
-                json.aaData = a;
-                fnCallback(json);
-              }
-            });
-        }
-      },
+    // fusionTableObjectToArray : function (aElements) { 
+    //   return function ( sSource, aaData, fnCallback ) {
+    //         $.ajax({
+    //           "dataType":"json",
+    //           "type":"GET",
+    //           "url":sSource,
+    //           "data":aaData,
+    //           "success": function(json){
+    //             var a = [];
+    //             $.each(json["rows"], function(index, item) {  
+    //               a.push(item);
+    //             });
+    //             json.aaData = a;
+    //             fnCallback(json);
+    //           }
+    //         });
+    //     }
+    //   },
 		initialize: function(){
 			this.$el.dataTable({
         "sDom": "<'row'<'col-2'f><'col-2'l>r>t<'row'<'col-2'i><'col-2'p>>",
@@ -39,10 +39,24 @@ define([
         "bInfo": false,
         "bProcessing": true,
         "bServerSide": true,
+        "bSortable": true,
+        "aaSorting":[],
         // "sAjaxSource": "data/test_samples.JSON"
+        "sAjaxDataProp" : "rows",
+        "sAjaxSource": "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species%20FROM%20118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M%20WHERE%20%27year%27%20IN%20(%272010%27)&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk",
+        "aoColumnDefs": [ {
+          "aTargets": [ 0 ],
+          // "mData": "download_link",
+          "mRender": function ( data ) {
+            return "<img src='images/"+data+".png'>";
+          }
+        },
+        {
+          "aTargets": [0,1,2,3,4,5],
+          "bSortable":true
+        } ]
 
-       "sAjaxSource": "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species%20FROM%20118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M%20WHERE%20%27year%27%20IN%20(%272010%27)&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk",
-        "fnServerData": this.fusionTableObjectToArray(['icon_name', 'tree_id', 'lat', 'lng', 'num_sequences', 'num_genotypes', 'species'])
+        // "fnServerData": this.fusionTableObjectToArray(['icon_name', 'tree_id', 'lat', 'lng', 'num_sequences', 'num_genotypes', 'species'])
 
       });
 
