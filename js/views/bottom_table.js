@@ -32,6 +32,9 @@ define([
     //     }
     //   },
 		initialize: function(){
+      $.extend( $.fn.dataTableExt.oStdClasses, {
+      "sWrapper": "dataTables_wrapper form-inline"
+      } );
 			this.$el.dataTable({
         "sDom": "<'row'<'col-2'f><'col-2'l>r>t<'row'<'col-2'i><'col-2'p>>",
         "sScrollY": "200px",
@@ -41,7 +44,7 @@ define([
         "bServerSide": true,
         "bSortable": true,
         "aaSorting":[],
-        // "sAjaxSource": "data/test_samples.JSON"
+        // "sAjaxSource": "data/test_samples.JSON",
         "sAjaxDataProp" : "rows",
         "sAjaxSource": "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species%20FROM%20118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M%20WHERE%20%27year%27%20IN%20(%272010%27)&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk",
         "aoColumnDefs": [ {
