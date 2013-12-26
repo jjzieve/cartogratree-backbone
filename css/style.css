@@ -86,6 +86,7 @@ h4{
 /*BOTTOM-PANEL*/
 #analysis_pane {
     padding-top: 20px;
+    background-color:white;
 }
 
 #data_table{
@@ -128,7 +129,7 @@ table {
   clear: both;
 }
 
-table.table thead .sorting,
+/*table.table thead .sorting,
 table.table thead .sorting_asc,
 table.table thead .sorting_desc,
 table.table thead .sorting_asc_disabled,
@@ -143,7 +144,7 @@ table.table thead .sorting_desc { background: url('../images/sort_desc.jpg') no-
  
 table.table thead .sorting_asc_disabled { background: url('images/sort_asc_disabled.png') no-repeat center right; }
 table.table thead .sorting_desc_disabled { background: url('images/sort_desc_disabled.png') no-repeat center right; }
-
+*/
 /*FOOTER*/
 #version_num{
     font-family: "Courier New";

@@ -117,45 +117,52 @@ define([
           google.maps.event.addListener(this.drawingManager,'polygoncomplete', function(polygon){
             if(that.polygon){
               that.polygon.setMap(null);
-              $('#data_table').dataTable().fnClearTable();
+              // $('#data_table').dataTable().fnClearTable();
+              var table = document.getElementById("data_table");
+                console.log(table);
+                  for(var i = $('#data_table').rows.length - 1; i > 0; i--)
+                  {
+                    console.log(i);
+                    $('#data_table').deleteRow(i);
+                  }
             }
             that.polygon = polygon;
             var markersInPolygon = [];
             //  $url="https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20count()%20FROM%201AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8%20WHERE%20ST_INTERSECTS('lat',%20CIRCLE(LATLNG($lat,$lng),%2025000))&key=AIzaSyCuYOWxwU8zbT5oBvHKOAgRYE08Ouoy5Us";
-            if (that.collection.meta("tgdrWhereClause")){
-              $.getJSON(
-                that.model.get("fusion_table_query_url")+
-                "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+
-                that.collection.meta("tgdr_id")+" WHERE "+
-                that.collection.meta("tgdrWhereClause")+that.model.get("fusion_table_key")
-                ).success(function(result){
-                  _.each(result.rows,function(row){
-                    // console.log(row);
-                    var point = new google.maps.LatLng(row[2],row[3]);
-                    if(polygon.Contains(point)) {
-                      markersInPolygon.push(row);
-                    }
-                  });
-                  _.each(markersInPolygon,function(marker){
-                    icon_name =  marker[0];
-                    tree_id =  marker[1];
-                    lat =  marker[2];
-                    lng =  marker[3];
-                    num_sequences =  marker[4];
-                    num_genotypes =  marker[5];
-                    species =  marker[6];
-                    $("#data_table").dataTable().fnAddData([
-                     icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species
-                  ]);
-                  // console.log(points);
+          //   if (that.collection.meta("tgdrWhereClause")){
+          //     $.getJSON(
+          //       that.model.get("fusion_table_query_url")+
+          //       "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+
+          //       that.collection.meta("tgdr_id")+" WHERE "+
+          //       that.collection.meta("tgdrWhereClause")+that.model.get("fusion_table_key")
+          //       ).success(function(result){
+          //         _.each(result.rows,function(row){
+          //           // console.log(row);
+          //           var point = new google.maps.LatLng(row[2],row[3]);
+          //           if(polygon.Contains(point)) {
+          //             markersInPolygon.push(row);
+          //           }
+          //         });
+          //         _.each(markersInPolygon,function(marker){
+          //           icon_name =  marker[0];
+          //           tree_id =  marker[1];
+          //           lat =  marker[2];
+          //           lng =  marker[3];
+          //           num_sequences =  marker[4];
+          //           num_genotypes =  marker[5];
+          //           species =  marker[6];
+          //           $("#data_table").dataTable().fnAddData([
+          //            icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species
+          //         ]);
+          //         // console.log(points);
 
-                  });
-              });
-            }
-            google.maps.event.addListener(that.map,'click',function(){
-              console.log(polygon);
-              polygon.setMap(null);
-            });
+          //         });
+          //     });
+            // }
+          //   google.maps.event.addListener(that.map,'click',function(){
+          //     console.log(polygon);
+          //     polygon.setMap(null);
+          //   });
           });
 
         },

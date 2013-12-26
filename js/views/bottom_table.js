@@ -8,6 +8,9 @@ define([
   'models/query',
   'collections/queries',
   'dataTables',
+  'tablesorter',
+  'metadata',
+  'tablecloth'
  ], function($, _, Backbone, QueryModel, QueriesCollection, dataTables){
 	var BottomTableView = Backbone.View.extend({
 		el: '#data_table',
@@ -32,82 +35,35 @@ define([
     //     }
     //   },
 		initialize: function(){
-      $.extend( $.fn.dataTableExt.oStdClasses, {
-      "sWrapper": "dataTables_wrapper form-inline"
-      } );
-			this.$el.dataTable({
-        "sDom": "<'row'<'col-2'f><'col-2'l>r>t<'row'<'col-2'i><'col-2'p>>",
-        "sScrollY": "200px",
-        "bPaginate": false,
-        "bInfo": false,
-        "bProcessing": true,
-        "bServerSide": true,
-        "bSortable": true,
-        "aaSorting":[],
-        // "sAjaxSource": "data/test_samples.JSON",
-        "sAjaxDataProp" : "rows",
-        "sAjaxSource": "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species%20FROM%20118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M%20WHERE%20%27year%27%20IN%20(%272010%27)&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk",
-        "aoColumnDefs": [ {
-          "aTargets": [ 0 ],
-          // "mData": "download_link",
-          "mRender": function ( data ) {
-            return "<img src='images/"+data+".png'>";
-          }
-        },
-        {
-          "aTargets": [0,1,2,3,4,5],
-          "bSortable":true
-        } ]
+      this.$el.tablecloth({ theme: "default", sortable: "true"});
+   //    $.extend( $.fn.dataTableExt.oStdClasses, {
+   //    "sWrapper": "dataTables_wrapper form-inline"
+   //    } );
+			// this.dataTable = this.$el.dataTable({
+   //      "sDom": "<'row'<'col-2'f><'col-2'l>r>t<'row'<'col-2'i><'col-2'p>>",
+   //      "sScrollY": "200px",
+   //      "bPaginate": false,
+   //      "bInfo": false,
+   //      "bProcessing": true,
+   //      // "bServerSide": true, //sorting doesn't work
+   //      // "sAjaxSource": "data/test_samples.JSON",
+   //      "sAjaxDataProp" : "rows",
+   //      "sAjaxSource": "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species%20FROM%20118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk",
+   //      "aoColumnDefs": [ {
+   //        "aTargets": [ 0 ],
+   //        "mRender": function ( data ) {
+   //          return "<img src='images/"+data+".png'>";
+   //        }
+   //      },
+   //      ]
 
-        // "fnServerData": this.fusionTableObjectToArray(['icon_name', 'tree_id', 'lat', 'lng', 'num_sequences', 'num_genotypes', 'species'])
+   //      // "fnServerData": this.fusionTableObjectToArray(['icon_name', 'tree_id', 'lat', 'lng', 'num_sequences', 'num_genotypes', 'species'])
 
-      });
+   //    });
 
       this.collection.on('add remove reset',this.populate,this); 
 		},
     populate: function(){
-      // console.log(this.collection.meta("currentQuery"));
-      // var that = this;
-      // if(this.collection.meta("currentQuery")){
-      //   // this.$el.dataTable().fnClearTable();
-
-      //   this.query = "SELECT tree_id FROM "+this.model.get("fusion_table_id")+" WHERE "+this.collection.meta("currentQuery");
-      //   console.log(this.query);
-      //   $.ajax({
-      //     url: this.model.get("fusion_table_query_url")+this.query+this.model.get("fusion_table_key"),
-      //     success : function(data){
-      //       if(data.rows){
-      //         _.each(data.rows, function(row){
-      //          that.$el.dataTable().fnAddData([
-      //             row[0],
-      //             '',
-      //             '',
-      //             '',
-      //           ]);
-      //        });
-      //      }
-      //   },
-      //   dataType: 'json'
-      // });
-      //   // $.getJSON(this.model.get("fusion_table_query_url")+
-      //   //   this.query+
-      //   //   this.model.get("fusion_table_key")).success(function(result){
-      //   //     if(result.rows){
-      //   //       _.each(result.rows, function(row){
-      //   //        that.$el.dataTable().fnAddData([
-      //   //           row[0],
-      //   //           '',
-      //   //           '',
-      //   //           '',
-      //   //         ]);
-      //   //       })
-              
-      //   //     }
-      //   //   });
-      //   // this.$el.dataTable().fnDraw();
-
-      // }
-
 
       },
 	});
