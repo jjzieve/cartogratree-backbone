@@ -84,9 +84,14 @@ h4{
 }
 
 /*BOTTOM-PANEL*/
-#analysis_pane {
+/*#analysis_pane {
     padding-top: 20px;
     background-color:white;
+}
+*/
+#data_table_container{
+  overflow:auto;
+  height: 200px;
 }
 
 #data_table{
@@ -144,7 +149,7 @@ table.table thead .sorting_desc { background: url('../images/sort_desc.jpg') no-
  
 table.table thead .sorting_asc_disabled { background: url('images/sort_asc_disabled.png') no-repeat center right; }
 table.table thead .sorting_desc_disabled { background: url('images/sort_desc_disabled.png') no-repeat center right; }
-*/
+
 /*FOOTER*/
 #version_num{
     font-family: "Courier New";

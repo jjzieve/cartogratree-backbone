@@ -104,7 +104,7 @@ define([
 
         initDrawingManager: function() {
           var that = this;
-          
+
           this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingControl: true,
             drawingControlOptions: {
@@ -151,10 +151,11 @@ define([
                         "num_genotypes":row[5],
                         "species":row[6]
                       }
-                      console.log(rowObj);
+                      // console.log(rowObj);
                       $('#data_table tbody').append(that.tableRowTemplate(rowObj));
                       $('#data_table').trigger("update");
                     }
+                    console.log(markersInPolygon.length);
                   });
           //         _.each(markersInPolygon,function(marker){
           //           icon_name =  marker[0];
