@@ -9,8 +9,9 @@ define([
   'text!templates/sts_is_infowindow.html',
   'text!templates/try_db_infowindow.html',
   'text!templates/ameriflux_infowindow.html',
+  'text!templates/table_row.html',
   'goog!maps,3,other_params:libraries=drawing&sensor=false',
-], function($,_, Backbone, QueryModel, QueriesCollection, tgdrInfoWindow, sts_isInfoWindow, try_dbInfoWindow, amerifluxInfoWindow){
+], function($,_, Backbone, QueryModel, QueriesCollection, tgdrInfoWindow, sts_isInfoWindow, try_dbInfoWindow, amerifluxInfoWindow, tableRow){
 
   google.maps.Polygon.prototype.Contains = function(point) {
         // ray casting alogrithm http://rosettacode.org/wiki/Ray-casting_algorithm
@@ -71,6 +72,7 @@ define([
         sts_isInfoWindowTemplate: _.template(sts_isInfoWindow),
         try_dbInfoWindowTemplate: _.template(try_dbInfoWindow),
         amerifluxInfoWindowTemplate: _.template(amerifluxInfoWindow),
+        tableRowTemplate: _.template(tableRow),
 
         mapOptions : {
           zoom: 4,
@@ -102,6 +104,7 @@ define([
 
         initDrawingManager: function() {
           var that = this;
+          
           this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingControl: true,
             drawingControlOptions: {
@@ -127,20 +130,32 @@ define([
             that.polygon = polygon;
             var markersInPolygon = [];
             //  $url="https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20count()%20FROM%201AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8%20WHERE%20ST_INTERSECTS('lat',%20CIRCLE(LATLNG($lat,$lng),%2025000))&key=AIzaSyCuYOWxwU8zbT5oBvHKOAgRYE08Ouoy5Us";
-          //   if (that.collection.meta("tgdrWhereClause")){
-          //     $.getJSON(
-          //       that.model.get("fusion_table_query_url")+
-          //       "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+
-          //       that.collection.meta("tgdr_id")+" WHERE "+
-          //       that.collection.meta("tgdrWhereClause")+that.model.get("fusion_table_key")
-          //       ).success(function(result){
-          //         _.each(result.rows,function(row){
-          //           // console.log(row);
-          //           var point = new google.maps.LatLng(row[2],row[3]);
-          //           if(polygon.Contains(point)) {
-          //             markersInPolygon.push(row);
-          //           }
-          //         });
+            if (that.collection.meta("tgdrWhereClause")){
+              $.getJSON(
+                that.model.get("fusion_table_query_url")+
+                "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+
+                that.collection.meta("tgdr_id")+" WHERE "+
+                that.collection.meta("tgdrWhereClause")+that.model.get("fusion_table_key")
+                ).success(function(result){
+                  _.each(result.rows,function(row){
+                      // console.log(row);
+                    var point = new google.maps.LatLng(row[2],row[3]);
+                    if(polygon.Contains(point)) {
+                      markersInPolygon.push(row);
+                      var rowObj = {
+                        "icon_name":row[0],
+                        "tree_id":row[1],
+                        "lat":row[2],
+                        "lng":row[3],
+                        "num_sequences":row[4],
+                        "num_genotypes":row[5],
+                        "species":row[6]
+                      }
+                      console.log(rowObj);
+                      $('#data_table tbody').append(that.tableRowTemplate(rowObj));
+                      $('#data_table').trigger("update");
+                    }
+                  });
           //         _.each(markersInPolygon,function(marker){
           //           icon_name =  marker[0];
           //           tree_id =  marker[1];
@@ -155,12 +170,12 @@ define([
           //         // console.log(points);
 
           //         });
-          //     });
-            // }
-          //   google.maps.event.addListener(that.map,'click',function(){
-          //     console.log(polygon);
-          //     polygon.setMap(null);
-          //   });
+              });
+            }
+            // google.maps.event.addListener(that.map,'click',function(){
+            //   console.log(polygon);
+            //   polygon.setMap(null);
+            // });
           });
 
         },

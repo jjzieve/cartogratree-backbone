@@ -35,7 +35,12 @@ define([
     //     }
     //   },
 		initialize: function(){
-      this.$el.tablecloth({ theme: "default", sortable: "true"});
+      this.$el.tablecloth({ 
+        theme: "default", 
+        sortable: true,
+        condensed: true,
+        striped: true,
+      });
    //    $.extend( $.fn.dataTableExt.oStdClasses, {
    //    "sWrapper": "dataTables_wrapper form-inline"
    //    } );
