@@ -119,12 +119,10 @@ define([
               that.polygon.setMap(null);
               // $('#data_table').dataTable().fnClearTable();
               var table = document.getElementById("data_table");
-                console.log(table);
-                  for(var i = $('#data_table').rows.length - 1; i > 0; i--)
-                  {
-                    console.log(i);
-                    $('#data_table').deleteRow(i);
-                  }
+              for(var i = table.rows.length - 1; i > 0; i--)
+              {
+                table.deleteRow(i);
+              }
             }
             that.polygon = polygon;
             var markersInPolygon = [];
