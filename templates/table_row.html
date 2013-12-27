@@ -1,9 +1,16 @@
 <tr>
-  <td><img style="height:16px;width:16px" class="img-responsive" src="images/<%= icon_name %>.png"></td>
-  <td><%= tree_id %></td>
-  <td><%= lat %></td>
-  <td><%= lng %></td>
-  <td><%= num_sequences %></td>
-  <td><%= num_genotypes %></td>
-  <td><%= species %></td>
+   	<td>
+   		<div class="checkbox">
+	   		<label>
+			<input type="checkbox" id="<%= tree_id %>">
+			</label>
+			<img style="height:16px;width:16px" class="img-responsive" src="images/<%= icon_name %>.png">
+		</div>
+	</td>
+	<td><%= tree_id %></td>
+	<td><%= lat %></td>
+	<td><%= lng %></td>
+	<td><%= num_sequences %></td>
+	<td><%= num_genotypes %></td>
+	<td><%= species %></td>
 </tr>

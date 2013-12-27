@@ -138,8 +138,6 @@ define([
                 "species":row[6]
               }
               // console.log(rowObj);
-              console.log(point);
-              console.log(index);
               $('#data_table tbody').append(that.tableRowTemplate(rowObj));
               $('#data_table').trigger("update");
             }
@@ -175,6 +173,7 @@ define([
             var try_dbQuery = that.getTableQuery("try_db");
             // var amerifluxQuery = that.getTableQuery("ameriflux");// implement later
             that.polygon = polygon;
+            $("body").css("cursor", "progress");
             $.getJSON(url+tgdrQuery+key).success(function(result){
               that.appendToTable(result,polygon);
               $.getJSON(url+sts_isQuery+key).success(function(result){
@@ -184,6 +183,7 @@ define([
                 });
               });
             });
+            $("body").css("cursor", "default");
                               
             // google.maps.event.addListener(that.map,'click',function(){
             //   console.log(polygon);
