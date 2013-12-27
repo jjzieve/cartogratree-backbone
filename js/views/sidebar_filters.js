@@ -56,6 +56,14 @@ define([
         		}
         	},
 
+        	addCount: function(data){
+			    if(data.rows){
+					return parseInt(data.rows[0][0]);
+				}
+				else{
+					return 0;
+				}
+        	},
   
 			refreshCounts: function(){
 				var that = this;
@@ -88,37 +96,13 @@ define([
 						var key = that.model.get("fusion_table_key");
 
 						$.getJSON(url+tgdrQuery+key).success(function(data){
-		    				if(data.rows){
-		    					var tgdrCount = parseInt(data.rows[0][0]);
-		    				}
-		    				else{
-		    					var tgdrCount = 0;
-		    				}
-		    				// console.log(tgdrQuery +"\ttgdr\t"+ tgdrCount);
+							var tgdrCount = that.addCount(data);
 		    				$.getJSON(url+sts_isQuery+key).success(function(data){
-								if(data.rows){
-									var sts_isCount = parseInt(data.rows[0][0]);
-								}
-								else{
-									var sts_isCount = 0;
-								}
-								// console.log(sts_isQuery+"\tsts_is\t" + sts_isCount);
+								var sts_isCount = that.addCount(data);
 								$.getJSON(url+try_dbQuery+key).success(function(data){
-		    						if(data.rows){
-		    							var try_dbCount = parseInt(data.rows[0][0]);
-		    						}
-		    						else{
-		    							var try_dbCount = 0;
-		    						}
-		    						// console.log(try_dbQuery+"\ttry_db\t"+try_dbCount);
+	    							var try_dbCount = that.addCount(data); 
 		    						$.getJSON(url+amerifluxQuery+key).success(function(data){
-		    							if(data.rows){
-		    								var amerifluxCount = parseInt(data.rows[0][0]);
-			    						}
-			    						else{
-			    							var amerifluxCount = 0;
-			    						}
-			    						// console.log(amerifluxQuery+"\tameriflux\t"+amerifluxCount);
+	    								var amerifluxCount = that.addCount(data); 
 		    							$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount+try_dbCount+amerifluxCount));
 			    					});
 		    					});

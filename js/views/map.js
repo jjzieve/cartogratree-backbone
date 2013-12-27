@@ -96,14 +96,61 @@ define([
           scaleControl: true,
         },
 
+        clearTable: function(){
+          var table = document.getElementById("data_table");
+          for(var i = table.rows.length - 1; i > 0; i--)
+          {
+            table.deleteRow(i);
+          }
+        },
 
-         initMap: function() {
+        initMap: function() {
           this.map =  new google.maps.Map(this.el, this.mapOptions);
         },
         
 
+        getTableQuery: function(table){
+          var table_id = this.collection.meta(table+"_id");
+          var prefix = "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+table_id
+          if (this.collection.meta(table+"WhereClause") == ""){
+            return prefix
+          }
+          else if (typeof(this.collection.meta(table+"WhereClause")) !== "undefined"){
+            return prefix+" WHERE "+this.collection.meta(table+"WhereClause")
+          }
+          else{
+            return prefix+" WHERE lat = 1000" // just a dumby url to return 0 on count()
+          }
+        },
+
+        appendToTable: function(result,polygon){
+          var that = this;
+          _.each(result.rows,function(row,index){
+            var point = new google.maps.LatLng(row[2],row[3]);
+            if(polygon.Contains(point)) {
+              var rowObj = {
+                "icon_name":row[0],
+                "tree_id":row[1],
+                "lat":row[2],
+                "lng":row[3],
+                "num_sequences":row[4],
+                "num_genotypes":row[5],
+                "species":row[6]
+              }
+              // console.log(rowObj);
+              console.log(point);
+              console.log(index);
+              $('#data_table tbody').append(that.tableRowTemplate(rowObj));
+              $('#data_table').trigger("update");
+            }
+          });
+        },
+
         initDrawingManager: function() {
           var that = this;
+          var url = that.model.get("fusion_table_query_url");
+          var key = that.model.get("fusion_table_key");
+          
 
           this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingControl: true,
@@ -120,59 +167,24 @@ define([
           google.maps.event.addListener(this.drawingManager,'polygoncomplete', function(polygon){
             if(that.polygon){
               that.polygon.setMap(null);
+              that.clearTable();
               // $('#data_table').dataTable().fnClearTable();
-              var table = document.getElementById("data_table");
-              for(var i = table.rows.length - 1; i > 0; i--)
-              {
-                table.deleteRow(i);
-              }
             }
+            var tgdrQuery = that.getTableQuery("tgdr");
+            var sts_isQuery = that.getTableQuery("sts_is");
+            var try_dbQuery = that.getTableQuery("try_db");
+            // var amerifluxQuery = that.getTableQuery("ameriflux");// implement later
             that.polygon = polygon;
-            var markersInPolygon = [];
-            //  $url="https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20count()%20FROM%201AV4s_xvk7OQUMCvxoKjnduw3DjahoRjjKM9eAj8%20WHERE%20ST_INTERSECTS('lat',%20CIRCLE(LATLNG($lat,$lng),%2025000))&key=AIzaSyCuYOWxwU8zbT5oBvHKOAgRYE08Ouoy5Us";
-            if (that.collection.meta("tgdrWhereClause")){
-              $.getJSON(
-                that.model.get("fusion_table_query_url")+
-                "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+
-                that.collection.meta("tgdr_id")+" WHERE "+
-                that.collection.meta("tgdrWhereClause")+that.model.get("fusion_table_key")
-                ).success(function(result){
-                  _.each(result.rows,function(row){
-                      // console.log(row);
-                    var point = new google.maps.LatLng(row[2],row[3]);
-                    if(polygon.Contains(point)) {
-                      markersInPolygon.push(row);
-                      var rowObj = {
-                        "icon_name":row[0],
-                        "tree_id":row[1],
-                        "lat":row[2],
-                        "lng":row[3],
-                        "num_sequences":row[4],
-                        "num_genotypes":row[5],
-                        "species":row[6]
-                      }
-                      // console.log(rowObj);
-                      $('#data_table tbody').append(that.tableRowTemplate(rowObj));
-                      $('#data_table').trigger("update");
-                    }
-                    console.log(markersInPolygon.length);
-                  });
-          //         _.each(markersInPolygon,function(marker){
-          //           icon_name =  marker[0];
-          //           tree_id =  marker[1];
-          //           lat =  marker[2];
-          //           lng =  marker[3];
-          //           num_sequences =  marker[4];
-          //           num_genotypes =  marker[5];
-          //           species =  marker[6];
-          //           $("#data_table").dataTable().fnAddData([
-          //            icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species
-          //         ]);
-          //         // console.log(points);
-
-          //         });
+            $.getJSON(url+tgdrQuery+key).success(function(result){
+              that.appendToTable(result,polygon);
+              $.getJSON(url+sts_isQuery+key).success(function(result){
+                that.appendToTable(result,polygon);
+                $.getJSON(url+try_dbQuery+key).success(function(result){
+                  that.appendToTable(result,polygon);
+                });
               });
-            }
+            });
+                              
             // google.maps.event.addListener(that.map,'click',function(){
             //   console.log(polygon);
             //   polygon.setMap(null);
@@ -338,10 +350,11 @@ define([
           this.initInfoWindows();
           this.initDrawingManager();
           this.collection.on('add remove reset',this.refreshLayers,this);
-          google.maps.event.addListener(this.map, 'click', function(){
-            $('#data_table').dataTable().fnClearTable();
+          google.maps.event.addListener(this.map, 'click', function(){ //clears bottom table and removes polygons from map
+            // $('#data_table').dataTable().fnClearTable();
             if(that.polygon){
               // console.log(that.polygon);
+              that.clearTable();
               that.polygon.setMap(null);
             }
           });
