@@ -108,6 +108,26 @@ define([
           this.map =  new google.maps.Map(this.el, this.mapOptions);
         },
         
+        getTableQueryCircle: function(table,circle){
+          var radius = circle.getRadius();
+          var center = circle.getCenter();
+          var lat = center.lat();
+          var lng = center.lng();
+          var circleQuery = " WHERE ST_INTERSECTS('lat', CIRCLE(LATLNG("+lat+","+lng+"),"+radius+"))";
+          console.log(circleQuery);
+          var table_id = this.collection.meta(table+"_id");
+          var prefix = "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+table_id;
+
+          if (this.collection.meta(table+"WhereClause") == ""){
+            return prefix + circleQuery;
+          }
+          else if (typeof(this.collection.meta(table+"WhereClause")) !== "undefined"){
+            return prefix+circleQuery+" AND "+this.collection.meta(table+"WhereClause")
+          }
+          else{
+            return prefix+" WHERE lat = 1000" // just a dumby url to return 0 on count()
+          }
+        },
 
         getTableQuery: function(table){
           var table_id = this.collection.meta(table+"_id");
@@ -121,6 +141,24 @@ define([
           else{
             return prefix+" WHERE lat = 1000" // just a dumby url to return 0 on count()
           }
+        },
+
+        appendToTableCircle: function(result){
+          var that = this;
+          _.each(result.rows,function(row,index){
+              var rowObj = {
+                "icon_name":row[0],
+                "tree_id":row[1],
+                "lat":row[2],
+                "lng":row[3],
+                "num_sequences":row[4],
+                "num_genotypes":row[5],
+                "species":row[6]
+              }
+              // console.log(rowObj);
+              $('#data_table tbody').append(that.tableRowTemplate(rowObj));
+              $('#data_table').trigger("update");
+          });
         },
 
         appendToTable: function(result,polygon){
@@ -156,11 +194,34 @@ define([
               position: google.maps.ControlPosition.TOP_CENTER,
               drawingModes: [
                 google.maps.drawing.OverlayType.POLYGON,
+                google.maps.drawing.OverlayType.CIRCLE,
               ]
             },
           });
 
           this.drawingManager.setMap(this.map);
+          google.maps.event.addListener(this.drawingManager,'circlecomplete', function(circle){
+            if(that.circle){
+              that.circle.setMap(null);
+              that.clearTable();
+              // $('#data_table').dataTable().fnClearTable();
+            }
+            var tgdrQuery = that.getTableQueryCircle("tgdr",circle);
+            var sts_isQuery = that.getTableQueryCircle("sts_is",circle);
+            var try_dbQuery = that.getTableQueryCircle("try_db",circle);
+            var circleQuery = ""
+            that.circle = circle;
+            $.getJSON(url+tgdrQuery+key).success(function(result){
+              that.appendToTableCircle(result);
+              $.getJSON(url+sts_isQuery+key).success(function(result){
+                that.appendToTableCircle(result);
+                $.getJSON(url+try_dbQuery+key).success(function(result){
+                  that.appendToTableCircle(result);
+                });
+              });
+            }); 
+
+          });
 
           google.maps.event.addListener(this.drawingManager,'polygoncomplete', function(polygon){
             if(that.polygon){
@@ -173,7 +234,6 @@ define([
             var try_dbQuery = that.getTableQuery("try_db");
             // var amerifluxQuery = that.getTableQuery("ameriflux");// implement later
             that.polygon = polygon;
-            $("body").css("cursor", "progress");
             $.getJSON(url+tgdrQuery+key).success(function(result){
               that.appendToTable(result,polygon);
               $.getJSON(url+sts_isQuery+key).success(function(result){
@@ -183,7 +243,6 @@ define([
                 });
               });
             });
-            $("body").css("cursor", "default");
                               
             // google.maps.event.addListener(that.map,'click',function(){
             //   console.log(polygon);
