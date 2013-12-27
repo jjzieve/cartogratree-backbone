@@ -16,7 +16,8 @@ define([
       filter: "", //so it doesn't have to be searched by the selection pane
       table_name: "", //tgdr,sts_is,try_db,ameriflux
       fusion_table_query_url: "https://www.googleapis.com/fusiontables/v1/query?sql=",
-      fusion_table_key: "&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk",
+     // fusion_table_key: "&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk",
+      fusion_table_key: "&key=AIzaSyAZe9tkwFZ4EPTwed61u6wIl27KAGq81bw",
      // fusion_table_id: "1820Dc_O7v7aFsf8_3yrVWyuh73o0lmJ4OnUE2Co"// need to pass this in, to tell which table to query
 
     }
