@@ -10,7 +10,8 @@ define([
   'dataTables',
   'tablesorter',
   'metadata',
-  'tablecloth'
+  'tablecloth',
+  'bootstrap'
  ], function($, _, Backbone, QueryModel, QueriesCollection, dataTables){
 	var BottomTableView = Backbone.View.extend({
 		el: '#data_table',
@@ -34,6 +35,19 @@ define([
     //         });
     //     }
     //   },
+    events: {
+      "click": "toggleSelection",
+    },
+
+    toggleSelection: function(event){
+      var row = $(event.target).closest('tr');
+      var id = row.attr("id");
+      row.toggleClass('selected');
+      if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the selected classes (i.e. highlighted rows)
+        $("#data_table .selected").not(row).removeClass("selected");
+       }
+    },
+
 		initialize: function(){
       this.$el.tablecloth({ 
         theme: "default", 
@@ -41,6 +55,13 @@ define([
         condensed: true,
         striped: true,
       });
+      $("#selected_markers_qmark").popover({trigger:'hover'});
+      // $('#analysis_pane ul li a.active').prepend("<span id='selected_markers_qmark' "+
+      //  "data-original-title='Selected tree samples' "+
+      //  "data-content='Table displays markers selected via the selection cursor from the map above and allows for further processing"+
+      //  "title='' data-toggle='popover'>"+
+      //  "<a href='#'> <img src='images/qmark.png'></a></span>");
+
    //    $.extend( $.fn.dataTableExt.oStdClasses, {
    //    "sWrapper": "dataTables_wrapper form-inline"
    //    } );

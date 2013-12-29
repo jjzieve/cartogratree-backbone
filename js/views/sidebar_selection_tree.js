@@ -143,7 +143,7 @@ define([
 						this.collection.remove(id);
 					}
   					if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the selected classes (i.e. highlighted rows)
-  						$(".selected").not(event.target).removeClass("selected");
+  						$("#selection_tree .selected").not(event.target).removeClass("selected");
   					}
 		  			
 		  		}
