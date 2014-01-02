@@ -37,6 +37,7 @@ define([
     //   },
     events: {
       "click": "toggleSelection",
+      // 'change :input' : 'updateValue'
     },
 
     toggleSelection: function(event){
@@ -49,13 +50,30 @@ define([
     },
 
 		initialize: function(){
+      var that = this;
       this.$el.tablecloth({ 
         theme: "default", 
         sortable: true,
         condensed: true,
         striped: true,
       });
-      $("#selected_markers_qmark").popover({trigger:'hover'});
+      $("#select_all").on('click', function(){ //could have created another view for this but thought it was overkill...
+        $(this).toggleClass('active');
+        if ($(this).hasClass("active")){
+          $.each(that.$("input[type='checkbox']"),function(index,checkbox){
+            $(checkbox).prop("checked",true);
+          });
+        }
+        else{
+          $.each(that.$("input[type='checkbox']"),function(index,checkbox){
+            $(checkbox).prop("checked",false);
+          });
+        }
+
+        // .toggleClass("checked");
+      });
+
+      // $("#selected_markers_qmark").popover({trigger:'hover'});
       // $('#analysis_pane ul li a.active').prepend("<span id='selected_markers_qmark' "+
       //  "data-original-title='Selected tree samples' "+
       //  "data-content='Table displays markers selected via the selection cursor from the map above and allows for further processing"+
@@ -86,12 +104,8 @@ define([
    //      // "fnServerData": this.fusionTableObjectToArray(['icon_name', 'tree_id', 'lat', 'lng', 'num_sequences', 'num_genotypes', 'species'])
 
    //    });
-
-      this.collection.on('add remove reset',this.populate,this); 
 		},
-    populate: function(){
 
-      },
 	});
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
