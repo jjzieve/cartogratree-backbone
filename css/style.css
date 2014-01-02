@@ -80,13 +80,14 @@ h4{
   border: 3px solid #000;
 }
 
-#infowindow img{
+.infowindow img{
   height:25%;
   width:25%;
 }
 
-#infowindow td{
+.infowindow td{
   font-size: 10px;
+  font-weight: normal;
 }
 
 /*BOTTOM-PANEL*/

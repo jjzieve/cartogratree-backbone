@@ -94,6 +94,7 @@ define([
           },
           scrollwheel: false,
           scaleControl: true,
+          disableDoubleClickZoom: true
         },
 
         clearTable: function(){
@@ -402,12 +403,28 @@ define([
           });
         },
 
+        initWorldClim: function(){
+          var that = this;
+          this.worldClimInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+
+          google.maps.event.addListener(this.map, 'rightclick', function(e){
+            var lat = e.latLng.lat();
+            var lng = e.latLng.lng();
+            $.get("worldclimjson.php?lat="+lat+"&lon="+lng,function(html){
+                that.worldClimInfoWindow.setContent(html);
+            });
+            that.worldClimInfoWindow.setPosition(new google.maps.LatLng(lat,lng));
+            that.worldClimInfoWindow.open(that.map);
+          });
+        },
+
         initialize: function(){
           var that = this;
           this.initMap();
           this.initLayers();
           this.initInfoWindows();
           this.initDrawingManager();
+          this.initWorldClim();
           this.collection.on('add remove reset',this.refreshLayers,this);
           if(this.collection.length > 0){// check if tree_ids are in url. if so, refresh map
             this.refreshLayers();
