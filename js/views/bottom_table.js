@@ -10,7 +10,8 @@ define([
   'dataTables',
   'tablesorter',
   'metadata',
-  'tablecloth'
+  'tablecloth',
+  'bootstrap'
  ], function($, _, Backbone, QueryModel, QueriesCollection, dataTables){
 	var BottomTableView = Backbone.View.extend({
 		el: '#data_table',
@@ -34,13 +35,51 @@ define([
     //         });
     //     }
     //   },
+    events: {
+      "click": "toggleSelection",
+      // 'change :input' : 'updateValue'
+    },
+
+    toggleSelection: function(event){
+      var row = $(event.target).closest('tr');
+      var id = row.attr("id");
+      row.toggleClass('selected');
+      if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the selected classes (i.e. highlighted rows)
+        $("#data_table .selected").not(row).removeClass("selected");
+       }
+    },
+
 		initialize: function(){
+      var that = this;
       this.$el.tablecloth({ 
         theme: "default", 
         sortable: true,
         condensed: true,
         striped: true,
       });
+      $("#select_all").on('click', function(){ //could have created another view for this but thought it was overkill...
+        $(this).toggleClass('active');
+        if ($(this).hasClass("active")){
+          $.each(that.$("input[type='checkbox']"),function(index,checkbox){
+            $(checkbox).prop("checked",true);
+          });
+        }
+        else{
+          $.each(that.$("input[type='checkbox']"),function(index,checkbox){
+            $(checkbox).prop("checked",false);
+          });
+        }
+
+        // .toggleClass("checked");
+      });
+
+      // $("#selected_markers_qmark").popover({trigger:'hover'});
+      // $('#analysis_pane ul li a.active').prepend("<span id='selected_markers_qmark' "+
+      //  "data-original-title='Selected tree samples' "+
+      //  "data-content='Table displays markers selected via the selection cursor from the map above and allows for further processing"+
+      //  "title='' data-toggle='popover'>"+
+      //  "<a href='#'> <img src='images/qmark.png'></a></span>");
+
    //    $.extend( $.fn.dataTableExt.oStdClasses, {
    //    "sWrapper": "dataTables_wrapper form-inline"
    //    } );
@@ -65,12 +104,8 @@ define([
    //      // "fnServerData": this.fusionTableObjectToArray(['icon_name', 'tree_id', 'lat', 'lng', 'num_sequences', 'num_genotypes', 'species'])
 
    //    });
-
-      this.collection.on('add remove reset',this.populate,this); 
 		},
-    populate: function(){
 
-      },
 	});
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope

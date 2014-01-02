@@ -5,6 +5,12 @@ a{
 a:hover{
   color: #3C746B;
 }
+.btn {
+  color: #3C746B;
+}
+.dropdown-menu li a{
+  color: #3C746B;
+}
 
 h4{
   color: #3C746B;
@@ -89,12 +95,18 @@ h4{
     background-color:white;
 }
 */
+/*#data_table tr.selected {
+    background-color: #3C746B;
+    color:white;
+    border: 1px solid white;
+}*/
+
 #data_table_container{
   overflow:auto;
   height: 200px;
 }
 
-#data_table{
+/*#data_table{
     border: 0;
     background-color:#efefef;
 }
@@ -132,7 +144,7 @@ div.dataTables_paginate {
 table {
   margin: 1em 0;
   clear: both;
-}
+}*/
 
 /*table.table thead .sorting,
 table.table thead .sorting_asc,

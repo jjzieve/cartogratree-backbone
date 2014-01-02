@@ -153,8 +153,32 @@ Updated:
 			<div class="col-xs-12">
 				<div class="well well-sm">
 					<h4>Analyze the data</h4>
+					<div class="btn-group pull-right">
+						<button id="select_all" type="button" class="btn btn-default">Select all</button>
+						<div class="btn-group pull-right">
+					 		<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Tools<span class="caret"></span></button>
+							<ul class="dropdown-menu">
+							  	<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Get Common Amplicon</a></li>
+							    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Get Common SNP</a></li>
+							    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Get Common Phenotypes</a></li>
+							    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Get WorldClim data</a></li>
+							    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Diversitree Input file</a></li>
+							    <li role="presentation" class="divider"></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="#">SSWAP/TASSEL Analysis</a></li>
+							</ul>
+						</div>
+					</div>
 					<ul class="nav nav-tabs" id="data_tabs">
-						<li><a href="#markers" data-toggle="tab">Selected Markers</a></li>
+						<li><a href="#markers" data-toggle="tab">
+							Selected Markers
+<!-- 							<span id="selected_markers_qmark" data-original-title="Selected tree samples" data-content="Table displays markers selected via the selection cursor from the map above and allows for further processing" title="" data-toggle="popover">
+							<a href="#"> <img src='images/qmark.png'></a>
+							</span> -->
+
+
+						</a>
+
+						</li>
 						<!-- <li><a href="#common_phenotype" data-toggle="tab">Common phenotypes</a></li> -->
 					</ul>
 					<div id="data_table_container" class="tab-content">
@@ -174,24 +198,6 @@ Updated:
 									</tr>
 								</thead>
 								<tbody>
-<!-- 									<tr>
-										<td>test</td>
-										<td>test</td>
-										<td>test</td>
-										<td>test</td>
-										<td>test</td>
-										<td>test</td>
-										<td>test</td>
-									</tr>
-									<tr>
-										<td>test1</td>
-										<td>test1</td>
-										<td>test1</td>
-										<td>test1</td>
-										<td>test1</td>
-										<td>test1</td>
-										<td>test1</td>
-									</tr> -->
 								</tbody>
 							</table>
 						</div>
