@@ -409,6 +409,9 @@ define([
           this.initInfoWindows();
           this.initDrawingManager();
           this.collection.on('add remove reset',this.refreshLayers,this);
+          if(this.collection.length > 0){// check if tree_ids are in url. if so, refresh map
+            this.refreshLayers();
+          }
           google.maps.event.addListener(this.map, 'click', function(){ //clears bottom table and removes polygons from map
             // $('#data_table').dataTable().fnClearTable();
             if(that.polygon){
@@ -423,49 +426,7 @@ define([
           return (this.collection.filter(function(query){return query.get("column") === column}).map(function(query){return query.get("value")}));
         },
 
-        genQuerySTS_IS: function(families,genuses,species,filters){
-          var familiesQuery = "";
-          var genusesQuery = "";
-          var speciesQuery = "";
-          var sequencedQuery = "";
-          var genotypedQuery = "";
-          var phenotypedQuery = "";
-          var gpsQuery = "";
-          if (families.length > 0){
-            familiesQuery = "'family' IN ('"+families.join("','")+"')";
-          }
-          if (genuses.length > 0){
-            genusesQuery = "'genus' IN ('"+genuses.join("','")+"')";
-          }
-          if (species.length > 0){
-            speciesQuery = "'species' IN ('"+species.join("','")+"')";
-          }
-          if (filters.indexOf("sequenced") != -1) {
-            sequencedQuery = "'num_sequences' > 0";
-          }
-          if (filters.indexOf("genotyped") != -1) {
-            genotypedQuery = "'num_genotypes' > 0";
-          }
-          if (filters.indexOf("phenotyped") != -1) {
-            phenotypedQuery = "'num_phenotypes' > 0";
-          }
-          if (filters.indexOf("exact_gps") != -1 && gpsQuery == "") {//if both or none are set shows all
-            gpsQuery = "'is_exact_gps_coordinate' = 'true'";
-          }
-          if (filters.indexOf("approx_gps") != -1 && gpsQuery == "") {
-            gpsQuery = "'is_exact_gps_coordinate' = 'false'";
-          }
-          return _.filter([
-            familiesQuery,
-            genusesQuery,
-            speciesQuery,
-            sequencedQuery,
-            genotypedQuery,
-            phenotypedQuery,
-            gpsQuery],function(string){ return string != ""}).join(' AND ');          
-        },
-
-        genQuery: function(table,years,families,genuses,species_tgdr,species_sts_is,accessions,filters){
+        genQuery: function(table,years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters){
           var studiesQuery = "";
           var yearsQuery = "";
           var familiesQuery = "";
@@ -473,6 +434,8 @@ define([
           var speciesTGDRQuery = "";
           var speciesSTS_ISQuery = "";
           var accessionsQuery = "";
+          var tree_idTGDRQuery = "";
+          var tree_idSTS_ISQuery = "";
           var sequencedQuery = ""; // no samples are sequenced in tgdr, may change in future
           var genotypedQuery = "";
           var phenotypedQuery = "";
@@ -491,6 +454,12 @@ define([
           }
           if (species_sts_is.length > 0){
             speciesSTS_ISQuery = "'species' IN ('"+species_sts_is.join("','")+"')";
+          }
+          if (tree_ids_tgdr.length > 0){
+            tree_idTGDRQuery = "'tree_id' IN ('"+tree_ids_tgdr.join("','")+"')";
+          }
+          if (tree_ids_sts_is.length > 0){
+            tree_idSTS_ISQuery = "'tree_id' IN ('"+tree_ids_sts_is.join("','")+"')";
           }
           if (accessions.length > 0){ 
             accessionsQuery = "'accession' IN ('"+accessions.join("','")+"')";
@@ -511,10 +480,10 @@ define([
             gpsQuery = "'is_exact_gps_coordinate' = 'false'";
           }
           if (table == "tgdr"){
-            return _.filter([yearsQuery,speciesTGDRQuery,accessionsQuery,sequencedQuery,genotypedQuery,phenotypedQuery,gpsQuery],function(string){ return string != ""}).join(' AND '); 
+            return _.filter([yearsQuery,speciesTGDRQuery,accessionsQuery,tree_idTGDRQuery,sequencedQuery,genotypedQuery,phenotypedQuery,gpsQuery],function(string){ return string != ""}).join(' AND '); 
           } 
           else if (table == "sts_is"){
-            return _.filter([familiesQuery, genusesQuery, speciesSTS_ISQuery, sequencedQuery, genotypedQuery, phenotypedQuery, gpsQuery],function(string){ return string != ""}).join(' AND '); 
+            return _.filter([familiesQuery, genusesQuery, speciesSTS_ISQuery, tree_idSTS_ISQuery, sequencedQuery, genotypedQuery, phenotypedQuery, gpsQuery],function(string){ return string != ""}).join(' AND '); 
           }
           else {//try_db or ameriflux
             return _.filter([sequencedQuery, genotypedQuery, phenotypedQuery, gpsQuery],function(string){ return string != ""}).join(' AND '); 
@@ -555,20 +524,22 @@ define([
           var species_tgdr = this.getColumn("species_tgdr");
           var species_sts_is = this.getColumn("species_sts_is");
           var accessions = this.getColumn("accession");
+          var tree_ids_tgdr = this.getColumn("tree_id_tgdr");
+          var tree_ids_sts_is = this.getColumn("tree_id_sts_is");
           var filters = this.collection.pluck("filter");
           
 
-          if (all.length > 0 || studies.length > 0 || years.length > 0 || species_tgdr.length > 0 || accessions.length > 0 || filters > 0){
-            var tgdrWhereClause = this.genQuery("tgdr",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
+          if (all.length > 0 || studies.length > 0 || years.length > 0 || species_tgdr.length > 0 || accessions.length > 0 || tree_ids_tgdr.length > 0 || filters > 0){
+            var tgdrWhereClause = this.genQuery("tgdr",years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters);
           }
-          if (all.length > 0 || taxa.length > 0 || families.length > 0 || genuses.length > 0 || species_sts_is.length > 0 || filters > 0){
-            var sts_isWhereClause = this.genQuery("sts_is",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
+          if (all.length > 0 || taxa.length > 0 || families.length > 0 || genuses.length > 0 || species_sts_is.length > 0 || tree_ids_sts_is.length > 0 || filters > 0){
+            var sts_isWhereClause = this.genQuery("sts_is",years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters);
           }
           if (all.length > 0 || phenotypes.length > 0 || try_db.length > 0 || filters > 0){
-            var try_dbWhereClause = this.genQuery("try_db",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
+            var try_dbWhereClause = this.genQuery("try_db",years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters);
           }
           if (all.length > 0 || environmental.length > 0 || ameriflux.length > 0 || filters > 0){
-            var amerifluxWhereClause = this.genQuery("ameriflux",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
+            var amerifluxWhereClause = this.genQuery("ameriflux",years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters);
           }
 
           this.refreshLayer("tgdr",tgdrWhereClause,this.tgdrLayer,this.collection.meta("tgdr_id"));

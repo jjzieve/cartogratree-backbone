@@ -108,12 +108,14 @@ define([
 						that.loadBranch(data,"1-2",0,0,"taxa");
 					}
 				);
-				this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default	
-				this.collection.add({
-                	id: "1",
-                	column: "all",
-               		value: "all"
-              	});  
+				if (this.collection.length == 0){ //if no tree_ids in url
+					this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default	
+					this.collection.add({
+	                	id: "1",
+	                	column: "all",
+	               		value: "all"
+	              	});  
+				}
 			
 			},
 

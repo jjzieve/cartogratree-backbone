@@ -5,8 +5,10 @@ a{
 a:hover{
   color: #3C746B;
 }
-
-li a{
+.btn {
+  color: #3C746B;
+}
+.dropdown-menu li a{
   color: #3C746B;
 }
 

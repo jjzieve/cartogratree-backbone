@@ -27,18 +27,34 @@ define([
 			var appRouter = new AppRouter();
 			
 			appRouter.on('route:index', function(tree_ids){
-				if (tree_ids){
-					console.log(tree_ids.split(','));
-				}
+
 				var navbar = new NavBarView();
 				var query = new QueryModel();
 				var queries = new QueriesCollection();
+				if (tree_ids){//add tree_ids from url to the collection
+					$.each(tree_ids.split(','),function(index,tree_id){
+						if(tree_id.substr(0,4) == "TGDR"){
+							var column = "tree_id_tgdr";
+						}
+						else{
+							var column = "tree_id_sts_is";
+						}
+						queries.add({
+							id: tree_id,
+							column: column,
+							value: tree_id
+						});
+					});
+				}
+
  				var treeNode = new TreeNodeModel();
 				var map = new MapView({collection: queries,model: query}); //get rid of generic endings "view,map"
 				var selectionTree = new SelectionTreeView({collection: queries, model: treeNode});
 				var filters = new FiltersView({collection: queries,model: query});
 				var tabs = new BottomTabsView({collection: queries,model: query});
 				var table = new BottomTableView({collection: queries,model: query});
+
+
 			});
 			// appRouter.on('about', function(){
    //    			this.navigate("about.html")
