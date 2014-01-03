@@ -11,6 +11,7 @@ define([
   'tablesorter',
   'metadata',
   'tablecloth',
+  'lazyjson',
   'bootstrap'
  ], function($, _, Backbone, QueryModel, QueriesCollection, dataTables){
 	var BottomTableView = Backbone.View.extend({
@@ -57,6 +58,15 @@ define([
         condensed: true,
         striped: true,
       });
+      // $('#lazyjson').lazyjson({
+      //   api: {
+      //     uri: 'https://www.googleapis.com/fusiontables/v1/query?sql=SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM 118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M&key=AIzaSyAZe9tkwFZ4EPTwed61u6wIl27KAGq81bw',
+      //   },
+      //   pagination: {
+      //     appendResults: true
+      //   },
+      //   debug: true
+      // })
       $("#select_all").on('click', function(){ //could have created another view for this but thought it was overkill...
         $(this).toggleClass('active');
         if ($(this).hasClass("active")){

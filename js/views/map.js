@@ -11,6 +11,7 @@ define([
   'text!templates/ameriflux_infowindow.html',
   'text!templates/table_row.html',
   'goog!maps,3,other_params:libraries=drawing&sensor=false',
+  'context_menu',
 ], function($,_, Backbone, QueryModel, QueriesCollection, tgdrInfoWindow, sts_isInfoWindow, try_dbInfoWindow, amerifluxInfoWindow, tableRow){
 
   google.maps.Polygon.prototype.Contains = function(point) {
@@ -403,19 +404,56 @@ define([
           });
         },
 
-        initWorldClim: function(){
-          var that = this;
-          this.worldClimInfoWindow = new google.maps.InfoWindow({maxWidth:250});
-
-          google.maps.event.addListener(this.map, 'rightclick', function(e){
-            var lat = e.latLng.lat();
-            var lng = e.latLng.lng();
-            $.get("worldclimjson.php?lat="+lat+"&lon="+lng,function(html){
-                that.worldClimInfoWindow.setContent(html);
-            });
-            that.worldClimInfoWindow.setPosition(new google.maps.LatLng(lat,lng));
-            that.worldClimInfoWindow.open(that.map);
-          });
+        initContextMenu: function(){
+		var that = this;
+		var contextMenuOptions={};
+                contextMenuOptions.classNames={menu:'context_menu', menuSeparator:'context_menu_separator'};
+                
+                //      create an array of ContextMenuItem objects
+                var menuItems=[];
+                menuItems.push({className:'context_menu_item', eventName:'zoom_in_click', label:'Zoom in'});
+                menuItems.push({className:'context_menu_item', eventName:'zoom_out_click', label:'Zoom out'});
+                //      a menuItem with no properties will be rendered as a separator
+                menuItems.push({});
+                menuItems.push({className:'context_menu_item', eventName:'center_map_click', label:'Center map here'});
+                menuItems.push({});
+                menuItems.push({className:'context_menu_item', eventName:'get_worldclim_data', label:'Get WorldClim Data'});
+                contextMenuOptions.menuItems=menuItems;
+                
+                //      create the ContextMenu object
+                var contextMenu=new ContextMenu(this.map, contextMenuOptions);
+                
+                //      display the ContextMenu on a Map right click
+                google.maps.event.addListener(this.map, 'rightclick', function(mouseEvent){
+                        contextMenu.show(mouseEvent.latLng);
+                });
+        
+                //      listen for the ContextMenu 'menu_item_selected' event
+                google.maps.event.addListener(contextMenu, 'menu_item_selected', function(latLng, eventName){
+                        //      latLng is the position of the ContextMenu
+                        //      eventName is the eventName defined for the clicked ContextMenuItem in the ContextMenuOptions
+                        switch(eventName){
+                                case 'zoom_in_click':
+                                        this.map.setZoom(this.map.getZoom()+1);
+                                        break;
+                                case 'zoom_out_click':
+                                        this.map.setZoom(this.map.getZoom()-1);
+                                        break;
+                                case 'center_map_click':
+                                        this.map.panTo(latLng);
+                                        break;
+                                case 'get_worldclim_data':
+                                        var lat = latLng.lat();
+                                        var lng = latLng.lng();
+          				that.worldClimInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+            				$.get("worldclimjson.php?lat="+lat+"&lon="+lng,function(html){
+            				    that.worldClimInfoWindow.setContent(html);
+            				});
+            				that.worldClimInfoWindow.setPosition(new google.maps.LatLng(lat,lng));
+            				that.worldClimInfoWindow.open(that.map);
+                                        break;
+                        }
+                });
         },
 
         initialize: function(){
@@ -424,7 +462,7 @@ define([
           this.initLayers();
           this.initInfoWindows();
           this.initDrawingManager();
-          this.initWorldClim();
+          this.initContextMenu();
           this.collection.on('add remove reset',this.refreshLayers,this);
           if(this.collection.length > 0){// check if tree_ids are in url. if so, refresh map
             this.refreshLayers();
@@ -564,8 +602,15 @@ define([
           this.refreshLayer("try_db",try_dbWhereClause,this.try_dbLayer,this.collection.meta("try_db_id"));
           this.refreshLayer("ameriflux",amerifluxWhereClause,this.amerifluxLayer,this.collection.meta("ameriflux_id"));    
           //debug
+          var approx_chars = ("http://mt0.googleapis.com/mapslt/ft?hl=en-US&lyrs=ft%3A1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI%7Csc%3Alat%7Csg%3A%27"+
+                  encodeURIComponent(this.collection.meta("sts_isWhereClause")).replace(/'/g,"%27")+
+                  "%7Ctmplt%3A2%7Cy%3A2&las=tutt,tutu,tutv,tutw,tuut,tuuu,tuuv,tuuw,tuvt,tuvu,tuvv,tuvw,tuwt,tuwu,tuwv,tuww,twtt,twtu,twut,twuu&z=4&src=apiv3&xc=1&callback=_xdc_._lvk5xk&token=77368"
+                  ).length;
+
+          console.log(encodeURIComponent(this.collection.meta("sts_isWhereClause")).replace(/'/g,"%27"));
           console.log("tgdrWhereClause:"+this.collection.meta("tgdrWhereClause")+"\n"+
                   "sts_isWhereClause:"+this.collection.meta("sts_isWhereClause")+"\n"+
+                  "num_chars:"+approx_chars+"\n"+
                   "try_dbWhereClause:"+this.collection.meta("try_dbWhereClause")+"\n"+
                   "amerifluxWhereClause:"+this.collection.meta("amerifluxWhereClause"));   
         },

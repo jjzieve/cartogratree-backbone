@@ -32,7 +32,8 @@ define([
 				var query = new QueryModel();
 				var queries = new QueriesCollection();
 				if (tree_ids){//add tree_ids from url to the collection
-					$.each(tree_ids.split(','),function(index,tree_id){
+					var tree_ids_array = tree_ids.split(',');
+					$.each(tree_ids_array,function(index,tree_id){
 						if(tree_id.substr(0,4) == "TGDR"){
 							var column = "tree_id_tgdr";
 						}
@@ -45,6 +46,7 @@ define([
 							value: tree_id
 						});
 					});
+					console.log("Number of tree_ids supplied: "+tree_ids_array.length);
 				}
 
  				var treeNode = new TreeNodeModel();

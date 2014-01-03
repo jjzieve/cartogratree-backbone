@@ -90,6 +90,25 @@ h4{
   font-weight: normal;
 }
 
+
+.context_menu{
+        background-color:white;
+        border:1px solid gray;
+}
+.context_menu_item{
+        padding:3px 6px;
+}
+.context_menu_item:hover {
+	color:white;
+        background-color:#3C746B;
+}
+.context_menu_separator{
+        background-color:gray;
+        height:1px;
+        margin:0;
+        padding:0;
+}
+
 /*BOTTOM-PANEL*/
 /*#analysis_pane {
     padding-top: 20px;

@@ -64,6 +64,18 @@ define([
 					return 0;
 				}
         	},
+
+        	ajaxPOST: function(url){
+        		$.ajax({
+				  dataType: "json",
+				  type:'POST',
+				  url: url,
+				  data: data,
+				  success: function(response){
+				  	console.log(response);
+				  }
+				});
+        	},
   
 			refreshCounts: function(){
 				var that = this;
@@ -94,7 +106,7 @@ define([
 
 						var url = that.model.get("fusion_table_query_url");
 						var key = that.model.get("fusion_table_key");
-
+						// that.ajaxPOST(url+tgdrQuery+key);
 						$.getJSON(url+tgdrQuery+key).success(function(data){
 							var tgdrCount = that.addCount(data);
 		    				$.getJSON(url+sts_isQuery+key).success(function(data){

@@ -6,8 +6,10 @@ require.config({
 		// underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min',
 		// backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
 		jquery: 'libs/jquery/jquery',
+		context_menu: 'libs/ContextMenu',
         tablesorter: 'libs/jquery/jquery.tablesorter',
         tablecloth: 'libs/jquery/jquery.tablecloth',
+        lazyjson: 'libs/jquery/jquery.lazyjson.min',
         metadata: 'libs/jquery/jquery.metadata',
         // jquery_ui: 'libs/jquery/jquery-ui-1.10.3.custom',
         bootstrap: 'libs/bootstrap',
@@ -37,6 +39,9 @@ require.config({
         'underscore': {
             exports: '_'
         },
+	'context_menu': {
+	   deps: ['goog!maps,3,other_params:libraries=drawing&sensor=false']
+	},
         // 'fusiontips': {
         //     deps: ['goog!maps,3,other_params:libraries=drawing&sensor=false']
         // }
