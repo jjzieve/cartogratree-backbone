@@ -51,10 +51,6 @@ table.treetable tr.expanded span.indenter a {
   background-image: url(../images/collapse.png);
 }
 
-table.treetable tr.leaf {
-	font-size: .8em
-}
-
 table.treetable tr.expanded{
   background-color: white;
 }

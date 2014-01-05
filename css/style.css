@@ -24,7 +24,8 @@ h4{
 }
 
 .nav-pills li a {
-  padding-top: 1cm;
+  padding-top: 50px;
+  font-size:  16px;
 }
 
 /*SIDE-BAR*/
@@ -185,6 +186,15 @@ table.table thead .sorting_desc_disabled { background: url('images/sort_desc_dis
 /*FOOTER*/
 #version_num{
     font-family: "Courier New";
+	text-align: right;
 }
 
+#footer p{
+	text-align: center;
+}
+
+#footer p a img {
+	height: 45px; 
+	padding: 5px; 
+}
 

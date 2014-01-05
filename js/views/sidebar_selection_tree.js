@@ -94,20 +94,27 @@ define([
     		},
 
 			initialize: function(){
-				// console.log(treeNodeTemplate.text);
+				// open to depth of 2
 				var that = this;
 				this.$el.treetable({expandable:true});
+				this.$el.treetable("expandNode","1");
 
 				$.getJSON('data/studies.JSON',
 					function(data){
 						that.loadBranch(data,"1-1",0,0,"studies");
+						that.$el.treetable("expandNode","1-1");
 					}
 				);
 				$.getJSON('data/taxa.JSON',
 					function(data){
 						that.loadBranch(data,"1-2",0,0,"taxa");
+						that.$el.treetable("expandNode","1-2");
 					}
 				);
+
+				this.$el.treetable("expandNode","1-3");
+				this.$el.treetable("expandNode","1-4");
+
 				if (this.collection.length == 0){ //if no tree_ids in url
 					this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default	
 					this.collection.add({

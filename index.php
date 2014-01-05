@@ -54,7 +54,7 @@ Updated:
 			<div id="sidebar" class="col-xs-4">
 				<div id="sidebar_selection" class="well well-sm">
 					<div id="select_tree_header">
-						<h4>Select the data</h4>
+						<h4>Select Map Display</h4>
 					</div>
 					<div class="filler"></div>
 					<div id="selection_tree_container">
@@ -85,7 +85,7 @@ Updated:
 				
 				<div id="filters" class="well well-sm">
 					<div id="filter_header">
-						<h4>Filter the data</h4>
+						<h4>Filter Map Display</h4>
 					</div>
 					<div class="filler"></div>
 					<!-- should load with templates -->
@@ -119,12 +119,13 @@ Updated:
 								</a>
 						</span>	
 					</div>
-					GPS
+					GPS Resolution
+					<br>
 					<div class="checkbox gps">
 					    <label>
 					      <input type="checkbox" id="exact_gps" value="Exact GPS">Exact (0)			      
 					    </label>
-					    <span id="exact_gps_qmark" data-original-title="Exact GPS samples" data-content="Each tree sample is independently georeferenced" title="" data-toggle="popover">
+					    <span id="exact_gps_qmark" data-original-title="Exact GPS samples" data-content="Sites with specific and well-defined latitude and longitude coordinates" title="" data-toggle="popover">
 								<a href="#">
 									<img src='images/qmark.png'>
 								</a>
@@ -134,7 +135,7 @@ Updated:
 					    <label>
 					      <input type="checkbox" id="approx_gps" value="Approximate GPS">Approximate (0)					      
 					    </label>
-					    <span id="approx_gps_qmark" data-original-title="Approximate GPS samples" data-content="Georeferenced sites with one to many tree samples" title="" data-toggle="popover">
+					    <span id="approx_gps_qmark" data-original-title="Approximate GPS samples" data-content="Sites with estimated coordinates which may be as broadly defined as the region or county" title="" data-toggle="popover">
 								<a href="#">
 									<img src='images/qmark.png'>
 								</a>
@@ -230,36 +231,26 @@ Updated:
 		</div>
 		<!--FOOTER-->
 		<div class="row" id="footer">
-	        <div class="col-xs-1 col-xs-offset-3">
-	             <a href="http://dendrome.ucdavis.edu/treegenes/" target=new>
-	             		<img class="img-responsive" src="http://dendrome.ucdavis.edu/images/logo_treegenes.png">
-	             </a>
-	        </div>
-	        <div class="col-xs-1">
-	            <a href="http://www.iplantcollaborative.org/" target=new>
-	            	<img class="img-responsive" src="http://dendrome.ucdavis.edu/iplant/images/iplant_collab_logo.jpg">
-	            </a>
-	        </div>
-	        <div class="col-xs-1">
-	            <a href="http://public.ornl.gov/ameriflux/index.html" target=new>
-	            	<img class="img-responsive" src="http://dendrome.ucdavis.edu/iplant/images/amerifluxlogo.gif">
-	            </a>
-	        </div>
-	        <div class="col-xs-1">
-	            <a href="http://try-db.org/pmwiki/index.php" target=new>
-	            	<img class="img-responsive" src="http://dendrome.ucdavis.edu/iplant/images/try_logo.jpg">
-	            </a>
-	        </div>
-	        <div class="col-xs-1">
-	            <a href="http://www.worldclim.org" target=new>
-	            	<img class="img-responsive" src="http://dendrome.ucdavis.edu/iplant/images/worldclim_logo.png">
-	            </a>
-	        </div>
-        	<div class="col-xs-1 col-xs-offset-4" id="version_num">
-        		v3.0.0
-        	</div>
-        </div>
-	</div>
+			<p>
+      				<a href="http://dendrome.ucdavis.edu/treegenes/" target=new>
+					<img src="http://dendrome.ucdavis.edu/images/logo_treegenes.png">
+				</a>
+      			        <a href="http://www.iplantcollaborative.org/" target=new>
+					<img src="http://dendrome.ucdavis.edu/iplant/images/iplant_collab_logo.jpg">
+				</a>
+      			        <a href="http://public.ornl.gov/ameriflux/index.html" target=new>
+					<img src="http://dendrome.ucdavis.edu/iplant/images/amerifluxlogo.gif">
+				</a>
+      			        <a href="http://try-db.org/pmwiki/index.php" target=new>
+					<img src="http://dendrome.ucdavis.edu/iplant/images/try_logo.jpg">
+				</a>
+      			        <a href="http://www.worldclim.org" target=new>
+					<img src="http://dendrome.ucdavis.edu/iplant/images/worldclim_logo.png">
+				</a>
+      			</p>
+      			<div id="version_num">v3.0.0</div>
+		</div>			
+
 </body>
 
 </html>
