@@ -50,7 +50,7 @@ h4{
 
 #selection_tree_container {
   overflow:auto;
-  height: 405px;
+  height: 390px;
 }
 
 /*#selection_tree td.selected {
@@ -65,7 +65,12 @@ h4{
 
 .gps {
   margin-left: 25px;
-  font-weight: normal;
+  font-weight: bold;
+}
+
+.inline_image{
+  height: 16px;
+  width: 16px;
 }
 /*MAP*/
 #map_canvas {
@@ -73,13 +78,13 @@ h4{
   width: 100%;
 }
 
-#legend {
+/*#legend {
   font-family: Arial, sans-serif;
   background: #fff;
   padding: 5px;
   margin: 5px;
   border: 3px solid #000;
-}
+}*/
 
 .infowindow img{
   height:25%;
@@ -122,10 +127,17 @@ h4{
     border: 1px solid white;
 }*/
 
+
 #data_table_container{
   overflow:auto;
-  height: 200px;
+  height: 450px;
 }
+
+/*#data_table_container .loading{
+  background-image: url(../images/ajax-loader.gif);
+  background-repeat: no-repeat;
+  background-position: center;
+}*/
 
 /*#data_table{
     border: 0;

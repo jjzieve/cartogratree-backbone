@@ -17,14 +17,24 @@ Updated:
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 <link type="text/css" href="css/bootstrap.css"  rel="stylesheet"/>
+<link type="text/css" href="css/slick.grid.css"  rel="stylesheet"/>
+<link type="text/css" href="css/example-bootstrap.css"  rel="stylesheet"/>
 <link type="text/css" href="css/bootstrap-switch.css"  rel="stylesheet"/>
 <!-- <link type="text/css" href="css/jquery-ui-1.10.3.custom.css"  rel="stylesheet"/> -->
-<link type="text/css" href="css/tablecloth.css"  rel="stylesheet"/>
-<link type="text/css" href="css/jquery.treetable.css"  rel="stylesheet"/>
+<!-- <link type="text/css" href="css/tablecloth.css"  rel="stylesheet"/>
+ --><link type="text/css" href="css/jquery.treetable.css"  rel="stylesheet"/>
 <link type="text/css" href="css/jquery.treetable.theme.default.css" rel="stylesheet"/>
 <link type="text/css" href="css/style.css"  rel="stylesheet"/>
 <link rel="shortcut icon" href="images/favicon.ico?" type="image/x-icon"><!-- "?" is a hack for FF -->
 <!-- <script data-main="js/main" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js"></script> -->
+  <style rel="stylesheet" type="text/css">
+    .grid-col {
+      padding: 35px;
+    }
+    .info-col {
+      padding: 20px;
+    }
+  </style>
 <script data-main="js/main" src="js/libs/require/require.js"></script>
 
 <title>CartograTree</title>
@@ -54,7 +64,7 @@ Updated:
 			<div id="sidebar" class="col-xs-4">
 				<div id="sidebar_selection" class="well well-sm">
 					<div id="select_tree_header">
-						<h4>Select Map Display</h4>
+						<h4>Map Display</h4>
 					</div>
 					<div class="filler"></div>
 					<div id="selection_tree_container">
@@ -71,13 +81,13 @@ Updated:
 								<td name="environmental" value="environmental">Environmental</td>
 							</tr>
 							<tr data-tt-id="1-3-0" data-tt-parent-id="1-3">
-								<td name="ameriflux" value="ameriflux">Ameriflux</td>
+								<td name="ameriflux" value="ameriflux"><img class="inline_image" src="images/ranger_station.png"> Ameriflux</td>
 							</tr>
 							<tr data-tt-id="1-4" data-tt-parent-id="1">
 								<td name="phenotypes" value="phenotypes">Phenotypes</td>
 							</tr>
 							<tr data-tt-id="1-4-0" data-tt-parent-id="1-4">
-								<td name="try_db" value="try_db">TRY-DB</td>
+								<td name="try_db" value="try_db"><img class="inline_image" src="images/measle_brown.png">TRY-DB</td>
 							</tr>
 						</table>
 					</div>
@@ -119,11 +129,11 @@ Updated:
 								</a>
 						</span>	
 					</div>
-					GPS Resolution
+					<b>GPS Resolution</b>
 					<br>
 					<div class="checkbox gps">
 					    <label>
-					      <input type="checkbox" id="exact_gps" value="Exact GPS">Exact (0)			      
+					      <input type="checkbox" id="exact_gps" value="Exact GPS"><img class="inline_image" src="images/small_green.png">Exact (0)			      
 					    </label>
 					    <span id="exact_gps_qmark" data-original-title="Exact GPS samples" data-content="Sites with specific and well-defined latitude and longitude coordinates" title="" data-toggle="popover">
 								<a href="#">
@@ -133,7 +143,7 @@ Updated:
 					</div>
 					<div class="checkbox gps">
 					    <label>
-					      <input type="checkbox" id="approx_gps" value="Approximate GPS">Approximate (0)					      
+					      <input type="checkbox" id="approx_gps" value="Approximate GPS"><img class="inline_image" src="images/small_yellow.png">Approximate (0)					      
 					    </label>
 					    <span id="approx_gps_qmark" data-original-title="Approximate GPS samples" data-content="Sites with estimated coordinates which may be as broadly defined as the region or county" title="" data-toggle="popover">
 								<a href="#">
@@ -186,10 +196,13 @@ Updated:
 						<div class="tab-pane fade in" id="markers">
 							<!-- <table id="data_table" class="bordered-table zebra-striped dataTable" cellspacing="0" cellpadding="0" border="0" aria-describedby="example_info"> -->
 							<!-- <table id="data_table" class="table table-borderless table-condensed table-striped dataTable"> -->
+<!-- 							<div id='loading' style='display:none'> -->
 
-							<button id="select_all" type="button" class="btn btn-default btn-sm">Check all</button>
 							<table id="data_table"> 
-								<thead>
+						    	<td valign="top" class="grid-col">
+									<div id="grid" class="grid"></div>
+								</td>
+<!-- 								<thead>
 									<tr>
 										<th>Type</th>
 										<th>ID</th>
@@ -201,7 +214,7 @@ Updated:
 									</tr>
 								</thead>
 								<tbody>
-								</tbody>
+								</tbody> -->
 							</table>
 <!-- 							<div id="lazyjson">
 								<table id="template-lazyjson">

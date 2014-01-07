@@ -14,6 +14,10 @@ define([
   'context_menu',
 ], function($,_, Backbone, QueryModel, QueriesCollection, tgdrInfoWindow, sts_isInfoWindow, try_dbInfoWindow, amerifluxInfoWindow, tableRow){
 
+  String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  }
+
   google.maps.Polygon.prototype.Contains = function(point) {
         // ray casting alogrithm http://rosettacode.org/wiki/Ray-casting_algorithm
         var crossings = 0,
@@ -316,15 +320,16 @@ define([
               return 'Exact GPS';
             }
             else if (icon_name == 'small_yellow'){
-              return 'Approximate GPS';
+              return 'Approx. GPS';
             }
-            else if (icon_name == 'parks'){
+            else if (icon_name == 'measle_brown'){
               return 'TRY-DB';
             }
             else{
               return 'Ameriflux';
             }
           }
+
 
 
           this.tgdrInfoWindow = new google.maps.InfoWindow({maxWidth:250});
@@ -338,8 +343,8 @@ define([
                   icon_type: convertIconToInfoWindowOutput(e.row["icon_name"].value),
                   tree_id: e.row["tree_id"].value,
                   species: e.row["species"].value,
-                  lat: e.row["lat"].value,
-                  lng: e.row["lng"].value,
+                  lat: new Number(e.row["lat"].value).toFixed(4),
+                  lng: new Number(e.row["lng"].value).toFixed(4),
                   sequenced: convertNumToInfoWindowOutput(e.row["num_sequences"].value),
                   genotyped: convertNumToInfoWindowOutput(e.row["num_genotypes"].value),
                   phenotyped: convertNumToInfoWindowOutput(e.row["num_phenotypes"].value),
@@ -360,8 +365,8 @@ define([
                   family: e.row["family"].value,
                   genus: e.row["genus"].value,
                   species: e.row["species"].value,
-                  lat: e.row["lat"].value,
-                  lng: e.row["lng"].value,
+                  lat: new Number(e.row["lat"].value).toFixed(4),
+                  lng: new Number(e.row["lng"].value).toFixed(4),
                   sequenced: convertNumToInfoWindowOutput(e.row["num_sequences"].value),
                   genotyped: convertNumToInfoWindowOutput(e.row["num_genotypes"].value),
                   phenotyped: convertNumToInfoWindowOutput(e.row["num_phenotypes"].value),
@@ -375,11 +380,11 @@ define([
                 that.try_dbInfoWindowTemplate({
                   icon_name: e.row["icon_name"].value,
                   icon_type: convertIconToInfoWindowOutput(e.row["icon_name"].value),
-                  angio_gymno: e.row["class"].value,
+                  angio_gymno: e.row["class"].value.capitalize(),
                   institution: e.row["institution"].value,
                   species: e.row["species"].value,
-                  lat: e.row["lat"].value,
-                  lng: e.row["lng"].value,
+                  lat: new Number(e.row["lat"].value).toFixed(4),
+                  lng: new Number(e.row["lng"].value).toFixed(4),
                   phenotyped: convertNumToInfoWindowOutput(e.row["num_phenotypes"].value),
                   dataset: e.row["dataset"].value,
                   })
@@ -395,8 +400,8 @@ define([
                   src_url: e.row["src_url"].value,
                   site_name: e.row["site_name"].value,
                   type: e.row["type"].value,
-                  lat: e.row["lat"].value,
-                  lng: e.row["lng"].value,
+                  lat: new Number(e.row["lat"].value).toFixed(4),
+                  lng: new Number(e.row["lng"].value).toFixed(4),
                   })
               );
               that.amerifluxInfoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
