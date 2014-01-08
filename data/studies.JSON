@@ -1,20 +1,20 @@
 {
     "2010": {
         "Populus trichocarpa": [
-            "TGDR001|Wegrzyn et al. (The New phytologist)"
+            "TGDR001|Wegrzyn et al. (New Phyt)"
         ]
     },
     "2012": {
         "Millettia pinnata": [
-            "TGDR009|Gowda et al. (Tree Genetics & Genomes)"
+            "TGDR009|Gowda et al. (TGG)"
         ],
         "Pinus parviflora": [
-            "TGDR003|Iwasaki et al. (Tree Genetics & Genomes)"
+            "TGDR003|Iwasaki et al. (TGG)"
         ]
     },
     "2013": {
         "Jatropha curcas": [
-            "TGDR005|Bressan et al. (Tree Genetics & Genomes)"
+            "TGDR005|Bressan et al. (TGG)"
         ]
     }
 }

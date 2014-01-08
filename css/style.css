@@ -130,7 +130,13 @@ h4{
 
 #data_table_container{
   overflow:auto;
-  height: 450px;
+  height: 510px;
+}
+
+.table_tools{
+  top: 10px;
+  /*bottom: 10px;*/
+  padding: 5px;
 }
 
 /*#data_table_container .loading{

@@ -17,57 +17,47 @@ define([
   String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
   }
+       //Heatmap configuration
+ //        var heatMapIsOn = true;
+ //        heatMapData = get_heatmapdata();
+ //        var heatmap = new google.maps.visualization.HeatmapLayer({
+ //            data: heatMapData
+ //        });  
+ //      var gradient = [
+ //        'rgba(0, 255, 255, 0)',
+ //        'rgba(0, 255, 255, 1)',
+ //        'rgba(0, 191, 255, 1)',
+ //        'rgba(0, 127, 255, 1)',
+ //        'rgba(0, 63, 255, 1)',
+ //        'rgba(0, 0, 255, 1)',
+ //        'rgba(0, 0, 223, 1)',
+ //        'rgba(0, 0, 191, 1)',
+ //        'rgba(0, 0, 159, 1)',
+ //        'rgba(0, 0, 127, 1)',
+ //        'rgba(0, 63, 91, 1)',
+ //        'rgba(0, 127, 63, 1)',
+ //        'rgba(0, 191, 31, 1)',
+ //        'rgba(0, 255, 0, 1)'
+ //      ]
 
-  google.maps.Polygon.prototype.Contains = function(point) {
-        // ray casting alogrithm http://rosettacode.org/wiki/Ray-casting_algorithm
-        var crossings = 0,
-            path = this.getPath();
+ //        heatmap.setMap(mapA);
+ //        heatmap.set('radius', 7);
+ //        heatmap.set('maxIntensity', 150);
+ //        heatmap.set('dissipating', true);
+ //        heatmap.set('gradient', gradient)
+ ;
+        //Heatmap init
+ //        google.maps.event.addListener(mapA, 'zoom_changed', function() {
 
-        // for each edge
-        for (var i=0; i < path.getLength(); i++) {
-            var a = path.getAt(i),
-                j = i + 1;
-            if (j >= path.getLength()) {
-                j = 0;
-            }
-            var b = path.getAt(j);
-            if (rayCrossesSegment(point, a, b)) {
-                crossings++;
-            }
-        }
-
-        // odd number of crossings?
-        return (crossings % 2 == 1);
-
-        function rayCrossesSegment(point, a, b) {
-            var px = point.lng(),
-                py = point.lat(),
-                ax = a.lng(),
-                ay = a.lat(),
-                bx = b.lng(),
-                by = b.lat();
-            if (ay > by) {
-                ax = b.lng();
-                ay = b.lat();
-                bx = a.lng();
-                by = a.lat();
-            }
-            // alter longitude to cater for 180 degree crossings
-            if (px < 0) { px += 360 };
-            if (ax < 0) { ax += 360 };
-            if (bx < 0) { bx += 360 };
-
-            if (py == ay || py == by) py += 0.00000001;
-            if ((py > by || py < ay) || (px > Math.max(ax, bx))) return false;
-            if (px < Math.min(ax, bx)) return true;
-
-            var red = (ax != bx) ? ((by - ay) / (bx - ax)) : Infinity;
-            var blue = (ax != px) ? ((py - ay) / (px - ax)) : Infinity;
-            return (blue >= red);
-
-        }
-
-     };
+ //            if (heatMapIsOn && zoom >= 6) {
+ //                layerl0.setMap(mapA);
+ //                heatMapIsOn = false;
+ //            } else if (!heatMapIsOn && zoom < 6) {
+ //                layerl0.setMap(null);
+ //                heatmap.setMap(mapA);
+ //                heatMapIsOn = true;
+ //            }
+ //        });
 
   	var MapView = Backbone.View.extend({
         el : '#map_canvas',
@@ -102,160 +92,47 @@ define([
           disableDoubleClickZoom: true
         },
 
-        clearTable: function(){
-          var table = document.getElementById("data_table");
-          for(var i = table.rows.length - 1; i > 0; i--)
-          {
-            table.deleteRow(i);
-          }
-        },
-
         initMap: function() {
           this.map =  new google.maps.Map(this.el, this.mapOptions);
         },
         
-        getTableQueryCircle: function(table,circle){
-          var radius = circle.getRadius();
-          var center = circle.getCenter();
-          var lat = center.lat();
-          var lng = center.lng();
-          var circleQuery = " WHERE ST_INTERSECTS('lat', CIRCLE(LATLNG("+lat+","+lng+"),"+radius+"))";
-          console.log(circleQuery);
-          var table_id = this.collection.meta(table+"_id");
-          var prefix = "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+table_id;
-
-          if (this.collection.meta(table+"WhereClause") == ""){
-            return prefix + circleQuery;
-          }
-          else if (typeof(this.collection.meta(table+"WhereClause")) !== "undefined"){
-            return prefix+circleQuery+" AND "+this.collection.meta(table+"WhereClause")
-          }
-          else{
-            return prefix+" WHERE lat = 1000" // just a dumby url to return 0 on count()
-          }
-        },
-
-        getTableQuery: function(table){
-          var table_id = this.collection.meta(table+"_id");
-          var prefix = "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+table_id
-          if (this.collection.meta(table+"WhereClause") == ""){
-            return prefix
-          }
-          else if (typeof(this.collection.meta(table+"WhereClause")) !== "undefined"){
-            return prefix+" WHERE "+this.collection.meta(table+"WhereClause")
-          }
-          else{
-            return prefix+" WHERE lat = 1000" // just a dumby url to return 0 on count()
-          }
-        },
-
-        appendToTableCircle: function(result){
-          var that = this;
-          _.each(result.rows,function(row,index){
-              var rowObj = {
-                "icon_name":row[0],
-                "tree_id":row[1],
-                "lat":row[2],
-                "lng":row[3],
-                "num_sequences":row[4],
-                "num_genotypes":row[5],
-                "species":row[6]
-              }
-              // console.log(rowObj);
-              $('#data_table tbody').append(that.tableRowTemplate(rowObj));
-              $('#data_table').trigger("update");
-          });
-        },
-
-        appendToTable: function(result,polygon){
-          var that = this;
-          _.each(result.rows,function(row,index){
-            var point = new google.maps.LatLng(row[2],row[3]);
-            if(polygon.Contains(point)) {
-              var rowObj = {
-                "icon_name":row[0],
-                "tree_id":row[1],
-                "lat":row[2],
-                "lng":row[3],
-                "num_sequences":row[4],
-                "num_genotypes":row[5],
-                "species":row[6]
-              }
-              // console.log(rowObj);
-              $('#data_table tbody').append(that.tableRowTemplate(rowObj));
-              $('#data_table').trigger("update");
-            }
-          });
-        },
 
         initDrawingManager: function() {
           var that = this;
-          var url = that.model.get("fusion_table_query_url");
-          var key = that.model.get("fusion_table_key");
-          
-
           this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingControl: true,
             drawingControlOptions: {
               position: google.maps.ControlPosition.TOP_CENTER,
               drawingModes: [
-                google.maps.drawing.OverlayType.POLYGON,
-                google.maps.drawing.OverlayType.CIRCLE,
+		            google.maps.drawing.OverlayType.RECTANGLE
               ]
             },
           });
 
           this.drawingManager.setMap(this.map);
-          google.maps.event.addListener(this.drawingManager,'circlecomplete', function(circle){
-            if(that.circle){
-              that.circle.setMap(null);
-              that.clearTable();
-              // $('#data_table').dataTable().fnClearTable();
-            }
-            var tgdrQuery = that.getTableQueryCircle("tgdr",circle);
-            var sts_isQuery = that.getTableQueryCircle("sts_is",circle);
-            var try_dbQuery = that.getTableQueryCircle("try_db",circle);
-            var circleQuery = ""
-            that.circle = circle;
-            $.getJSON(url+tgdrQuery+key).success(function(result){
-              that.appendToTableCircle(result);
-              $.getJSON(url+sts_isQuery+key).success(function(result){
-                that.appendToTableCircle(result);
-                $.getJSON(url+try_dbQuery+key).success(function(result){
-                  that.appendToTableCircle(result);
-                });
-              });
-            }); 
-
-          });
-
-          google.maps.event.addListener(this.drawingManager,'polygoncomplete', function(polygon){
-            if(that.polygon){
-              that.polygon.setMap(null);
-              that.clearTable();
-              // $('#data_table').dataTable().fnClearTable();
-            }
-            var tgdrQuery = that.getTableQuery("tgdr");
-            var sts_isQuery = that.getTableQuery("sts_is");
-            var try_dbQuery = that.getTableQuery("try_db");
-            // var amerifluxQuery = that.getTableQuery("ameriflux");// implement later
-            that.polygon = polygon;
-            $.getJSON(url+tgdrQuery+key).success(function(result){
-              that.appendToTable(result,polygon);
-              $.getJSON(url+sts_isQuery+key).success(function(result){
-                that.appendToTable(result,polygon);
-                $.getJSON(url+try_dbQuery+key).success(function(result){
-                  that.appendToTable(result,polygon);
-                });
-              });
-            });
-                              
-            // google.maps.event.addListener(that.map,'click',function(){
-            //   console.log(polygon);
-            //   polygon.setMap(null);
-            // });
-          });
-
+	
+          google.maps.event.addListener(this.drawingManager,'rectanglecomplete', function(rectangle){
+        		if(that.rectangle){// remove old rectangle from map and its data (is redundant could be better)
+        			that.rectangle.setMap(null);
+        			that.collection.remove("rectangle");
+        		}
+        		that.rectangle = rectangle;
+          	var sw = rectangle.getBounds().getSouthWest();
+          	var ne = rectangle.getBounds().getNorthEast();
+          	var rectangleQuery = "ST_INTERSECTS('lat', RECTANGLE(LATLNG"+sw+",LATLNG"+ne+"))";
+        		that.collection.add({//could become a problem if we want multiple
+        			id: "rectangle",
+        			value: rectangleQuery // a bit hackish because it doesn't follow the format of the other models but its the best I could come up with...
+        		});
+        		var innerThat = that;	
+            google.maps.event.addListener(that.map,'click',function(){// on map click remove this rectangle and all its data
+           		rectangle.setMap(null);
+        			that.collection.remove("rectangle");
+        		});
+            console.log("in rectangle");
+            console.log(this.collection);
+      	  });
+		
         },
       
 
@@ -472,14 +349,6 @@ define([
           if(this.collection.length > 0){// check if tree_ids are in url. if so, refresh map
             this.refreshLayers();
           }
-          google.maps.event.addListener(this.map, 'click', function(){ //clears bottom table and removes polygons from map
-            // $('#data_table').dataTable().fnClearTable();
-            if(that.polygon){
-              // console.log(that.polygon);
-              that.clearTable();
-              that.polygon.setMap(null);
-            }
-          });
         },
 
         getColumn: function(column){
@@ -607,15 +476,10 @@ define([
           this.refreshLayer("try_db",try_dbWhereClause,this.try_dbLayer,this.collection.meta("try_db_id"));
           this.refreshLayer("ameriflux",amerifluxWhereClause,this.amerifluxLayer,this.collection.meta("ameriflux_id"));    
           //debug
-          var approx_chars = ("http://mt0.googleapis.com/mapslt/ft?hl=en-US&lyrs=ft%3A1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI%7Csc%3Alat%7Csg%3A%27"+
-                  encodeURIComponent(this.collection.meta("sts_isWhereClause")).replace(/'/g,"%27")+
-                  "%7Ctmplt%3A2%7Cy%3A2&las=tutt,tutu,tutv,tutw,tuut,tuuu,tuuv,tuuw,tuvt,tuvu,tuvv,tuvw,tuwt,tuwu,tuwv,tuww,twtt,twtu,twut,twuu&z=4&src=apiv3&xc=1&callback=_xdc_._lvk5xk&token=77368"
-                  ).length;
-
-          console.log(encodeURIComponent(this.collection.meta("sts_isWhereClause")).replace(/'/g,"%27"));
+          console.log(this.collection);
           console.log("tgdrWhereClause:"+this.collection.meta("tgdrWhereClause")+"\n"+
                   "sts_isWhereClause:"+this.collection.meta("sts_isWhereClause")+"\n"+
-                  "num_chars:"+approx_chars+"\n"+
+                  "rectangleWhereClause:"+this.collection.meta("rectangleWhereClause")+"\n"+
                   "try_dbWhereClause:"+this.collection.meta("try_dbWhereClause")+"\n"+
                   "amerifluxWhereClause:"+this.collection.meta("amerifluxWhereClause"));   
         },

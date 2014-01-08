@@ -55,8 +55,8 @@
   border-bottom: 1px solid #dddddd;
 }
 .grid input[type="checkbox"] {
-  vertical-align: baseline;
-  margin: 0;
+/*  vertical-align: baseline; */
+/*  margin: 0;*/
 }
 .grid .slick-viewport {
   border-top: 1px solid #dddddd;
@@ -183,8 +183,9 @@ body .grid .slick-header-columns .slick-header-column.ui-state-default {
   vertical-align: middle;
 }
 .grid-col {
-  padding: 35px;
+  /*padding: 35px;*/
+  padding: 15px;
 }
 .info-col {
-  padding: 20px;
+/*  padding: 20px;*/
 }

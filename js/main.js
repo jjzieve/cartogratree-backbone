@@ -2,12 +2,12 @@
 require.config({
 	paths: {
         // ***Use these in production for speed boost*** 
-	// jquery: '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min',
-	// underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min',
-	// backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
-	jquery: 'libs/jquery/jquery',
-	underscore: 'libs/underscore/underscore',
-	backbone: 'libs/backbone/backbone',
+	jquery: '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min',
+	underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min',
+	backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min',
+	// jquery: 'libs/jquery/jquery',
+	// underscore: 'libs/underscore/underscore',
+	// backbone: 'libs/backbone/backbone',
     jquery_migrate: 'libs/jquery/jquery.migrate-1.2.1.min',
     jquery_ui: 'libs/jquery/jquery-ui-1.10.3.custom.min',
     jquery_drag: 'libs/jquery/jquery.event.drag-2.0.min',

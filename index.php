@@ -26,16 +26,8 @@ Updated:
 <link type="text/css" href="css/jquery.treetable.theme.default.css" rel="stylesheet"/>
 <link type="text/css" href="css/style.css"  rel="stylesheet"/>
 <link rel="shortcut icon" href="images/favicon.ico?" type="image/x-icon"><!-- "?" is a hack for FF -->
-<!-- <script data-main="js/main" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js"></script> -->
-  <style rel="stylesheet" type="text/css">
-    .grid-col {
-      padding: 35px;
-    }
-    .info-col {
-      padding: 20px;
-    }
-  </style>
-<script data-main="js/main" src="js/libs/require/require.js"></script>
+<script data-main="js/main" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js"></script>
+<!-- <script data-main="js/main" src="js/libs/require/require.js"></script> -->
 
 <title>CartograTree</title>
 </head>
@@ -180,65 +172,23 @@ Updated:
 						</div>
 					</div>
 					<ul class="nav nav-tabs" id="data_tabs">
-						<li><a href="#markers" data-toggle="tab">
-							Selected Markers
-<!-- 							<span id="selected_markers_qmark" data-original-title="Selected tree samples" data-content="Table displays markers selected via the selection cursor from the map above and allows for further processing" title="" data-toggle="popover">
-							<a href="#"> <img src='images/qmark.png'></a>
-							</span> -->
-
-
-						</a>
-
+						<li>
+							<a href="#markers" data-toggle="tab">Samples</a>
 						</li>
-						<!-- <li><a href="#common_phenotype" data-toggle="tab">Common phenotypes</a></li> -->
 					</ul>
 					<div id="data_table_container" class="tab-content">
 						<div class="tab-pane fade in" id="markers">
-							<!-- <table id="data_table" class="bordered-table zebra-striped dataTable" cellspacing="0" cellpadding="0" border="0" aria-describedby="example_info"> -->
-							<!-- <table id="data_table" class="table table-borderless table-condensed table-striped dataTable"> -->
-<!-- 							<div id='loading' style='display:none'> -->
-
+							<div class="btn-group">
+								<button class="table_tools btn btn-default" type="button" id="remove_selected">Remove selected</button>
+								<button class="table_tools btn btn-default" type="button" id="clear_table">Clear table</button>
+							</div>
 							<table id="data_table"> 
 						    	<td valign="top" class="grid-col">
 									<div id="grid" class="grid"></div>
 								</td>
-<!-- 								<thead>
-									<tr>
-										<th>Type</th>
-										<th>ID</th>
-										<th>Latitude</th>
-										<th>Longitude</th>
-										<th>Number of sequences</th>
-										<th>Number of genotypes</th>
-										<th>Species</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody> -->
 							</table>
-<!-- 							<div id="lazyjson">
-								<table id="template-lazyjson">
-									<tr>
-										<td>{{.}}</td>
-									</tr>
-								</table>
-							</div> -->
+							Total samples selected: <span id="sample_count">0</span>
 						</div>
-						<!-- <div class="tab-pane fade" id="common_phenotype">
-							<table id="common_phenotype_table" class="table table-borderless table-condensed table-hover">
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Latitude</th>
-										<th>Longitude</th>
-										<th>Species</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody>
-							</table>
-						</div>
-					</div> -->
 				</div>
 			</div>
 		</div>

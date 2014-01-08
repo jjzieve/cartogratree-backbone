@@ -28,6 +28,9 @@ define([
     },
     
     reset: function(){
+      // if (typeof(this._meta["rectangleWhereClause"]) != undefined){// no model associated with it, could be implemented better
+	     //   delete this._meta["rectangleWhereClause"]; 
+      // }
       if (typeof(this._meta["tgdrWhereClause"]) != undefined){
         delete this._meta["tgdrWhereClause"];
       }
