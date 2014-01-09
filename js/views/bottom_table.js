@@ -36,9 +36,7 @@ define([
       forceFitColumns: true,
       rowHeight: 35
     },
-
-    // dataView: new Slick.Data.DataView(),
-
+    data: [],
 
     showIcon: function (row, cell, value, columnDef, dataContext){
       return "<img class='inline_image' src='images/"+value+".png'>";
@@ -67,7 +65,7 @@ define([
         {id: "genotypes", name: "Total genotypes", field: "genotypes",width: 130, sortable:true},
         {id: "phenotypes", name: "Total phenotypes", field: "phenotypes",width: 135, sortable:true},
         {id: "species", name: "Species", field: "species",width: 150, sortable:true},
-      ];
+      ],
       this.checkboxSelector = new Slick.CheckboxSelectColumn({});
       this.columns.unshift(this.checkboxSelector.getColumnDefinition());
     },
@@ -95,7 +93,7 @@ define([
     },
 
     clearSlickGrid: function(){
-      var data = [];//clear data
+      this.data = [];//clear data
 
       // $("#grid").empty();
 
@@ -105,16 +103,17 @@ define([
 
       // this.grid.setSelectionModel(new Slick.RowSelectionModel());
       // this.grid.registerPlugin(this.checkboxSelector);
-
+      //console.log(this.data);
       this.dataView.beginUpdate();
-      this.dataView.setItems(data);
+      this.dataView.setItems(this.data);
+      console.log(this.checkboxSelector);
       this.dataView.endUpdate();
 
       this.grid.updateRowCount();
       this.grid.render();
 
       this.dataView.syncGridSelection(this.grid, true);
-      this.grid.resizeCanvas(); 
+      // this.grid.resizeCanvas(); 
       //reset selected count
       $("#sample_count").html(0);
     },
@@ -135,15 +134,17 @@ define([
       $.ajax({
         url : 'getFusionMarkers.php',
         dataType: "json",
-        data: {"sts_is_query":sts_is_query,
+        data: {
+          "sts_is_query":sts_is_query,
           "tgdr_query":tgdr_query,
           "try_db_query":try_db_query},
 
         success: function (response) {
           that.unsetLoaderIcon();
-          var data = $.map(response,function(a,i){
+          that.data = that.data.concat($.map(response,function(a,i){
             return that.toObj(a,i);
-          });
+          }));
+
 
           // dataView = new Slick.Data.DataView();
           // grid = new Slick.Grid('#grid', dataView, that.columns, that.options);
@@ -160,7 +161,7 @@ define([
           that.grid.onSort.subscribe(function (e, args) {
               sortDir = args.sortAsc;
               sortCol = args.sortCol.field;
-              dataView.sort(comparer, sortDir);
+              that.dataView.sort(comparer, sortDir);
               that.grid.invalidateAllRows();
               that.grid.render();
           });
@@ -171,7 +172,7 @@ define([
           }
 
           that.dataView.beginUpdate();
-          that.dataView.setItems(data);
+          that.dataView.setItems(that.data);
           that.dataView.endUpdate();
 
           that.grid.updateRowCount();
@@ -183,17 +184,14 @@ define([
       		  $("#sample_count").html(that.grid.getSelectedRows().length);
       	  });
 
-          $("#remove_selected").on("click", function(){//use backbone events
-            var ids = that.dataView.mapRowsToIds(that.grid.getSelectedRows());
-            $.each(ids,function(index,id){
-              console.log("deleting: "+id);
-              that.dataView.deleteItem(id);
-            });
-            that.grid.invalidate();
-          });
-          $("#clear_table").on("click", function(){
-            that.clearSlickGrid();
-          })
+          // $("#remove_selected").on("click", function(){//use backbone events
+          //   var ids = that.dataView.mapRowsToIds(that.grid.getSelectedRows());
+          //   $.each(ids,function(index,id){
+          //     console.log("deleting: "+id);
+          //     that.dataView.deleteItem(id);
+          //   });
+          //   that.grid.invalidate();
+          // });
 
           console.log("Total samples: "+that.grid.getDataLength());
         }
@@ -228,8 +226,24 @@ define([
     this.initColumns();
     this.initGrid();
 		this.clearSlickGrid();//clear at first
-		this.collection.on('add remove reset',this.refreshTable,this);
+		this.collection.on('add change remove',this.refreshTable,this); //possibly reset?
 	},
+
+  removeSelected: function(){
+    var that = this;
+    var ids = this.dataView.mapRowsToIds(this.grid.getSelectedRows());
+    $.each(ids,function(index,id){
+      console.log("deleting: "+id);
+      that.dataView.deleteItem(id);
+    });
+    this.grid.invalidate();
+  },
+
+            
+  events:{
+    "click #remove_selected": "removeSelected",
+    "click #clear_table": "clearTable",
+  }
 
 	});
   // Above we have passed in jQuery, Underscore and Backbone

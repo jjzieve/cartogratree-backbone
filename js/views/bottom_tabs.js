@@ -15,9 +15,26 @@ define([
     el: "#data_tabs",
 
     initialize: function(){
-      this.$("a:first").tab('show');
+      var that = this;
+      this.$("li a:first").tab('show');
+      $('#tools ul li a').on('click', function() {
+        $('#tools_title').html($(this).html());
+        $("#tools ul li a").not(this).removeClass("selected");
+        $(this).addClass('selected');
+      });
+      $("#run_tool").on('click', function(){
+        console.log($("#tools ul li").find("a.selected").attr("id"));
+        // $.each($("#tools ul li a"),function(index,element){
+        //   if (element.hasClass("selected")){
+        //     console.log(element.html());
+        //   }
+        // })
+      });
     },
 
+// $('#myTabContent').append('<div class="tab-pane in active" id="new_tab_id"><p> Loading content ...</p></div>');
+// $('#tab').append('<li><a href="#new_tab_id" data-toggle="tab">Tab Name</a></li>');
+// $('#tab a:last').tab('show');
     // events : {
     //   "click .nav_tabs li a":"show"
     // },

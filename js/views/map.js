@@ -68,7 +68,7 @@ define([
         try_dbInfoWindowTemplate: _.template(try_dbInfoWindow),
         amerifluxInfoWindowTemplate: _.template(amerifluxInfoWindow),
         tableRowTemplate: _.template(tableRow),
-
+        rectangles: [],
         mapOptions : {
           zoom: 4,
           minZoom: 2,
@@ -96,6 +96,12 @@ define([
           this.map =  new google.maps.Map(this.el, this.mapOptions);
         },
         
+        clearRectangles: function(){
+          $.each(this.rectangles,function(index,rectangle){
+            rectangle.setMap(null);
+          });
+          this.collection.remove("rectangle"); 
+        },
 
         initDrawingManager: function() {
           var that = this;
@@ -112,26 +118,31 @@ define([
           this.drawingManager.setMap(this.map);
 	
           google.maps.event.addListener(this.drawingManager,'rectanglecomplete', function(rectangle){
-        		if(that.rectangle){// remove old rectangle from map and its data (is redundant could be better)
-        			that.rectangle.setMap(null);
-        			that.collection.remove("rectangle");
+            that.rectangles.push(rectangle); //store map rectangle objects but effectively only cache and 
+            var sw = rectangle.getBounds().getSouthWest();
+            var ne = rectangle.getBounds().getNorthEast();
+            var rectangleQuery = "ST_INTERSECTS('lat', RECTANGLE(LATLNG"+sw+",LATLNG"+ne+"))";
+            var rectangleModel = that.collection.get("rectangle");
+
+         		if(typeof(rectangleModel) !== "undefined"){
+              rectangleModel.set({"value":rectangleQuery});
+              that.collection.set(rectangleModel,{remove:false});
         		}
-        		that.rectangle = rectangle;
-          	var sw = rectangle.getBounds().getSouthWest();
-          	var ne = rectangle.getBounds().getNorthEast();
-          	var rectangleQuery = "ST_INTERSECTS('lat', RECTANGLE(LATLNG"+sw+",LATLNG"+ne+"))";
-        		that.collection.add({//could become a problem if we want multiple
-        			id: "rectangle",
-        			value: rectangleQuery // a bit hackish because it doesn't follow the format of the other models but its the best I could come up with...
-        		});
-        		var innerThat = that;	
-            google.maps.event.addListener(that.map,'click',function(){// on map click remove this rectangle and all its data
-           		rectangle.setMap(null);
-        			that.collection.remove("rectangle");
-        		});
-            console.log("in rectangle");
-            console.log(this.collection);
+            else{
+              that.collection.add({
+                id: "rectangle",
+                value: rectangleQuery // a bit hackish because it doesn't follow the format of the other models but its the best I could come up with...
+              });
+            }
+            console.log("in rectangle complete");
+            console.log(that.collection);
       	  });
+          $("#clear_table").on("click", function(){
+            that.clearRectangles();
+          })
+          google.maps.event.addListener(this.map,'click',function(){// on map click remove all the rectangles from the map and the current query
+            that.clearRectangles();
+          });
 		
         },
       
@@ -287,56 +298,57 @@ define([
         },
 
         initContextMenu: function(){
-		var that = this;
-		var contextMenuOptions={};
-                contextMenuOptions.classNames={menu:'context_menu', menuSeparator:'context_menu_separator'};
-                
-                //      create an array of ContextMenuItem objects
-                var menuItems=[];
-                menuItems.push({className:'context_menu_item', eventName:'zoom_in_click', label:'Zoom in'});
-                menuItems.push({className:'context_menu_item', eventName:'zoom_out_click', label:'Zoom out'});
-                //      a menuItem with no properties will be rendered as a separator
-                menuItems.push({});
-                menuItems.push({className:'context_menu_item', eventName:'center_map_click', label:'Center map here'});
-                menuItems.push({});
-                menuItems.push({className:'context_menu_item', eventName:'get_worldclim_data', label:'Get WorldClim Data'});
-                contextMenuOptions.menuItems=menuItems;
-                
-                //      create the ContextMenu object
-                var contextMenu=new ContextMenu(this.map, contextMenuOptions);
-                
-                //      display the ContextMenu on a Map right click
-                google.maps.event.addListener(this.map, 'rightclick', function(mouseEvent){
-                        contextMenu.show(mouseEvent.latLng);
-                });
-        
-                //      listen for the ContextMenu 'menu_item_selected' event
-                google.maps.event.addListener(contextMenu, 'menu_item_selected', function(latLng, eventName){
-                        //      latLng is the position of the ContextMenu
-                        //      eventName is the eventName defined for the clicked ContextMenuItem in the ContextMenuOptions
-                        switch(eventName){
-                                case 'zoom_in_click':
-                                        this.map.setZoom(this.map.getZoom()+1);
-                                        break;
-                                case 'zoom_out_click':
-                                        this.map.setZoom(this.map.getZoom()-1);
-                                        break;
-                                case 'center_map_click':
-                                        this.map.panTo(latLng);
-                                        break;
-                                case 'get_worldclim_data':
-                                        var lat = latLng.lat();
-                                        var lng = latLng.lng();
-          				that.worldClimInfoWindow = new google.maps.InfoWindow({maxWidth:250});
-            				$.get("worldclimjson.php?lat="+lat+"&lon="+lng,function(html){
-            				    that.worldClimInfoWindow.setContent(html);
-            				});
-            				that.worldClimInfoWindow.setPosition(new google.maps.LatLng(lat,lng));
-            				that.worldClimInfoWindow.open(that.map);
-                                        break;
-                        }
-                });
+      		var that = this;
+      		var contextMenuOptions={};
+          contextMenuOptions.classNames={menu:'context_menu', menuSeparator:'context_menu_separator'};
+          
+          //      create an array of ContextMenuItem objects
+          var menuItems=[];
+          menuItems.push({className:'context_menu_item', eventName:'zoom_in_click', label:'Zoom in'});
+          menuItems.push({className:'context_menu_item', eventName:'zoom_out_click', label:'Zoom out'});
+          //      a menuItem with no properties will be rendered as a separator
+          menuItems.push({});
+          menuItems.push({className:'context_menu_item', eventName:'center_map_click', label:'Center map here'});
+          menuItems.push({});
+          menuItems.push({className:'context_menu_item', eventName:'get_worldclim_data', label:'Get WorldClim Data'});
+          contextMenuOptions.menuItems=menuItems;
+          
+          //      create the ContextMenu object
+          var contextMenu=new ContextMenu(this.map, contextMenuOptions);
+          
+          //      display the ContextMenu on a Map right click
+          google.maps.event.addListener(this.map, 'rightclick', function(mouseEvent){
+                  contextMenu.show(mouseEvent.latLng);
+          });
+  
+          //      listen for the ContextMenu 'menu_item_selected' event
+          google.maps.event.addListener(contextMenu, 'menu_item_selected', function(latLng, eventName){
+                  //      latLng is the position of the ContextMenu
+                  //      eventName is the eventName defined for the clicked ContextMenuItem in the ContextMenuOptions
+                  switch(eventName){
+                          case 'zoom_in_click':
+                                  this.map.setZoom(this.map.getZoom()+1);
+                                  break;
+                          case 'zoom_out_click':
+                                  this.map.setZoom(this.map.getZoom()-1);
+                                  break;
+                          case 'center_map_click':
+                                  this.map.panTo(latLng);
+                                  break;
+                          case 'get_worldclim_data':
+                                  var lat = latLng.lat();
+                                  var lng = latLng.lng();
+    				that.worldClimInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+      				$.get("worldclimjson.php?lat="+lat+"&lon="+lng,function(html){
+      				    that.worldClimInfoWindow.setContent(html);
+      				});
+      				that.worldClimInfoWindow.setPosition(new google.maps.LatLng(lat,lng));
+      				that.worldClimInfoWindow.open(that.map);
+                                  break;
+                  }
+          });
         },
+
 
         initialize: function(){
           var that = this;

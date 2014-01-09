@@ -93,7 +93,7 @@ Updated:
 					<!-- should load with templates -->
 					<div class="checkbox">
 					    <label>
-					      <input type="checkbox" id="sequenced" value="Sequenced">Sequenced (0)
+					      <input type="checkbox" id="sequenced" value="Sequenced">Sequenced (<span id="sequenced_count">0</span>)
 					    </label>
 					    <span id="sequenced_qmark" data-original-title="Sequenced samples" data-content="These tree samples have had some amount of sequencing performed on them but not necessarily genotyped" title="" data-toggle="popover">
 								<a href="#">
@@ -103,7 +103,7 @@ Updated:
 					</div>
 					<div class="checkbox">
 					    <label>
-					      <input type="checkbox" id="genotyped" value="Genotyped">Genotyped (0)	      
+					      <input type="checkbox" id="genotyped" value="Genotyped">Genotyped (<span id="genotyped_count">0</span>)	      
 					    </label>
 					    <span id="genotyped_qmark" data-original-title="Genotyped samples" data-content="These tree samples have been genotyped by SNPs and/or other genetic markers" title="" data-toggle="popover">
 								<a href="#">
@@ -113,7 +113,7 @@ Updated:
 					</div>
 					<div class="checkbox">
 					    <label>
-					      <input type="checkbox" id="phenotyped" value="Phenotyped">Phenotyped (0)					      
+					      <input type="checkbox" id="phenotyped" value="Phenotyped">Phenotyped (<span id="phenotyped_count">0</span>)					      
 					    </label>
 					    <span id="phenotyped_qmark" data-original-title="Phenotyped samples" data-content="These tree samples have had phenotypes assessed for them" title="" data-toggle="popover">
 								<a href="#">
@@ -125,7 +125,7 @@ Updated:
 					<br>
 					<div class="checkbox gps">
 					    <label>
-					      <input type="checkbox" id="exact_gps" value="Exact GPS"><img class="inline_image" src="images/small_green.png">Exact (0)			      
+					      <input type="checkbox" id="exact_gps" value="Exact GPS"><img class="inline_image" src="images/small_green.png">Exact (<span id="exact_gps_count">0</span>)			      
 					    </label>
 					    <span id="exact_gps_qmark" data-original-title="Exact GPS samples" data-content="Sites with specific and well-defined latitude and longitude coordinates" title="" data-toggle="popover">
 								<a href="#">
@@ -135,7 +135,7 @@ Updated:
 					</div>
 					<div class="checkbox gps">
 					    <label>
-					      <input type="checkbox" id="approx_gps" value="Approximate GPS"><img class="inline_image" src="images/small_yellow.png">Approximate (0)					      
+					      <input type="checkbox" id="approx_gps" value="Approximate GPS"><img class="inline_image" src="images/small_yellow.png">Approximate (<span id="approx_gps_count">0</span>)					      
 					    </label>
 					    <span id="approx_gps_qmark" data-original-title="Approximate GPS samples" data-content="Sites with estimated coordinates which may be as broadly defined as the region or county" title="" data-toggle="popover">
 								<a href="#">
@@ -158,26 +158,39 @@ Updated:
 					<h4>Analyze the data</h4>
 					<div class="btn-group pull-right">
 					 		<button id="run_tool" type="button" class="btn btn-default">Run tool</button>
-						<div class="btn-group pull-right">
-						<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Tools<span class="caret"></span></button>
+						<div id="tools" class="btn-group pull-right">
+						<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"><span id="tools_title">Tools</span> <span class="caret"></span></button>
 							<ul class="dropdown-menu">
-							  	<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Get Common Amplicon</a></li>
-							    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Get Common SNP</a></li>
-							    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Get Common Phenotypes</a></li>
-							    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Get WorldClim data</a></li>
-							    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Diversitree Input file</a></li>
+							  	<li role="presentation"><a id="common_amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Amplicon</a></li>
+							    <li role="presentation"><a id="common_phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Phenotype</a></li>
+							    <li role="presentation"><a id="common_snp_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common SNP</a></li>
+							    <li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get WorldClim data</a></li>
+							    <li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>
 							    <li role="presentation" class="divider"></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="#">SSWAP/TASSEL Analysis</a></li>
+							    <li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL Analysis</a></li>
+								<li role="presentation"><a id="sswap_tool" role="menuitem" tabindex="-1" href="javascript:void(0);"><img src="images/sswapinfoicon.png"> sswap.info</img></a></li>
 							</ul>
 						</div>
 					</div>
-					<ul class="nav nav-tabs" id="data_tabs">
+					<ul class="nav nav-tabs" id="data_tabs"> <!--Diversitree, SSWAP, and TASSEL don't have tabs -->
 						<li>
-							<a href="#markers" data-toggle="tab">Samples</a>
+							<a href="#samples" data-toggle="tab">Samples</a>
 						</li>
+<!-- 						<li>
+							<a href="#common_amplicon" data-toggle="tab">Common Amplicon</a>
+						</li>
+						<li>
+							<a href="#common_phenotype" data-toggle="tab">Common Phenotype</a>
+						</li>
+						<li>
+							<a href="#common_snp" data-toggle="tab">Common SNP</a>
+						</li>
+						<li>
+							<a href="#world_clim" data-toggle="tab">World Clim</a>
+						</li> -->
 					</ul>
 					<div id="data_table_container" class="tab-content">
-						<div class="tab-pane fade in" id="markers">
+						<div class="tab-pane fade in" id="samples">
 							<div class="btn-group">
 								<button class="table_tools btn btn-default" type="button" id="remove_selected">Remove selected</button>
 								<button class="table_tools btn btn-default" type="button" id="clear_table">Clear table</button>

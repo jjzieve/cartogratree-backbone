@@ -64,16 +64,28 @@ require.config({
             deps: ['jquery_core']
         },
         'jquery_mouse':{
-            deps: ['jquery_core','jquery_widget']
+            deps: ['jquery_widget']
         },
         'jquery_resizable':{
-            deps: ['jquery_core','jquery_widget','jquery_mouse']
+            deps: ['jquery_mouse']
         },
         'jquery_sortable':{
-            deps: ['jquery_core','jquery_widget','jquery_mouse','jquery_resizable']
+            deps: ['jquery_resizable']
+        },
+        'slick_core':{
+            deps: ['jquery_resizable','jquery_drag']
         },
         'slick_grid':{
-            deps: ['jquery','jquery_drag']
+            deps: ['slick_core']
+        },
+        'slick_dataview':{
+            deps: ['slick_grid']
+        },
+        'slick_checkbox':{
+            deps: ['slick_dataview']
+        },
+        'slick_selection':{
+            deps: ['slick_checkbox']
         },
 
 	}

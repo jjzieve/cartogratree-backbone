@@ -17,25 +17,21 @@ define([
 			collection: QueriesCollection,
         				
 			events : {
-				"click .checkbox": "toggleFilter"
+				"click input[type=checkbox]": "toggleFilter"
 			},
 
 			toggleFilter : function(event){
     			var filter = event.target.id;
-    			if (filter) {
-    				if ($('#'+filter).parents('label').hasClass('active')) {
-    					this.collection.remove(filter);
-    				}
-    				else {
-    					this.collection.add(
-    					{
-    						id: filter, // so it can be removed
-    						filter: filter
-    					});
-    				}
-    			}
-    			$('#'+filter).parents('label').toggleClass('active');
-    			$('#'+filter).attr('checked', !$('#'+filter).attr('checked'));
+   				if ($('#'+filter).is(":checked")) {
+   					this.collection.add(
+   					{
+   						id: filter, // so it can be removed
+   						filter: filter
+   					});   					
+   				}
+   				else {
+   					this.collection.remove(filter);    				
+   				}
     		},
 
 			getColumn: function(column){//repeated from map view, not very DRY...
@@ -115,7 +111,8 @@ define([
 	    							var try_dbCount = that.addCount(data); 
 		    						$.getJSON(url+amerifluxQuery+key).success(function(data){
 	    								var amerifluxCount = that.addCount(data); 
-		    							$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount+try_dbCount+amerifluxCount));
+		    							// $("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount+try_dbCount+amerifluxCount));
+		    							$("#"+id+"_count").html(tgdrCount+sts_isCount+try_dbCount+amerifluxCount);
 			    					});
 		    					});
 				 			});
@@ -131,6 +128,7 @@ define([
 				$('#exact_gps_qmark').popover({trigger:'hover'});
 				$('#approx_gps_qmark').popover({trigger:'hover'});
 				this.refreshCounts();
+				console.log()
 				this.collection.on('add remove reset',this.refreshCounts,this);	
 			},
 			
