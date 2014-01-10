@@ -10,54 +10,15 @@ define([
   'text!templates/try_db_infowindow.html',
   'text!templates/ameriflux_infowindow.html',
   'text!templates/table_row.html',
-  'goog!maps,3,other_params:libraries=drawing&sensor=false',
+  //'goog!maps,3,other_params:libraries=drawing&sensor=false',
+  'async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization',
   'context_menu',
+  'heatmap_data',
 ], function($,_, Backbone, QueryModel, QueriesCollection, tgdrInfoWindow, sts_isInfoWindow, try_dbInfoWindow, amerifluxInfoWindow, tableRow){
 
   String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
   }
-       //Heatmap configuration
- //        var heatMapIsOn = true;
- //        heatMapData = get_heatmapdata();
- //        var heatmap = new google.maps.visualization.HeatmapLayer({
- //            data: heatMapData
- //        });  
- //      var gradient = [
- //        'rgba(0, 255, 255, 0)',
- //        'rgba(0, 255, 255, 1)',
- //        'rgba(0, 191, 255, 1)',
- //        'rgba(0, 127, 255, 1)',
- //        'rgba(0, 63, 255, 1)',
- //        'rgba(0, 0, 255, 1)',
- //        'rgba(0, 0, 223, 1)',
- //        'rgba(0, 0, 191, 1)',
- //        'rgba(0, 0, 159, 1)',
- //        'rgba(0, 0, 127, 1)',
- //        'rgba(0, 63, 91, 1)',
- //        'rgba(0, 127, 63, 1)',
- //        'rgba(0, 191, 31, 1)',
- //        'rgba(0, 255, 0, 1)'
- //      ]
-
- //        heatmap.setMap(mapA);
- //        heatmap.set('radius', 7);
- //        heatmap.set('maxIntensity', 150);
- //        heatmap.set('dissipating', true);
- //        heatmap.set('gradient', gradient)
- ;
-        //Heatmap init
- //        google.maps.event.addListener(mapA, 'zoom_changed', function() {
-
- //            if (heatMapIsOn && zoom >= 6) {
- //                layerl0.setMap(mapA);
- //                heatMapIsOn = false;
- //            } else if (!heatMapIsOn && zoom < 6) {
- //                layerl0.setMap(null);
- //                heatmap.setMap(mapA);
- //                heatMapIsOn = true;
- //            }
- //        });
 
   	var MapView = Backbone.View.extend({
         el : '#map_canvas',
@@ -69,81 +30,32 @@ define([
         amerifluxInfoWindowTemplate: _.template(amerifluxInfoWindow),
         tableRowTemplate: _.template(tableRow),
         rectangles: [],
-        // mapOptions : {
-        //   zoom: 4,
-        //   minZoom: 2,
-        //   maxZoom: 25,
-        //   center: new google.maps.LatLng(38.5539,-121.7381), //Davis, CA
-        //   mapTypeId: 'terrain',
-        //   mapTypeControl: true,
-        //   mapTypeControlOptions: { 
-        //     mapTypeIds: [
-        //       'terrain',
-        //       'satellite',
-        //     ],
-        //     style: google.maps.MapTypeControlStyle.DROPDOWN_MENU 
-        //   },
-        //   navigationControl: true,
-        //   navigationControlOptions: { 
-        //     style: google.maps.NavigationControlStyle.ZOOM_PAN 
-        //   },
-        //   scrollwheel: false,
-        //   scaleControl: true,
-        //   disableDoubleClickZoom: true
-        // },
+         mapOptions : {
+           zoom: 4,
+           minZoom: 2,
+           maxZoom: 25,
+           center: new google.maps.LatLng(38.5539,-121.7381), //Davis, CA
+           mapTypeId: 'terrain',
+           mapTypeControl: true,
+           mapTypeControlOptions: { 
+             mapTypeIds: [
+               'terrain',
+               'satellite',
+             ],
+             style: google.maps.MapTypeControlStyle.DROPDOWN_MENU 
+           },
+           navigationControl: true,
+           navigationControlOptions: { 
+             style: google.maps.NavigationControlStyle.ZOOM_PAN 
+           },
+           scrollwheel: false,
+           scaleControl: true,
+           disableDoubleClickZoom: true
+         },
 
         initMap: function() {
-          // this.map =  new google.maps.Map(this.el, this.mapOptions);
-          // this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById("toggle_heatmap"));
-          var styles = [
-            {
-              stylers: [
-                { hue: "#00ffe6" },
-                { saturation: -20 }
-              ]
-            },{
-              featureType: "road",
-              elementType: "geometry",
-              stylers: [
-                { lightness: 100 },
-                { visibility: "simplified" }
-              ]
-            },{
-              featureType: "road",
-              elementType: "labels",
-              stylers: [
-                { visibility: "off" }
-              ]
-            }
-          ];
-          var styledMap = new google.maps.StyledMapType(styles,
-            {name: "Heat map"});
-          var mapOptions = {
-              zoom: 4,
-              minZoom: 2,
-              maxZoom: 25,
-              center: new google.maps.LatLng(38.5539,-121.7381), //Davis, CA
-              // mapTypeId: 'terrain',
-              mapTypeControl: true,
-              mapTypeControlOptions: { 
-                mapTypeIds: [
-                  'terrain',
-                  'satellite',
-                  'heat_map',
-                ],
-                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU 
-              },
-              navigationControl: true,
-              navigationControlOptions: { 
-                style: google.maps.NavigationControlStyle.ZOOM_PAN 
-              },
-              scrollwheel: false,
-              scaleControl: true,
-              disableDoubleClickZoom: true
-          };
-          this.map = new google.maps.Map(this.el, mapOptions);
-          this.map.mapTypes.set('heat_map',styledMap);
-          this.map.setMapTypeId('terrain');
+          this.map =  new google.maps.Map(this.el, this.mapOptions);
+          this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById("toggle_heatmap"));
 
         },
         
@@ -197,6 +109,62 @@ define([
 		
         },
       
+	initHeatMap: function(){
+	  var that = this;
+	  //Heatmap configuration
+          var heatMapData = get_heatmapdata();
+          this.heatmap = new google.maps.visualization.HeatmapLayer({
+            data: heatMapData
+          }); 
+      	  var gradient = [
+      	   'rgba(0, 255, 255, 0)',
+      	   'rgba(0, 255, 255, 1)',
+      	   'rgba(0, 191, 255, 1)',
+      	   'rgba(0, 127, 255, 1)',
+      	   'rgba(0, 63, 255, 1)',
+      	   'rgba(0, 0, 255, 1)',
+      	   'rgba(0, 0, 223, 1)',
+      	   'rgba(0, 0, 191, 1)',
+      	   'rgba(0, 0, 159, 1)',
+      	   'rgba(0, 0, 127, 1)',
+      	   'rgba(0, 63, 91, 1)',
+      	   'rgba(0, 127, 63, 1)',
+      	   'rgba(0, 191, 31, 1)',
+      	   'rgba(0, 255, 0, 1)'
+      	  ];
+
+      	  this.heatmap.set('radius', 7);
+      	  this.heatmap.set('maxIntensity', 150);
+      	  this.heatmap.set('dissipating', true);
+      	  this.heatmap.set('gradient', gradient);
+	  this.toggleHeatMap($("#toggle_heatmap"));//initially on 
+	  
+	//listener
+	  $("#toggle_heatmap").on("click", function(){
+		that.toggleHeatMap($(this));
+	  });
+	},
+	
+	toggleHeatMap: function(heatMapToggle){
+		heatMapToggle.toggleClass("selected");
+		if (heatMapToggle.hasClass("selected")){
+			this.heatmap.setMap(this.map);
+			this.clearLayers();
+		}
+		else{
+			this.heatmap.setMap(null);
+			this.refreshLayers();
+		}
+	},
+	  
+
+	clearLayers: function(){
+	  console.log('clearLayers');
+	  this.tgdrLayer.setMap(null);
+	  this.sts_isLayer.setMap(null);
+	  this.try_dbLayer.setMap(null);
+	  this.amerifluxLayer.setMap(null);
+	},
 
         initLayers: function() {
           this.tgdrLayer = new google.maps.FusionTablesLayer({
@@ -401,19 +369,6 @@ define([
         },
 
 
-        initialize: function(){
-          var that = this;
-          this.initMap();
-          this.initLayers();
-          this.initInfoWindows();
-          this.initDrawingManager();
-          this.initContextMenu();
-          this.collection.on('add remove reset',this.refreshLayers,this);
-          if(this.collection.length > 0){// check if tree_ids are in url. if so, refresh map
-            this.refreshLayers();
-          }
-        },
-
         getColumn: function(column){
           return (this.collection.filter(function(query){return query.get("column") === column}).map(function(query){return query.get("value")}));
         },
@@ -502,6 +457,7 @@ define([
         },
 
         refreshLayers: function(){
+	if(!$("#toggle_heatmap").hasClass("selected")){//if heat map on, do nothing
           //tree nodes
           var all = this.getColumn("all");
           var environmental = this.getColumn("environmental");
@@ -545,7 +501,23 @@ define([
                   "rectangleWhereClause:"+this.collection.meta("rectangleWhereClause")+"\n"+
                   "try_dbWhereClause:"+this.collection.meta("try_dbWhereClause")+"\n"+
                   "amerifluxWhereClause:"+this.collection.meta("amerifluxWhereClause"));   
+	}
         },
+
+        initialize: function(){
+          var that = this;
+          this.initMap();
+          this.initLayers();
+          this.initHeatMap();
+          this.initInfoWindows();
+          this.initDrawingManager();
+          this.initContextMenu();
+          this.collection.on('add remove reset',this.refreshLayers,this);
+          if(this.collection.length > 0){// check if tree_ids are in url. if so, refresh map
+            this.refreshLayers();
+          }
+        },
+
 
         render: function(){
           return this;

@@ -36,6 +36,7 @@ require.config({
     templates: '../templates',
     propertyParser : 'libs/require/propertyParser',
     text: 'libs/require/text',
+    heatmap_data: 'heatmapdata'
     //font: 'libs/require/font',
     //image: 'libs/require/image',
     //json: 'libs/require/json',
@@ -52,7 +53,12 @@ require.config({
             exports: '_'
         },
     	'context_menu': {
-    	   deps: ['goog!maps,3,other_params:libraries=drawing&sensor=false']
+    	   //deps: ['goog!maps,3,other_params:libraries=drawing,visualization&sensor=false']
+	   deps: ['async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization']
+    	},
+    	'heatmap_data': {
+	   deps: ['async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization']
+    //	   deps: ['goog!maps,3,other_params:libraries=drawing,visualization&sensor=false']
     	},
         'jquery_migrate': {
             deps: ['jquery']

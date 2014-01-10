@@ -148,10 +148,10 @@ Updated:
 			</div>
 			<!--MAP-->
 			<div class="col-xs-8">
-				<!-- <div id="toggle_heatmap">
-					Toggle heat map
-				</div> -->
 				<div id="map_canvas"></div>
+				<div id="toggle_heatmap">
+					<img src="images/heatmap.jpg">
+				</div>
 			</div>
 
 		</div>

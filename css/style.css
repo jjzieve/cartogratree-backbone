@@ -82,28 +82,20 @@ h4{
   width: 100%;
 }
 
-#toggle_heatmap {
-/*  font-family: Arial, sans-serif;
-  font-weight: bold;
+#toggle_heatmap{
   background: #fff;
-  padding: 2px;
-  margin: 3px;*/
-  /*border: 3px solid #000;*/
-  -moz-user-select: none;
-  background-clip: padding-box;
-  background-color: #FFFFFF;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 2px;
-  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
-  color: #000000;
-  direction: ltr;
-  font-family: Roboto,Arial,sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  overflow: hidden;
-  padding: 1px 6px;
-  position: relative;
-  text-align: left;
+  padding: 4px;
+  margin-top: 6px; 
+  margin-left: -5px;
+}
+#toggle_heatmap img{
+ height: 16px;
+ width: 16px;
+ opacity: 0.3;
+}
+
+#toggle_heatmap.selected img{
+ opacity: 1;
 }
 
 .infowindow img{

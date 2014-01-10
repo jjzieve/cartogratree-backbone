@@ -15,10 +15,9 @@ $jsonarray = json_decode($json, true);
 
 
 ?>
-                        <html>
+                 <!--       <html>
                         <head>
                         
-                        <!--<link type="text/css" href="css/themes/blue/style.css" rel="stylesheet" />-->
                         <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
                         <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
                         <script type="text/javascript" src="js/jquery-ui-1.8.20.custom.min.js"></script>
@@ -32,7 +31,7 @@ $jsonarray = json_decode($json, true);
                         }
                         </style>
                         </head>
-			<body>
+			<body> -->
 
 <table class="table table-borderless table-condensed table-hover">
 
@@ -122,7 +121,7 @@ $jsonarray = json_decode($json, true);
                                 print($OUTPUT);
 
 ?>
-			</body>
-			</html>
+<!--			</body>-->
+<!--			</html>-->
 
 
