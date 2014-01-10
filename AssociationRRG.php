@@ -70,13 +70,24 @@ function generateJsonTreeById($array, $latarray, $lngarray) {
        "api" : "/makeRRG",
 
        "prefix" : {
-         "data"   : "http://sswapmeet.sswap.info/data/",
-         "tassel" : "http://sswapmeet.sswap.info/iplant/tassel/",
-         "tassel-args" : "http://sswapmeet.sswap.info/iplant/tassel/args/"
+            "data"   : "http://sswapmeet.sswap.info/data/",
+            "mime"   : "http://sswapmeet.sswap.info/mime/",
+            "tassel" : "http://sswapmeet.sswap.info/iplant/tassel/",
+            "tasselFile" : "http://sswapmeet.sswap.info/maizegenetics/tassel/file/",
+            "tassel-args" : "http://sswapmeet.sswap.info/iplant/tassel/args/"
         },
 
 
-        "http://sswap.info/canonical" : {
+      "http://sswap.info/iplant/resources/tassel/rrg" : { },
+
+      "mapping" : { "sswap:Subject" : "_:gwasData" },
+
+      "definitions" : {
+
+        "_:gwasData" : {
+
+          "rdf:type" : "tassel:requests/TasselRequest",
+
 ';
     if($genoUrl) {
 
@@ -87,43 +98,56 @@ function generateJsonTreeById($array, $latarray, $lngarray) {
 
     if($phenoUrl) {
 
-        $jsonRRG = $jsonRRG.'           "tassel-args:r"            : '.$phenoUrl.'
+        $jsonRRG = $jsonRRG.'           "tassel-args:r"            : '.$phenoUrl.',
+
 ';
 
     }
-
-
-	$jsonRRG = $jsonRRG.'
-         },
-
-      "mapping" : { "sswap:Subject" : "_:gwasData" },
-
-      "definitions" : {
-
-        "_:gwasData" : {
-
-          "rdf:type" : "data:DataBundle",
-
-';
 
     if($genoUrl) {
 
-        $jsonRRG = $jsonRRG.'           "tassel:data/hasGenotype"            : '.$genoUrl.',
+        $jsonRRG = $jsonRRG.'           "tassel:data/hasGenotype"           : '.$genoUrl.',
 ';
 
     }
-//    if($worldclimUrl) {
-//
-//        $jsonRRG = $jsonRRG.'           "tassel:data/hasEnviro"            : '.$worldclimUrl.',
-//';
-//
-//    }
     if($phenoUrl) {
 
         $jsonRRG = $jsonRRG.'           "tassel:data/hasTraits"             : '.$phenoUrl.'
 ';
 
     }
+
+        $jsonRRG = $jsonRRG.'
+         },
+
+';
+
+    if($genoUrl) {
+
+        $jsonRRG = $jsonRRG.'         '.$genoUrl.' : {
+              "rdf:type" : [ "mime:application/X-hapmap" , "tasselFile:Genotype" ]
+         },
+
+';
+
+    }
+
+    if($phenoUrl) {
+
+        $jsonRRG = $jsonRRG.'         '.$phenoUrl.' : {
+              "rdf:type" : "tasselFile:Trait"
+         }
+
+';
+
+    }
+
+//    if($worldclimUrl) {
+//
+//        $jsonRRG = $jsonRRG.'           "tassel:data/hasEnviro"            : '.$worldclimUrl.',
+//';
+//
+//    }
     if($popstruUrl) {
 
         $jsonRRG = $jsonRRG.'           "tassel:data/hasPopulationStructure"            : '.$popstruUrl.',
@@ -138,82 +162,9 @@ function generateJsonTreeById($array, $latarray, $lngarray) {
     }
 
         $jsonRRG = $jsonRRG.'
-         }
-
       }
 }';
 
-//$old='
-//        "prefix" : {
-//                "treeGenes" : "'.$namespace.'",
-//                "requests" : "'.$namespace.'requests/"
-//        },
-//
-//    "http://dendrome.ucdavis.edu/cartogratree/GetWorldClimData.php?lat='.$latstring.'&lon='.$lngstring.'&id='.$namestring.'&csv"
-//    "http://dendrome.ucdavis.edu/cartogratree/GetPhenoData.php?id='.$namestring.'&csv"
-//    "http://dendrome.ucdavis.edu/_dev/havasquezgross/cartogratree/GetGenoData.php?tid='.$namestring.'&hapmap"
-//	"http://sswap.dendrome.ucdavis.edu/resources/associationStudies/assocationStudiesService" : {},';
-//	
-//
-//	$jsonRRG = $jsonRRG.'
-//
-//	"mapping" : {
-//	';
-//
-//	$size = count($array);
-//	//foreach term create a subject node
-//	foreach($array as $i => $value) {
-//		$subNum = $i + 1;
-//		if($i < $size - 1) {
-//			$jsonRRG = $jsonRRG.'
-//		"_:subject'.$subNum.'" : "urn:treeGenes:treesample:id:'.$value.'",';
-//		} else {
-//			$jsonRRG = $jsonRRG.'
-//		"_:subject'.$subNum.'" : "urn:treeGenes:treesample:id:'.$value.'"';
-//		}
-//	}
-//
-//	$jsonRRG = $jsonRRG.'
-//
-//	},
-//
-//	"definitions" : {
-//	';
-//
-//	foreach($array as $i => $value) {
-//		$subNum = $i + 1;
-//		if($i < $size) {
-//			$jsonRRG = $jsonRRG.'
-//		"_:subject'.$subNum.'" : { "treeGenes:treesample/id" : "'.$value.'" },';
-//		}
-//	}
-//
-//	$jsonRRG = $jsonRRG.'
-//	';
-//        foreach($array as $i => $value) {
-//                if($i < $size - 1) {
-//                        $jsonRRG = $jsonRRG.'
-//                "urn:treeGenes:treesample:id:'.$value.'" : {
-//                        "rdf:type" : "treeGenes:treesample/TreeSample",
-//                        "treeGenes:treesample/id" : "'.$value.'",
-//                        "treeGenes:treesample/lat" : "'.$latarray[$i].'",
-//                        "treeGenes:treesample/lng" : "'.$lngarray[$i].'"
-//                },';
-//                } else {
-//                        $jsonRRG = $jsonRRG.'
-//                "urn:treeGenes:treesample:id:'.$value.'" : {
-//                        "rdf:type" : "treeGenes:treesample/TreeSample",
-//                        "treeGenes:treesample/id" : "'.$value.'"
-//                        "treeGenes:treesample/lat" : "'.$latarray[$i].'",
-//                        "treeGenes:treesample/lng" : "'.$lngarray[$i].'"
-//                }';
-//                }
-//        }   
-//	
-//	$jsonRRG = $jsonRRG.'
-//
-//	}
-//}';
 
 	return $jsonRRG;
 }

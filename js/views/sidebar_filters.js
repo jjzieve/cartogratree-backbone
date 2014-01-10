@@ -61,18 +61,7 @@ define([
 				}
         	},
 
-        	ajaxPOST: function(url){
-        		$.ajax({
-				  dataType: "json",
-				  type:'POST',
-				  url: url,
-				  data: data,
-				  success: function(response){
-				  	console.log(response);
-				  }
-				});
-        	},
-  
+ 
 			refreshCounts: function(){
 				var that = this;
 				this.$el.children().each(function(){ //check each filter/checkbox
@@ -127,8 +116,9 @@ define([
 				$('#phenotyped_qmark').popover({trigger:'hover'});
 				$('#exact_gps_qmark').popover({trigger:'hover'});
 				$('#approx_gps_qmark').popover({trigger:'hover'});
+				// $("#exact_gps").attr('checked',true); // do we really need this?
+				// $("#approx_gps").attr('checked',true);
 				this.refreshCounts();
-				console.log()
 				this.collection.on('add remove reset',this.refreshCounts,this);	
 			},
 			

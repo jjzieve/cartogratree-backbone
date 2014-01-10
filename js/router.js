@@ -6,15 +6,17 @@ define([
 	'backbone',
 	'models/query',
 	'models/tree_node',
+	'models/tree_id',
 	'collections/queries',
+	'collections/tree_ids',
 	'views/navbar',
 	'views/map',
 	'views/sidebar_selection_tree',
 	'views/sidebar_filters',
 	'views/bottom_tabs',
 	'views/bottom_table',
-	], function($, _, Backbone, QueryModel, TreeNodeModel, 
-		QueriesCollection, 
+	], function($, _, Backbone, QueryModel, TreeNodeModel, TreeIDModel,
+		QueriesCollection, TreeIDCollection,
 		NavBarView, MapView, SelectionTreeView, FiltersView, BottomTabsView, BottomTableView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
@@ -31,6 +33,8 @@ define([
 				var navbar = new NavBarView();
 				var query = new QueryModel();
 				var queries = new QueriesCollection();
+				var selected_tree_id = new TreeIDModel();
+				var selected_tree_ids = new TreeIDCollection();
 				if (tree_ids){//add tree_ids from url to the collection
 					var tree_ids_array = tree_ids.split(',');
 					$.each(tree_ids_array,function(index,tree_id){
@@ -53,8 +57,8 @@ define([
 				var map = new MapView({collection: queries,model: query}); //get rid of generic endings "view,map"
 				var selectionTree = new SelectionTreeView({collection: queries, model: treeNode});
 				var filters = new FiltersView({collection: queries,model: query});
-				var tabs = new BottomTabsView({collection: queries,model: query});
-				var table = new BottomTableView({collection: queries,model: query});
+				var tabs = new BottomTabsView({collection: selected_tree_ids,model: selected_tree_id});
+				var table = new BottomTableView({collection: queries, sub_collection: selected_tree_ids, model: query});
 
 
 			});

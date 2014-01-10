@@ -148,29 +148,35 @@ Updated:
 			</div>
 			<!--MAP-->
 			<div class="col-xs-8">
+				<!-- <div id="toggle_heatmap">
+					Toggle heat map
+				</div> -->
 				<div id="map_canvas"></div>
 			</div>
+
 		</div>
 			<!--ANALYSIS PANE-->
 		<div id= "analysis_pane" class="row">
 			<div class="col-xs-12">
-				<div class="well well-sm">
+				<div id="tabs_container" class="well well-sm">
 					<h4>Analyze the data</h4>
-					<div class="btn-group pull-right">
-					 		<button id="run_tool" type="button" class="btn btn-default">Run tool</button>
-						<div id="tools" class="btn-group pull-right">
-						<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"><span id="tools_title">Tools</span> <span class="caret"></span></button>
-							<ul class="dropdown-menu">
-							  	<li role="presentation"><a id="common_amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Amplicon</a></li>
-							    <li role="presentation"><a id="common_phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Phenotype</a></li>
-							    <li role="presentation"><a id="common_snp_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common SNP</a></li>
-							    <li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get WorldClim data</a></li>
-							    <li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>
-							    <li role="presentation" class="divider"></li>
-							    <li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL Analysis</a></li>
-								<li role="presentation"><a id="sswap_tool" role="menuitem" tabindex="-1" href="javascript:void(0);"><img src="images/sswapinfoicon.png"> sswap.info</img></a></li>
-							</ul>
-						</div>
+					<div id="tools" class="btn-group pull-right">
+						<button class="btn btn-default" type="button" data-toggle="dropdown"><span id="tools_title">Select tool</span> <span class="caret"></span></button>
+						<ul class="dropdown-menu">
+						    <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Select tool</a></li>
+						  	<li class="disabled" role="presentation"><a id="common_amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Amplicon</a></li>
+						    <li role="presentation"><a id="common_phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Phenotype</a></li>
+						    <li role="presentation"><a id="common_snp_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common SNP</a></li>
+						    <li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get WorldClim data</a></li>
+						    <li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>
+						    <li role="presentation" class="divider"></li>
+						    <li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>
+				    		<li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>
+							<li role="presentation"><a id="sswap_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Tree ID data</a></li>
+						</ul>
+						<div class="btn-group">
+				 			<button id="run_tool" type="button" class="btn btn-default">Run tool on selected samples</button>		
+				 		</div>
 					</div>
 					<ul class="nav nav-tabs" id="data_tabs"> <!--Diversitree, SSWAP, and TASSEL don't have tabs -->
 						<li>
@@ -191,10 +197,10 @@ Updated:
 					</ul>
 					<div id="data_table_container" class="tab-content">
 						<div class="tab-pane fade in" id="samples">
-							<div class="btn-group">
-								<button class="table_tools btn btn-default" type="button" id="remove_selected">Remove selected</button>
-								<button class="table_tools btn btn-default" type="button" id="clear_table">Clear table</button>
+							<div class="button-wrapper">
+								<button class="btn btn-default" type="button" id="remove_selected">Remove selected samples</button>
 							</div>
+								<div id="clear_table" style="display: none;"></div> <!-- just used to remove rectangles from map -->
 							<table id="data_table"> 
 						    	<td valign="top" class="grid-col">
 									<div id="grid" class="grid"></div>

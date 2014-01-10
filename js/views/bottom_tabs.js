@@ -6,43 +6,82 @@ define([
   'underscore', // lib/underscore/underscore
   'backbone',    // lib/backbone/backbone
   'bootstrap',
-  'models/query',
-  'collections/queries',
-], function($, _, Backbone, QueryModel, QueriesCollection){
+  'models/tree_id',
+  'collections/tree_ids',
+], function($, _, Backbone, Tree_IDModel, Tree_IDCollection){
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
   var BottomTabsView = Backbone.View.extend({
-    el: "#data_tabs",
+    el: "#tabs_container",
+    model: Tree_IDModel,
+    collection: Tree_IDCollection,
+
+    events:{
+      "click #tools ul li a" : "changeTitle",
+      "click #run_tool" : "runTool"
+    },
+
+    changeTitle: function(e){
+      $('#tools_title').html($(e.target).html());
+      $("#tools ul li a").not(e.target).removeClass("selected");
+      $(e.target).addClass('selected');
+    },
+
+    runTool: function(e){
+      var tool = $("#tools ul li").find("a.selected").attr("id");
+      console.log(tool);
+      var ids = this.collection.pluck("id").join(","); 
+      var lats = this.collection.pluck("lat").join(","); 
+      var lngs = this.collection.pluck("lng").join(",");
+      console.log(ids);
+      console.log(lats);
+      console.log(lngs);
+      if(ids.length > 0){
+        switch(tool){
+          case 'common_amplicon_tool':
+            break;
+          case 'common_phenotype_tool':
+            this.openCommonPhenoCSV(ids);
+            break;
+          case 'worldclim_tool':
+            break;
+          case 'common_snp_tool':
+            this.openSNPCSV(ids);
+            break;
+          case 'diversitree_tool':
+            this.openDiversitreeCSV(ids);
+            break;
+          case 'tassel_tool':
+            this.openAssociationRRG(ids);
+            break;
+          case 'sswap_tool':
+            break;
+        }
+      }
+    },
+    openCommonPhenoCSV: function(ids){
+      $("#data_tabs").append("<li><a href='#common_amplicon' data-toggle='tab'>Common Phenotypes</a></li>");
+      $("#data_table_container").append("<div class='tab-pane fade in'"+
+       "style='background-image:url(images/ajax-loader.gif);background-repeat:no-repeat;background-position:center;'"+
+       "id='common_phenotype_table'></div>");
+      this.$("ul.nav-tabs li a:last").tab('show');
+      window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
+    },
+    openDiversitreeCSV: function(ids){
+      window.location.href = 'DiversitreeDownload.php?tid='+ids+'&csv';
+    },
+     openSNPCSV: function(ids){
+      window.location.href = 'GetSNPData.php?tid='+ids+'&csv';
+    },
+    openAssociationRRG: function(ids){
+      window.location.href = 'AssociationRRG.php?tid='+ids;
+    },
 
     initialize: function(){
       var that = this;
-      this.$("li a:first").tab('show');
-      $('#tools ul li a').on('click', function() {
-        $('#tools_title').html($(this).html());
-        $("#tools ul li a").not(this).removeClass("selected");
-        $(this).addClass('selected');
-      });
-      $("#run_tool").on('click', function(){
-        console.log($("#tools ul li").find("a.selected").attr("id"));
-        // $.each($("#tools ul li a"),function(index,element){
-        //   if (element.hasClass("selected")){
-        //     console.log(element.html());
-        //   }
-        // })
-      });
+      this.$("ul.nav-tabs li a:first").tab('show');
+         
     },
-
-// $('#myTabContent').append('<div class="tab-pane in active" id="new_tab_id"><p> Loading content ...</p></div>');
-// $('#tab').append('<li><a href="#new_tab_id" data-toggle="tab">Tab Name</a></li>');
-// $('#tab a:last').tab('show');
-    // events : {
-    //   "click .nav_tabs li a":"show"
-    // },
-
-    // show: function(e){
-    //   e.preventDefault();
-    //   this.$(e.target).tab('show');
-    // },
 
     render: function(){
       return this;

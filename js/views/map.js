@@ -69,31 +69,82 @@ define([
         amerifluxInfoWindowTemplate: _.template(amerifluxInfoWindow),
         tableRowTemplate: _.template(tableRow),
         rectangles: [],
-        mapOptions : {
-          zoom: 4,
-          minZoom: 2,
-          maxZoom: 25,
-          center: new google.maps.LatLng(38.5539,-121.7381), //Davis, CA
-          mapTypeId: 'terrain',
-          mapTypeControl: true,
-          mapTypeControlOptions: { 
-            mapTypeIds: [
-              'terrain',
-              'satellite'
-            ],
-            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU 
-          },
-          navigationControl: true,
-          navigationControlOptions: { 
-            style: google.maps.NavigationControlStyle.ZOOM_PAN 
-          },
-          scrollwheel: false,
-          scaleControl: true,
-          disableDoubleClickZoom: true
-        },
+        // mapOptions : {
+        //   zoom: 4,
+        //   minZoom: 2,
+        //   maxZoom: 25,
+        //   center: new google.maps.LatLng(38.5539,-121.7381), //Davis, CA
+        //   mapTypeId: 'terrain',
+        //   mapTypeControl: true,
+        //   mapTypeControlOptions: { 
+        //     mapTypeIds: [
+        //       'terrain',
+        //       'satellite',
+        //     ],
+        //     style: google.maps.MapTypeControlStyle.DROPDOWN_MENU 
+        //   },
+        //   navigationControl: true,
+        //   navigationControlOptions: { 
+        //     style: google.maps.NavigationControlStyle.ZOOM_PAN 
+        //   },
+        //   scrollwheel: false,
+        //   scaleControl: true,
+        //   disableDoubleClickZoom: true
+        // },
 
         initMap: function() {
-          this.map =  new google.maps.Map(this.el, this.mapOptions);
+          // this.map =  new google.maps.Map(this.el, this.mapOptions);
+          // this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById("toggle_heatmap"));
+          var styles = [
+            {
+              stylers: [
+                { hue: "#00ffe6" },
+                { saturation: -20 }
+              ]
+            },{
+              featureType: "road",
+              elementType: "geometry",
+              stylers: [
+                { lightness: 100 },
+                { visibility: "simplified" }
+              ]
+            },{
+              featureType: "road",
+              elementType: "labels",
+              stylers: [
+                { visibility: "off" }
+              ]
+            }
+          ];
+          var styledMap = new google.maps.StyledMapType(styles,
+            {name: "Heat map"});
+          var mapOptions = {
+              zoom: 4,
+              minZoom: 2,
+              maxZoom: 25,
+              center: new google.maps.LatLng(38.5539,-121.7381), //Davis, CA
+              // mapTypeId: 'terrain',
+              mapTypeControl: true,
+              mapTypeControlOptions: { 
+                mapTypeIds: [
+                  'terrain',
+                  'satellite',
+                  'heat_map',
+                ],
+                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU 
+              },
+              navigationControl: true,
+              navigationControlOptions: { 
+                style: google.maps.NavigationControlStyle.ZOOM_PAN 
+              },
+              scrollwheel: false,
+              scaleControl: true,
+              disableDoubleClickZoom: true
+          };
+          this.map = new google.maps.Map(this.el, mapOptions);
+          this.map.mapTypes.set('heat_map',styledMap);
+          this.map.setMapTypeId('terrain');
+
         },
         
         clearRectangles: function(){
@@ -323,21 +374,21 @@ define([
   
           //      listen for the ContextMenu 'menu_item_selected' event
           google.maps.event.addListener(contextMenu, 'menu_item_selected', function(latLng, eventName){
-                  //      latLng is the position of the ContextMenu
-                  //      eventName is the eventName defined for the clicked ContextMenuItem in the ContextMenuOptions
-                  switch(eventName){
-                          case 'zoom_in_click':
-                                  this.map.setZoom(this.map.getZoom()+1);
-                                  break;
-                          case 'zoom_out_click':
-                                  this.map.setZoom(this.map.getZoom()-1);
-                                  break;
-                          case 'center_map_click':
-                                  this.map.panTo(latLng);
-                                  break;
-                          case 'get_worldclim_data':
-                                  var lat = latLng.lat();
-                                  var lng = latLng.lng();
+          //      latLng is the position of the ContextMenu
+          //      eventName is the eventName defined for the clicked ContextMenuItem in the ContextMenuOptions
+            switch(eventName){
+              case 'zoom_in_click':
+                      this.map.setZoom(this.map.getZoom()+1);
+                      break;
+              case 'zoom_out_click':
+                      this.map.setZoom(this.map.getZoom()-1);
+                      break;
+              case 'center_map_click':
+                      this.map.panTo(latLng);
+                      break;
+              case 'get_worldclim_data':
+                      var lat = latLng.lat();
+                      var lng = latLng.lng();
     				that.worldClimInfoWindow = new google.maps.InfoWindow({maxWidth:250});
       				$.get("worldclimjson.php?lat="+lat+"&lon="+lng,function(html){
       				    that.worldClimInfoWindow.setContent(html);
