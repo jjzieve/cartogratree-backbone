@@ -77,11 +77,12 @@ define([
               ]
             },
           });
-
+	  
           this.drawingManager.setMap(this.map);
 	
           google.maps.event.addListener(this.drawingManager,'rectanglecomplete', function(rectangle){
             that.rectangles.push(rectangle); //store map rectangle objects but effectively only cache and 
+	    if(!$("#toggle_heatmap").hasClass("selected")){// do nothing to the collection if in heat map mode
             var sw = rectangle.getBounds().getSouthWest();
             var ne = rectangle.getBounds().getNorthEast();
             var rectangleQuery = "ST_INTERSECTS('lat', RECTANGLE(LATLNG"+sw+",LATLNG"+ne+"))";
@@ -97,12 +98,14 @@ define([
                 value: rectangleQuery // a bit hackish because it doesn't follow the format of the other models but its the best I could come up with...
               });
             }
+	}
+	//listeners
             console.log("in rectangle complete");
             console.log(that.collection);
       	  });
           $("#clear_table").on("click", function(){
             that.clearRectangles();
-          })
+          });
           google.maps.event.addListener(this.map,'click',function(){// on map click remove all the rectangles from the map and the current query
             that.clearRectangles();
           });
@@ -147,13 +150,22 @@ define([
 	
 	toggleHeatMap: function(heatMapToggle){
 		heatMapToggle.toggleClass("selected");
-		if (heatMapToggle.hasClass("selected")){
+		var columns = this.collection.pluck("column");
+		// don't add the heat map if tree_ids are in the url
+		// && columns.indexOf("tree_id_sts_is") === -1 && columns.indexOf("tree_id_tgdr") === -1 ){
+		if (heatMapToggle.hasClass("selected")){ 
 			this.heatmap.setMap(this.map);
 			this.clearLayers();
+			$("#heatmap_tooltip").tooltip('hide');
+			$('#heatmap_tooltip').data('tooltip',false)          // Delete the tooltip
+              			.tooltip({title: 'Heat map (All studies)',placement: 'bottom'});
 		}
 		else{
 			this.heatmap.setMap(null);
 			this.refreshLayers();
+			$("#heatmap_tooltip").tooltip('hide');
+			$('#heatmap_tooltip').data('tooltip',false)          // Delete the tooltip
+              			.tooltip({ title: 'Selected markers',placement:"bottom"});
 		}
 	},
 	  
@@ -444,6 +456,7 @@ define([
           }
           else{
             this.collection.meta(table+"WhereClause",whereClause); //sets the new where clause
+	    if(!$("#toggle_heatmap").hasClass("selected")){//if heat map on, don't set layer
             layer.setOptions({
               query: {
                 select: "lat",
@@ -452,12 +465,12 @@ define([
               }
             });
             layer.setMap(this.map);
+	}
           }
 
         },
 
         refreshLayers: function(){
-	if(!$("#toggle_heatmap").hasClass("selected")){//if heat map on, do nothing
           //tree nodes
           var all = this.getColumn("all");
           var environmental = this.getColumn("environmental");
@@ -501,7 +514,6 @@ define([
                   "rectangleWhereClause:"+this.collection.meta("rectangleWhereClause")+"\n"+
                   "try_dbWhereClause:"+this.collection.meta("try_dbWhereClause")+"\n"+
                   "amerifluxWhereClause:"+this.collection.meta("amerifluxWhereClause"));   
-	}
         },
 
         initialize: function(){

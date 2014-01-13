@@ -59,9 +59,9 @@ function generateJsonTreeById($array, $latarray, $lngarray) {
         $lngstring = implode(",", $lngarray);
         $worldclimUrl = '"http://dendrome.ucdavis.edu/cartogratree/GetWorldClimData.php?lat='.$latstring.'&lon='.$lngstring.'&id='.$namestring.'&csv"';
     }
-    $phenoUrl= '"http://dendrome.ucdavis.edu/_dev/havasquezgross/cartogratree/GetPhenoData.php?tid='.$namestring.'"';
+    $phenoUrl= '"http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetPhenoData.php?tid='.$namestring.'"';
     //$genoUrl= '"http://dendrome.ucdavis.edu/_dev/havasquezgross/cartogratree/GetGenoData.php?tid='.$namestring.'&hapmap"';
-    $genoUrl= '"http://dendrome.ucdavis.edu/_dev/havasquezgross/cartogratree/GetGenoData.php?tid='.$namestring.'"';
+    $genoUrl= '"http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetGenoData.php?tid='.$namestring.'"';
     $popstruUrl = NULL;
     $kinshipUrl = NULL;
 

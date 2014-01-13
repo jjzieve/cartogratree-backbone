@@ -45,7 +45,7 @@ Updated:
 					<li><a href="about.html">About</a></li>
 					<li><a href="http://dendrome.ucdavis.edu/treegenes/" >TreeGenes</a></li>
 					<li><a href="http://dendrome.ucdavis.edu/DiversiTree/">DiversiTree</a></li>
-					<li><a href="http://loblolly.ucdavis.edu/bipod/ftp/Documentation/CartogratreeDocumentation.pdf">Documentation</a></li>
+					<li class="disabled"><a href="http://loblolly.ucdavis.edu/bipod/ftp/Documentation/CartogratreeDocumentation.pdf">Documentation</a></li>
 					<li><a href="mailto:tg-help.ucdavis.edu">Contact</a>
 					<li><a id="credits" data-toggle="popover" data-placement="bottom" title="Credits" href="#">Credits</a></li>
 				</ul>
@@ -57,6 +57,9 @@ Updated:
 				<div id="sidebar_selection" class="well well-sm">
 					<div id="select_tree_header">
 						<h4>Map Display</h4>
+					<span id="display_description">
+						Ctrl+Click or Cmd+Click for multiple selections
+					</span>
 					</div>
 					<div class="filler"></div>
 					<div id="selection_tree_container">
@@ -89,7 +92,7 @@ Updated:
 					<div id="filter_header">
 						<h4>Filter Map Display</h4>
 					</div>
-					<div class="filler"></div>
+					<div class="filler2"></div>
 					<!-- should load with templates -->
 					<div class="checkbox">
 					    <label>
@@ -149,9 +152,11 @@ Updated:
 			<!--MAP-->
 			<div class="col-xs-8">
 				<div id="map_canvas"></div>
-				<div id="toggle_heatmap">
-					<img src="images/heatmap.jpg">
-				</div>
+					<div id="toggle_heatmap">
+						<a id="heatmap_tooltip" href="#" data-toggle="tooltip">
+						<img src="images/heatmap.jpg">
+						</a>
+					</div>
 			</div>
 
 		</div>
@@ -198,7 +203,10 @@ Updated:
 					<div id="data_table_container" class="tab-content">
 						<div class="tab-pane fade in" id="samples">
 							<div class="button-wrapper">
-								<button class="btn btn-default" type="button" id="remove_selected">Remove selected samples</button>
+								<div class="btn-group">
+									<button class="btn btn-default" type="button" id="remove_selected">Remove selected samples</button>
+									<button id="sswap_demo" type="button" style="color:white;"class="btn btn-success">Tassel demo data</button>
+								</div>
 							</div>
 								<div id="clear_table" style="display: none;"></div> <!-- just used to remove rectangles from map -->
 							<table id="data_table"> 
@@ -231,7 +239,9 @@ Updated:
 				</a>
       			</p>
       			<div id="version_num">v3.0.0</div>
-		</div>			
+		</div>		
+	
+	<div id="pipelineButton"></div><!--for sswap-->
 
 </body>
 

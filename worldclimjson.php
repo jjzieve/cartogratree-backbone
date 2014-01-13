@@ -15,7 +15,7 @@ $jsonarray = json_decode($json, true);
 
 
 ?>
-                 <!--       <html>
+                        <html>
                         <head>
                         
                         <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
@@ -31,7 +31,7 @@ $jsonarray = json_decode($json, true);
                         }
                         </style>
                         </head>
-			<body> -->
+			<body> 
 
 <table class="table table-borderless table-condensed table-hover">
 
@@ -121,7 +121,7 @@ $jsonarray = json_decode($json, true);
                                 print($OUTPUT);
 
 ?>
-<!--			</body>-->
-<!--			</html>-->
+			</body>
+			</html>
 
 

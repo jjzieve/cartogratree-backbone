@@ -37,6 +37,11 @@ h4{
   position:absolute;
 }
 
+#display_description{
+	margin-left: 35px;
+	font-size: 10;
+	color: #999999;
+}
 /*#sidebar_selection {
     background-color: #f2f2f2;
     height: 477px;
@@ -49,12 +54,15 @@ h4{
 }
 
 .filler{/* to give spaceing between divs with absolute position*/
+  padding: 25px;
+}
+.filler2{/* to give spaceing between divs with absolute position*/
   padding: 15px;
 }
 
 #selection_tree_container {
   overflow:auto;
-  height: 390px;
+  height: 370px;
 }
 
 /*#selection_tree td.selected {
@@ -83,13 +91,33 @@ h4{
 }
 
 #toggle_heatmap{
-  background: #fff;
-  padding: 4px;
-  margin-top: 6px; 
-  margin-left: -5px;
+-moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    -moz-user-select: none;
+    background-clip: padding-box;
+    background-color: #FFFFFF;
+    border-bottom-right-radius: 2px;
+    border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) -moz-use-text-color;
+    border-image: none;
+    border-style: solid solid solid none;
+    border-top-right-radius: 2px;
+    border-width: 1px 1px 1px 0;
+    box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+    color: #565656;
+    direction: ltr;
+    font-family: Roboto,Arial,sans-serif;
+    font-size: 11px;
+/*    overflow: hidden;*/
+    padding: 4px;
+    position: relative;
+    text-align: left;
+    margin-top: 5px; 
+    margin-left: -5px;
 }
 #toggle_heatmap img{
- height: 16px;
+ height: 14px;
  width: 16px;
  opacity: 0.3;
 }

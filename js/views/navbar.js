@@ -12,7 +12,7 @@ define([
     el: "#navbar",
     initialize: function(){
       $('#credits').popover({
-          trigger:'click',
+          trigger:'hover',
           html:'true',
           content:'Backbone<br>Bootstrap<br>Google Fusion Table<br>Google Maps<br>jQuery<br>SlickGrid<br>TreeTable'
       });

@@ -36,7 +36,9 @@ require.config({
     templates: '../templates',
     propertyParser : 'libs/require/propertyParser',
     text: 'libs/require/text',
-    heatmap_data: 'heatmapdata'
+    heatmap_data: 'heatmapdata',
+    //sswap: 'http://sswap.info/sswap'
+    sswap: 'sswap'
     //font: 'libs/require/font',
     //image: 'libs/require/image',
     //json: 'libs/require/json',

@@ -8,6 +8,7 @@ define([
   'bootstrap',
   'models/tree_id',
   'collections/tree_ids',
+  'sswap'
 ], function($, _, Backbone, Tree_IDModel, Tree_IDCollection){
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
@@ -15,10 +16,51 @@ define([
     el: "#tabs_container",
     model: Tree_IDModel,
     collection: Tree_IDCollection,
+    demoJsonRRG : {
+    		 
+    	       "api" : "/makeRRG",
+
+    	       "prefix" : {
+    	            "data"   : "http://sswapmeet.sswap.info/data/",
+    	            "mime"   : "http://sswapmeet.sswap.info/mime/",
+    	            "tassel" : "http://sswapmeet.sswap.info/iplant/tassel/",
+    	            "tasselFile" : "http://sswapmeet.sswap.info/maizegenetics/tassel/file/",
+    	            "tassel-args" : "http://sswapmeet.sswap.info/iplant/tassel/args/"
+    	        },
+
+
+    	      "http://sswap.info/iplant/resources/tassel/rrg" : { },
+
+    	      "mapping" : { "sswap:Subject" : "_:gwasData" },
+
+    	      "definitions" : {
+
+    	        "_:gwasData" : {
+
+    	          "rdf:type" : "tassel:requests/TasselRequest",
+
+    	           "tassel-args:h"            : "http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetGenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007",
+    	           "tassel-args:r"            : "http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetPhenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007",
+    	           "tassel:data/hasGenotype"           : "http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetGenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007",
+    	           "tassel:data/hasTraits"             : "http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetPhenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007"
+
+    	         },
+
+    	         "http://dendrome.ucdavis.edu/_dev/havasquezgross/cartogratree/GetGenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007" : {
+    	              "rdf:type" : [ "mime:application/X-hapmap" , "tasselFile:Genotype" ]
+    	         },
+
+    	         "http://dendrome.ucdavis.edu/_dev/havasquezgross/cartogratree/GetPhenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007" : {
+    	              "rdf:type" : "tasselFile:Trait"
+    	         }
+
+
+    	      }
+    	},
 
     events:{
       "click #tools ul li a" : "changeTitle",
-      "click #run_tool" : "runTool"
+      "click #run_tool" : "runTool",
     },
 
     changeTitle: function(e){
@@ -26,6 +68,7 @@ define([
       $("#tools ul li a").not(e.target).removeClass("selected");
       $(e.target).addClass('selected');
     },
+    
 
     runTool: function(e){
       var tool = $("#tools ul li").find("a.selected").attr("id");
@@ -52,7 +95,7 @@ define([
             this.openDiversitreeCSV(ids);
             break;
           case 'tassel_tool':
-            this.openAssociationRRG(ids);
+            this.getAssociationRRG(ids);
             break;
           case 'sswap_tool':
             break;
@@ -70,17 +113,35 @@ define([
     openDiversitreeCSV: function(ids){
       window.location.href = 'DiversitreeDownload.php?tid='+ids+'&csv';
     },
-     openSNPCSV: function(ids){
+    openSNPCSV: function(ids){
       window.location.href = 'GetSNPData.php?tid='+ids+'&csv';
     },
-    openAssociationRRG: function(ids){
-      window.location.href = 'AssociationRRG.php?tid='+ids;
+    getAssociationRRG: function(ids){
+     // window.location.href = 'AssociationRRG.php?tid='+ids;
+	var that = this;
+	$.getJSON('AssociationRRG.php?tid='+ids).success(function(jsonRRG){
+	   //live code
+      	    SSWAP.discover(jsonRRG, "#pipelineButton");
+      	    //SSWAP.discover(this.demoJsonRRG, "#pipelineButton");
+		
+	    $("#sswap_form").submit();
+	    console.log(jsonRRG);
+	});
     },
-
+    toggleRunDisabled: function(){
+	if(this.collection.length > 0){
+		$("#run_tool").removeClass("disabled");
+	}
+	else{
+		$("#run_tool").addClass("disabled");
+	}
+   },
+	
     initialize: function(){
       var that = this;
       this.$("ul.nav-tabs li a:first").tab('show');
-         
+      this.collection.on('add remove reset',this.toggleRunDisabled,this);
+      this.toggleRunDisabled();         
     },
 
     render: function(){

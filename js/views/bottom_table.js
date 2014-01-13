@@ -76,7 +76,6 @@ define([
     getTableQueryRectangle: function(table,rectangleQuery){
       var table_id = this.collection.meta(table+"_id");
       var prefix = "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,num_phenotypes,species FROM "+table_id;
-
       if (this.collection.meta(table+"WhereClause") == ""){
         return prefix + " WHERE " + rectangleQuery;
       }
@@ -125,7 +124,6 @@ define([
           that.data = that.data.concat($.map(response,function(a,i){
             return that.toObj(a,i);
           }));
-
           var sortCol = undefined;
           var sortDir = true;
           function comparer(a, b) {
@@ -205,8 +203,36 @@ define([
     this.initGrid();
 		this.clearSlickGrid();//clear at first
 		this.collection.on('add change remove',this.refreshTable,this); //possibly reset?
-  },
 
+	$("#sswap_demo").on("click",function(){// just for demo
+		var demoData = [{"type":"small_yellow","id":"GRI0001.0","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"647","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0002.1","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"643","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0003.2","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"648","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0004.3","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"646","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0005.4","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"646","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0006.5","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"644","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0007.6","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"650","phenotypes":"0","species":"Populus nigra"}];
+      that.dataView.beginUpdate();
+	console.log(demoData);
+      that.dataView.setItems(demoData);
+      that.dataView.endUpdate();
+
+      that.grid.updateRowCount();
+	that.grid.render();
+      that.dataView.syncGridSelection(that.grid, true);
+	  that.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
+      		  $("#sample_count").html(that.grid.getSelectedRows().length);
+            that.sub_collection.reset();//remove all previous ids
+            $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
+              var id = that.dataView.getItemByIdx(idx)["id"].replace(/\.\d+$/,"");
+              var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
+              var lng = that.dataView.getItemByIdx(idx)["lng"];
+              that.sub_collection.add({
+                id: id,
+                lat: lat,
+                lng: lng
+              }); 
+            });
+      	  });
+
+          console.log("Total samples: "+that.grid.getDataLength());
+
+	});
+},
   removeSelected: function(){
     var that = this;
     if (this.grid.getSelectedRows().length == this.grid.getDataLength()){ // clear if all selected, not iterate remove

@@ -91,7 +91,7 @@ define([
 
 						var url = that.model.get("fusion_table_query_url");
 						var key = that.model.get("fusion_table_key");
-						// that.ajaxPOST(url+tgdrQuery+key);
+						//should use backend script instead of nested json
 						$.getJSON(url+tgdrQuery+key).success(function(data){
 							var tgdrCount = that.addCount(data);
 		    				$.getJSON(url+sts_isQuery+key).success(function(data){
