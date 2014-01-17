@@ -87,6 +87,7 @@ define([
             this.openCommonPhenoCSV(ids);
             break;
           case 'worldclim_tool':
+	    this.openWorldClimCSV(ids,lats,lngs);
             break;
           case 'common_snp_tool':
             this.openSNPCSV(ids);
@@ -115,6 +116,9 @@ define([
     },
     openSNPCSV: function(ids){
       window.location.href = 'GetSNPData.php?tid='+ids+'&csv';
+    },
+    openWorldClimCSV: function(ids,lats,lngs){
+      window.location.href = 'GetWorldClimData.php?id='+ids+'&lat='+lats+'&lon='+lngs+'&csv';
     },
     getAssociationRRG: function(ids){
      // window.location.href = 'AssociationRRG.php?tid='+ids;
