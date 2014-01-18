@@ -99,6 +99,7 @@ define([
             this.getAssociationRRG(ids);
             break;
           case 'sswap_tool':
+	    this.getMapRRG(ids);
             break;
         }
       }
@@ -132,6 +133,27 @@ define([
 	    console.log(jsonRRG);
 	});
     },
+    
+    getMapRRG: function(ids){
+	      /*if(checkedTreeID.length > 0){ 
+                         params.push("tid="+checkedTreeID.join(','));    
+                  }
+                  
+                  if(checkedSiteID.length > 0){ //for ameriflux
+                          params.push("aid="+checkedSiteID.join(','));    
+                  }
+                  
+                  params = params.join('&');
+                  $.get('http://dendrome.ucdavis.edu/DiversiTree/MapRRG.php?'+params, function(data) {
+                                  SSWAP.discover(data, "#hidden_form");
+                                  $('#sswap_form').submit();
+                  });*/
+	$.getJSON('http://dendrome.ucdavis.edu/DiversiTree/MapRRG.php?tid='+ids).success(function(jsonRRG){
+		SSWAP.discover(jsonRRG,"#pipelineButton");
+		$("#sswap_form").submit();
+	});
+    },
+
     toggleRunDisabled: function(){
 	if(this.collection.length > 0){
 		$("#run_tool").removeClass("disabled");

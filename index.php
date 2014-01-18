@@ -177,7 +177,7 @@ Updated:
 						    <li role="presentation" class="divider"></li>
 						    <li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>
 				    		<li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>
-							<li class="disabled" role="presentation"><a id="sswap_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Tree ID data</a></li>
+							<li role="presentation"><a id="sswap_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Tree ID data</a></li>
 						</ul>
 						<div class="btn-group">
 				 			<button id="run_tool" type="button" class="btn btn-default">Run tool on selected samples</button>		
