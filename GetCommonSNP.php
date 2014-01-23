@@ -1,6 +1,7 @@
 <?php
 
-include_once("../includes/db_access/db_connect_sswap.php");
+//include_once("../includes/db_access/db_connect_sswap.php");
+include_once("../../dev/includes/db_access/db_connect_sswap.php");//for dev box
 
 function outputCSV($data) {
     $outstream = fopen("php://output", "w");
@@ -138,30 +139,8 @@ if(isset($_GET['csv'])) {
 } //csv
 else {
 
-?>
-
-	<html>
-	<head>
-	
-	<!--<link type="text/css" href="css/themes/blue/style.css" rel="stylesheet" />-->
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui-1.8.20.custom.min.js"></script>
-	<script type="text/javascript" src="js/jquery.tablesorter.js"></script>
-	<link type="text/css" href="css/style_gettools.css" rel="stylesheet" />
-	<script>
-		$(document).ready(function(){
-			$("#data_table").tablesorter({
-				widgets: ['zebra']
-			});	
-		});
-	</script>
-	</head>
-	<body>
-	<table id="data_table" class="tablesorter">
-<?php
-
 	if($numrows > 0) {
+		echo "<table id='common_snp_table' style='font-size:14px'>";
 		$tree_data_string = array();
 		$col_flag = true;
 		$col_names = array('<th>TreeID</th>');
@@ -198,7 +177,10 @@ else {
 			$col_flag = false;
 		}
 		echo "<tr><td>$prev_identifier</td>".implode('',$tree_data_string)."</tr>\n";
+		echo "</tbody></table>";
 	}
-	echo "\n</tbody></table></body></html>";
+	else{
+		echo "N/A";
+	}
 }
 ?>

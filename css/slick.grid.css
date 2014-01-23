@@ -15,7 +15,7 @@ classes should alter those!
   width: 999999px;
   position: relative;
   white-space: nowrap;
-  cursor: default;
+  cursor: pointer;
   overflow: hidden;
 }
 

@@ -13,31 +13,7 @@ $json = file_get_contents($jsonurl);
 
 $jsonarray = json_decode($json, true);
 
-
-?>
-                        <html>
-                        <head>
-                        
-                        <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-                        <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-                        <script type="text/javascript" src="js/jquery-ui-1.8.20.custom.min.js"></script>
-                        <style>
-                        table {
-                        	font-size:0.75em;
-                        	border-collapse:collapse;
-                        }
-                        td{
-                        	padding:5px 10px;
-                        }
-                        </style>
-                        </head>
-			<body> 
-
-<table class="table table-borderless table-condensed table-hover">
-
-<?php
-//echo "$json<br>";
-
+echo "<table class='table table-borderless table-condensed table-hover infowindow'>";
 
 				$mat = $jsonarray['mat'] / 10;
 				$mdr = $jsonarray['mdr'] / 10;

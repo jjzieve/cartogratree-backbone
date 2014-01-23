@@ -178,6 +178,10 @@ h4{
   padding-top: 10px;
 }
 
+.nav-tabs > li .close {
+	margin: -2px 0 0 10px;
+	font-size: 18px;
+}
 /*#data_table_container .loading{
   background-image: url(../images/ajax-loader.gif);
   background-repeat: no-repeat;
@@ -195,37 +199,7 @@ h4{
     border: 0;
 }
 
-div.dataTables_length label {
-  width: 460px;
-  float: left;
-  text-align: left;
-}
-
-div.dataTables_length select {
-  width: 75px;
-}
-
-div.dataTables_filter label {
-  float: right;
-  width: 460px;
-}
-
-div.dataTables_info {
-  padding-top: 8px;
-}
-
-div.dataTables_paginate {
-  float: right;
-  margin: 0;
-}
-
-table {
-  margin: 1em 0;
-  clear: both;
-}*/
-
-/*table.table thead .sorting,
-table.table thead .sorting_asc,
+/*table.table thead .sorting_asc,
 table.table thead .sorting_desc,
 table.table thead .sorting_asc_disabled,
 table.table thead .sorting_desc_disabled {

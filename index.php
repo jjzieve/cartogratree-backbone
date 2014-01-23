@@ -21,8 +21,8 @@ Updated:
 <link type="text/css" href="css/example-bootstrap.css"  rel="stylesheet"/>
 <link type="text/css" href="css/bootstrap-switch.css"  rel="stylesheet"/>
 <!-- <link type="text/css" href="css/jquery-ui-1.10.3.custom.css"  rel="stylesheet"/> -->
-<!-- <link type="text/css" href="css/tablecloth.css"  rel="stylesheet"/>
- --><link type="text/css" href="css/jquery.treetable.css"  rel="stylesheet"/>
+<link type="text/css" href="css/tablecloth.css"  rel="stylesheet"/>
+<link type="text/css" href="css/jquery.treetable.css"  rel="stylesheet"/>
 <link type="text/css" href="css/jquery.treetable.theme.default.css" rel="stylesheet"/>
 <link type="text/css" href="css/style.css"  rel="stylesheet"/>
 <link rel="shortcut icon" href="images/favicon.ico?" type="image/x-icon"><!-- "?" is a hack for FF -->
@@ -184,21 +184,9 @@ Updated:
 				 		</div>
 					</div>
 					<ul class="nav nav-tabs" id="data_tabs"> <!--Diversitree, SSWAP, and TASSEL don't have tabs -->
-						<li>
+						<li id="samples_tab">
 							<a href="#samples" data-toggle="tab">Samples</a>
 						</li>
-<!-- 						<li>
-							<a href="#common_amplicon" data-toggle="tab">Common Amplicon</a>
-						</li>
-						<li>
-							<a href="#common_phenotype" data-toggle="tab">Common Phenotype</a>
-						</li>
-						<li>
-							<a href="#common_snp" data-toggle="tab">Common SNP</a>
-						</li>
-						<li>
-							<a href="#world_clim" data-toggle="tab">World Clim</a>
-						</li> -->
 					</ul>
 					<div id="data_table_container" class="tab-content">
 						<div class="tab-pane fade in" id="samples">

@@ -1,27 +1,27 @@
 .table th.center, .table td.center  { text-align:center; }
 .table th.right, .table td.right    { text-align:right; }
 /* using datatables arrow images */
-.table th.headerSortable {
+/*.table th.headerSortable {
   background-image: url(../images/sort_both.jpg);
   cursor: pointer;
   background-repeat: no-repeat;
   background-position: center right;
   padding-right:16px !important;
-}
+}*/
 .table th.headerSortable:hover {
   cursor:pointer;
 }
 .table th.headerSortDown {
-  /*background-image: url(../images/asc.gif);*/
-  background-image: url(../images/sort_asc.jpg);
+  background-image: url(../images/sort-asc.gif);
+  /*background-image: url(../images/sort_asc.jpg);*/
   cursor: pointer;
   background-repeat: no-repeat;
   background-position: center right;
   padding-right:16px !important;
 }
 .table th.headerSortUp {
-  /*background-image: url(../images/desc.gif);*/
-  background-image: url(../images/sort_desc.jpg);
+  background-image: url(../images/sort-desc.gif);
+  /*background-image: url(../images/sort_desc.jpg);*/
   cursor: pointer;
   background-repeat: no-repeat;
   background-position: center right;

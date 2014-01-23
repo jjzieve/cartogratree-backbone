@@ -18,7 +18,6 @@ if (isset($_GET['lat'])) {
 			$escapedId = pg_escape_string(trim($_GET['id']));
 		}
 	}
-} else {
 }
 
 $latArr = explode(",", $escapedLat);
@@ -123,26 +122,7 @@ if(isset($_GET['csv'])) {
 } else {
 
 ?>
-	<html>
-	<head>
-	
-	<!--<link type="text/css" href="css/themes/blue/style.css" rel="stylesheet" />-->
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui-1.8.20.custom.min.js"></script>
-	<script type="text/javascript" src="js/jquery.tablesorter.js"></script>
-	<link type="text/css" href="css/style_gettools.css" rel="stylesheet" />
-	<script>
-		$(document).ready(function(){
-			$("#data_table").tablesorter({
-				widgets: ['zebra']
-			});	
-		});
-	</script>
-	</head>
-	<body>
-
-	<table id="data_table" class="tablesorter">
+	<table id='world_clim_table' style='font-size:14px'>
 		<thead>
 		<tr>
 			<th ><b title="Identifier">Identifier</b></th>
@@ -178,7 +158,6 @@ if(isset($_GET['csv'])) {
 		$lat = $latArr[$i];
 		$lon = $lonArr[$i];
 		$id = $idArr[$i];
-		
 		$jsonurl = "http://castle.iplantcollaborative.org:9000/info?lat=$lat&lon=$lon";
 		$json = file_get_contents($jsonurl);
 
@@ -229,7 +208,7 @@ if(isset($_GET['csv'])) {
 		$OUTPUT .= "<td>$precs</td>";
 		$OUTPUT .= "</tr>";
 	}
-		$OUTPUT .= "</tbody></table></body></html>";
-		print($OUTPUT);
+		$OUTPUT .= "</tbody></table>";
+		echo $OUTPUT;
 }
 ?>
