@@ -157,6 +157,21 @@ Updated:
 						<img src="images/heatmap.jpg">
 						</a>
 					</div>
+					<div id="layers">
+						<button id="layers_button" type="button" data-toggle="dropdown"><span id="layers_title">Select ArcGIS layer</span> <span class="caret"></span></button>
+						<ul class="dropdown-menu pull-right">
+						    <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Select ArcGIS layer</a></li>
+						    <li role="presentation"><a value="http://services.arcgisonline.com/ArcGIS/rest/services/Specialty/Soil_Survey_Map/MapServer" role="menuitem" tabindex="-1" href="javascript:void(0);">Soil Survey</a></li>
+						    <li role="presentation"><a value="http://maps3.arcgisonline.com/ArcGIS/rest/services/A-16/K%C3%B6ppen-Geiger_Observed_and_Predicted_Climate_Shifts/MapServer"role="menuitem" tabindex="-1" href="javascript:void(0);">Koppen-Geiger Climate Shifts</a></li>
+						    <li role="presentation"><a value="http://maps1.arcgisonline.com/ArcGIS/rest/services/USGS_Forest_Fragmentation/MapServer" role="menuitem" tabindex="-1" href="javascript:void(0);">USGS Forest Fragmentation</a></li>
+						    <li role="presentation"><a value="http://maps1.arcgisonline.com/ArcGIS/rest/services/FIA_Woody_Biomass/MapServer" role="menuitem" tabindex="-1" href="javascript:void(0);">FIA Woody Biomass</a></li>
+						    <li role="presentation"><a value="http://maps1.arcgisonline.com/ArcGIS/rest/services/RMRS_Wildland_Fire_Potential/MapServer" role="menuitem" tabindex="-1" href="javascript:void(0);">US Wildland Fire Potential</a></li>
+						    <li role="presentation"><a value="http://maps1.arcgisonline.com/ArcGIS/rest/services/USGS_Earthquake_Faults/MapServer" role="menuitem" tabindex="-1" href="javascript:void(0);">USGS Earthquake Faults</a></li>
+						    <li role="presentation"><a value="http://maps1.arcgisonline.com/ArcGIS/rest/services/NASS_Croplands_2009/MapServer" role="menuitem" tabindex="-1" href="javascript:void(0);">NASS Croplands 2009</a></li>
+						    <li role="presentation"><a value="http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Toxic_Release_Inventory_2010/MapServer" role="menuitem" tabindex="-1" href="javascript:void(0);">EPA Toxic Release Inventory 2010</a></li>
+						</ul>
+					</div>
+						
 			</div>
 
 		</div>

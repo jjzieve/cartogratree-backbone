@@ -109,8 +109,8 @@ if(isset($_GET['csv'])) {
 
 else {
 
-	echo "<table id='common_pheno_table' style='font-size:14px'>";
 	if($numrows > 0) {
+		echo "<table id='common_pheno_table' style='font-size:14px'>";
 		$tree_data_string = array();
 		$col_flag = true;
 		$col_names = array('<th>TreeID</th>');
@@ -146,7 +146,10 @@ else {
 			$col_flag = false;
 		}
 		echo "<tr><td>$prev_identifier</td>".implode('',$tree_data_string)."</tr>\n";
+		echo "</tbody></table>";
 	}
-	echo "</tbody></table>";
+	else{
+		echo "N/A";
+	}
 }
 ?>

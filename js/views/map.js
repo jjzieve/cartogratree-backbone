@@ -14,6 +14,7 @@ define([
   'async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization',
   'context_menu',
   'heatmap_data',
+  'arcgis'
 ], function($,_, Backbone, QueryModel, QueriesCollection, tgdrInfoWindow, sts_isInfoWindow, try_dbInfoWindow, amerifluxInfoWindow, tableRow){
 
   String.prototype.capitalize = function() {
@@ -53,12 +54,40 @@ define([
            disableDoubleClickZoom: true
          },
 
+	//should add heatmap toggle here also
+	events: {
+	  "click #layers ul li a" : "changeArcGISLayer",
+	},
+		
         initMap: function() {
           this.map =  new google.maps.Map(this.el, this.mapOptions);
           this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById("toggle_heatmap"));
+          this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById("layers"));
 
         },
         
+    	changeTitle: function(e){
+      		$('#layers_title').html($(e.target).html());
+     		$("#layers ul li a").not(e.target).removeClass("selected");
+      		$(e.target).addClass('selected');
+    	},  
+
+	clearArcGISLayer: function(){
+		if(this.arcGISLayer){
+			this.arcGISLayer.setMap(null);
+		}
+	},
+		
+	changeArcGISLayer: function(e){
+		this.changeTitle(e);
+		var url = $(e.target).attr("value");
+		this.clearArcGISLayer();
+		if(url){
+			this.arcGISLayer = new gmaps.ags.MapOverlay(url);
+			this.arcGISLayer.setMap(this.map);
+		}
+	},
+
         clearRectangles: function(){
           $.each(this.rectangles,function(index,rectangle){
             rectangle.setMap(null);
@@ -100,8 +129,6 @@ define([
             }
 	}
 	//listeners
-            console.log("in rectangle complete");
-            console.log(that.collection);
       	  });
           $("#clear_table").on("click", function(){
             that.clearRectangles();
@@ -171,7 +198,6 @@ define([
 	  
 
 	clearLayers: function(){
-	  console.log('clearLayers');
 	  this.tgdrLayer.setMap(null);
 	  this.sts_isLayer.setMap(null);
 	  this.try_dbLayer.setMap(null);
@@ -508,7 +534,6 @@ define([
           this.refreshLayer("try_db",try_dbWhereClause,this.try_dbLayer,this.collection.meta("try_db_id"));
           this.refreshLayer("ameriflux",amerifluxWhereClause,this.amerifluxLayer,this.collection.meta("ameriflux_id"));    
           //debug
-          console.log(this.collection);
           console.log("tgdrWhereClause:"+this.collection.meta("tgdrWhereClause")+"\n"+
                   "sts_isWhereClause:"+this.collection.meta("sts_isWhereClause")+"\n"+
                   "rectangleWhereClause:"+this.collection.meta("rectangleWhereClause")+"\n"+

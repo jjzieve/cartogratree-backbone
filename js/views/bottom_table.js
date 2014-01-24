@@ -88,7 +88,6 @@ define([
     },
 
     clearSlickGrid: function(){
-      console.log("deleting all, removing all rectangles");
       $("#clear_table").trigger("click"); // map view listens to this to remove rectangles
       this.data = [];//clear data
       this.dataView.beginUpdate();
@@ -109,10 +108,10 @@ define([
       var sts_is_query = encodeURIComponent(this.getTableQueryRectangle("sts_is",rectangleQuery));
       var tgdr_query = encodeURIComponent(this.getTableQueryRectangle("tgdr",rectangleQuery));
       var try_db_query = encodeURIComponent(this.getTableQueryRectangle("try_db",rectangleQuery));
-     
+    	//ameriflux? 
       this.setLoaderIcon();
       $.ajax({
-        url : 'getFusionMarkers.php',
+        url : 'GetFusionMarkers.php',
         dataType: "json",
         data: {
           "sts_is_query":sts_is_query,
@@ -167,7 +166,7 @@ define([
             });
       	  });
 
-          console.log("Total samples: "+that.grid.getDataLength());
+          //console.log("Total samples: "+that.grid.getDataLength());
         }
       });
     },
@@ -186,7 +185,6 @@ define([
 	
 		
 	refreshTable: function(){
-		console.log("refreshTable");
     var rectangleQueryModel = this.collection.get("rectangle");
  		if (rectangleQueryModel != undefined){// a rectangle has been completed
 			this.updateSlickGrid(rectangleQueryModel.get("value"));

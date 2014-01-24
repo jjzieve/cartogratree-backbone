@@ -37,6 +37,7 @@ require.config({
     propertyParser : 'libs/require/propertyParser',
     text: 'libs/require/text',
     heatmap_data: 'heatmapdata',
+    arcgis: 'libs/maps/arcgislink',
     //sswap: 'http://sswap.info/sswap'
     sswap: 'sswap'
     //font: 'libs/require/font',
@@ -59,6 +60,10 @@ require.config({
 	   deps: ['async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization']
     	},
     	'heatmap_data': {
+	   deps: ['async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization']
+    //	   deps: ['goog!maps,3,other_params:libraries=drawing,visualization&sensor=false']
+    	},
+    	'arcgis': {
 	   deps: ['async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization']
     //	   deps: ['goog!maps,3,other_params:libraries=drawing,visualization&sensor=false']
     	},

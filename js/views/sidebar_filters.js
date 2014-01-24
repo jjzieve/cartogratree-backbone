@@ -84,15 +84,27 @@ define([
 							var columnQuery = "is_exact_gps_coordinate = 'false'";
 						}
 
-						var tgdrQuery = that.getCountQuery("tgdr",columnQuery);
-						var sts_isQuery = that.getCountQuery("sts_is",columnQuery);
-						var try_dbQuery = that.getCountQuery("try_db",columnQuery);
-						var amerifluxQuery = that.getCountQuery("ameriflux",columnQuery);
+						var tgdrQuery = encodeURIComponent(that.getCountQuery("tgdr",columnQuery));
+						var sts_isQuery = encodeURIComponent(that.getCountQuery("sts_is",columnQuery));
+						var try_dbQuery = encodeURIComponent(that.getCountQuery("try_db",columnQuery));
+						var amerifluxQuery = encodeURIComponent(that.getCountQuery("ameriflux",columnQuery));
 
 						var url = that.model.get("fusion_table_query_url");
 						var key = that.model.get("fusion_table_key");
-						//should use backend script instead of nested json
-						$.getJSON(url+tgdrQuery+key).success(function(data){
+						//ameriflux?
+						$.ajax({
+        						url : 'GetFusionMarkers.php',
+      							dataType: "json",
+      							data: {
+      							    "sts_is_query":sts_isQuery,
+      							    "tgdr_query":tgdrQuery,
+      							    "try_db_query":try_dbQuery},
+							success: function(response){
+								var sum = _.reduce(_.map(_.flatten(response),function(n){return parseInt(n)}),function(memo,num){return memo+num;});
+		    						$("#"+id+"_count").html(sum);
+							}
+						});
+						/*$.getJSON(url+tgdrQuery+key).success(function(data){
 							var tgdrCount = that.addCount(data);
 		    				$.getJSON(url+sts_isQuery+key).success(function(data){
 								var sts_isCount = that.addCount(data);
@@ -105,7 +117,7 @@ define([
 			    					});
 		    					});
 				 			});
-						});
+						});*/
 					}
 				});
 			},
