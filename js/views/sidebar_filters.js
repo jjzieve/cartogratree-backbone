@@ -93,7 +93,7 @@ define([
 						var key = that.model.get("fusion_table_key");
 						//ameriflux?
 						$.ajax({
-        						url : 'GetFusionMarkers.php',
+        						url : 'QueryFusionTables.php',
       							dataType: "json",
       							data: {
       							    "sts_is_query":sts_isQuery,

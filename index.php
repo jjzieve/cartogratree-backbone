@@ -171,6 +171,8 @@ Updated:
 						    <li role="presentation"><a value="http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Toxic_Release_Inventory_2010/MapServer" role="menuitem" tabindex="-1" href="javascript:void(0);">EPA Toxic Release Inventory 2010</a></li>
 						</ul>
 					</div>
+					<div id="legend" style="display:none;"></div>
+						
 						
 			</div>
 
@@ -191,8 +193,7 @@ Updated:
 						    <li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>
 						    <li role="presentation" class="divider"></li>
 						    <li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>
-				    		<li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>
-							<li role="presentation"><a id="sswap_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Tree ID data</a></li>
+				    		    <li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>
 						</ul>
 						<div class="btn-group">
 				 			<button id="run_tool" type="button" class="btn btn-default">Run tool on selected samples</button>		

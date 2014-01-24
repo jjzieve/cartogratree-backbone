@@ -14,7 +14,10 @@ define([
   'async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization',
   'context_menu',
   'heatmap_data',
-  'arcgis'
+  'arcgis',
+  'tablesorter',
+  'metadata',
+  'tablecloth'
 ], function($,_, Backbone, QueryModel, QueriesCollection, tgdrInfoWindow, sts_isInfoWindow, try_dbInfoWindow, amerifluxInfoWindow, tableRow){
 
   String.prototype.capitalize = function() {
@@ -63,6 +66,7 @@ define([
           this.map =  new google.maps.Map(this.el, this.mapOptions);
           this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById("toggle_heatmap"));
           this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById("layers"));
+          this.map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(document.getElementById("legend"));
 
         },
         
@@ -82,9 +86,32 @@ define([
 		this.changeTitle(e);
 		var url = $(e.target).attr("value");
 		this.clearArcGISLayer();
+		$("#legend").css({"display":"none"});
 		if(url){
 			this.arcGISLayer = new gmaps.ags.MapOverlay(url);
 			this.arcGISLayer.setMap(this.map);
+			$.ajax({
+				url: "GetArcGISLegends.php",
+				dataType: "json",
+				data: {"url":url+"/legend?f=json&pretty=true"},
+				success: function(response){
+					var legendHTML = "<table class='table table-borderless table-condensed table-hover infowindow'><thead><th><a target='_blank' href='"+url+"'>ArcGIS Legend</a></th></thead>";
+					_.each(response["layers"],function(layer){
+						var layerName = layer["layerName"];
+						legendHTML += "<tr><td>"+layerName+"</td></tr>";
+						 _.each(layer["legend"],function(key){
+							var label = key["label"];
+							var image = key["imageData"];
+							var imageType = key["contentType"];
+							legendHTML += "<tr><td>"+label+"</td>"+"<td><img src='data:"+imageType+";base64,"+image+"'></td></tr>";
+						});
+					});
+					legendHTML += "</table>";
+					$("#legend").empty();
+					$("#legend").append(legendHTML);
+					$("#legend").css({"display":"block"});
+				}
+			});
 		}
 	},
 
@@ -277,10 +304,10 @@ define([
 
 
 
-          this.tgdrInfoWindow = new google.maps.InfoWindow({maxWidth:250});
-          this.sts_isInfoWindow = new google.maps.InfoWindow({maxWidth:250});
-          this.try_dbInfoWindow = new google.maps.InfoWindow({maxWidth:250});
-          this.amerifluxInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+          this.tgdrInfoWindow = new google.maps.InfoWindow({maxWidth:350});
+          this.sts_isInfoWindow = new google.maps.InfoWindow({maxWidth:350});
+          this.try_dbInfoWindow = new google.maps.InfoWindow({maxWidth:350});
+          this.amerifluxInfoWindow = new google.maps.InfoWindow({maxWidth:350});
           google.maps.event.addListener(this.tgdrLayer, 'click', function(e){
               that.tgdrInfoWindow.setContent(
                 that.tgdrInfoWindowTemplate({
@@ -349,6 +376,7 @@ define([
                   lng: new Number(e.row["lng"].value).toFixed(4),
                   })
               );
+
               that.amerifluxInfoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
               that.amerifluxInfoWindow.open(that.map);
           });

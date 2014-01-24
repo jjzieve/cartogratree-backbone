@@ -145,11 +145,22 @@ h4{
     margin-top: 5px;
 }
 
-
-.infowindow img{
+#legend{
+	overflow: auto;
+  	font-size: 10px;
+  	font-weight: normal;
+	height:200px;
+	width:200px;
+        background-color:white;
+        border:3px solid gray;
+	padding: 1px 6px;
+	margin-bottom:40px;
+}
+	
+/*.infowindow img{
   height:25%;
   width:25%;
-}
+}*/
 
 .infowindow td{
   font-size: 10px;

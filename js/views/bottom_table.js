@@ -111,7 +111,7 @@ define([
     	//ameriflux? 
       this.setLoaderIcon();
       $.ajax({
-        url : 'GetFusionMarkers.php',
+        url : 'QueryFusionTables.php',
         dataType: "json",
         data: {
           "sts_is_query":sts_is_query,

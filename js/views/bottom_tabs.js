@@ -19,48 +19,6 @@ define([
     el: "#tabs_container",
     model: Tree_IDModel,
     collection: Tree_IDCollection,
-    demoJsonRRG : {
-    		 
-    	       "api" : "/makeRRG",
-
-    	       "prefix" : {
-    	            "data"   : "http://sswapmeet.sswap.info/data/",
-    	            "mime"   : "http://sswapmeet.sswap.info/mime/",
-    	            "tassel" : "http://sswapmeet.sswap.info/iplant/tassel/",
-    	            "tasselFile" : "http://sswapmeet.sswap.info/maizegenetics/tassel/file/",
-    	            "tassel-args" : "http://sswapmeet.sswap.info/iplant/tassel/args/"
-    	        },
-
-
-    	      "http://sswap.info/iplant/resources/tassel/rrg" : { },
-
-    	      "mapping" : { "sswap:Subject" : "_:gwasData" },
-
-    	      "definitions" : {
-
-    	        "_:gwasData" : {
-
-    	          "rdf:type" : "tassel:requests/TasselRequest",
-
-    	           "tassel-args:h"            : "http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetGenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007",
-    	           "tassel-args:r"            : "http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetPhenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007",
-    	           "tassel:data/hasGenotype"           : "http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetGenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007",
-    	           "tassel:data/hasTraits"             : "http://dendrome.ucdavis.edu/_dev/jjzieve/cartogratree-backbone/GetPhenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007"
-
-    	         },
-
-    	         "http://dendrome.ucdavis.edu/_dev/havasquezgross/cartogratree/GetGenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007" : {
-    	              "rdf:type" : [ "mime:application/X-hapmap" , "tasselFile:Genotype" ]
-    	         },
-
-    	         "http://dendrome.ucdavis.edu/_dev/havasquezgross/cartogratree/GetPhenoData.php?tid=GRI0001,GRI0002,GRI0003,GRI0004,GRI0005,GRI0006,GRI0007" : {
-    	              "rdf:type" : "tasselFile:Trait"
-    	         }
-
-
-    	      }
-    	},
-
     events:{
       "click #tools ul li a" : "changeTitle",
       "click .close" : "closeTab",
@@ -106,9 +64,6 @@ define([
             break;
           case 'tassel_tool':
             this.openSSWAPTassel(ids);
-            break;
-          case 'sswap_tool':
-	    this.openSSWAPIDs(ids);
             break;
         }
       }
@@ -215,13 +170,6 @@ define([
 	});
     },
     
-    openSSWAPIDs: function(ids){
-	$.getJSON('http://dendrome.ucdavis.edu/DiversiTree/MapRRG.php?tid='+ids).success(function(jsonRRG){
-		SSWAP.discover(jsonRRG,"#pipelineButton");
-		$("#sswap_form").submit();
-	});
-    },
-
     toggleRunDisabled: function(){
 	if(this.collection.length > 0){
 		$("#run_tool").removeClass("disabled");
