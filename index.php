@@ -20,14 +20,14 @@ Updated:
 <link type="text/css" href="css/slick.grid.css"  rel="stylesheet"/>
 <link type="text/css" href="css/example-bootstrap.css"  rel="stylesheet"/>
 <link type="text/css" href="css/bootstrap-switch.css"  rel="stylesheet"/>
-<!-- <link type="text/css" href="css/jquery-ui-1.10.3.custom.css"  rel="stylesheet"/> -->
 <link type="text/css" href="css/tablecloth.css"  rel="stylesheet"/>
 <link type="text/css" href="css/jquery.treetable.css"  rel="stylesheet"/>
 <link type="text/css" href="css/jquery.treetable.theme.default.css" rel="stylesheet"/>
+<link type="text/css" href="js/libs/jquery/select2-3.4.5/select2.css" rel="stylesheet"/> <!-- too lazy to move from js dir :p -->
+<link type="text/css" href="js/libs/jquery/select2-3.4.5/select2-bootstrap.css" rel="stylesheet"/>
 <link type="text/css" href="css/style.css"  rel="stylesheet"/>
 <link rel="shortcut icon" href="images/favicon.ico?" type="image/x-icon"><!-- "?" is a hack for FF -->
 <script data-main="js/main" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js"></script>
-<!-- <script data-main="js/main" src="js/libs/require/require.js"></script> -->
 
 <title>CartograTree</title>
 </head>
@@ -57,10 +57,14 @@ Updated:
 				<div id="sidebar_selection" class="well well-sm">
 					<div id="select_tree_header">
 						<h4>Map Display</h4>
+					<div id="tree_id_search_container">
+						<div id="tree_id_search"></div>
+					</div>
 					<span id="display_description">
 						Ctrl+Click or Cmd+Click for multiple selections
 					</span>
 					</div>
+					<div class="filler"></div>
 					<div class="filler"></div>
 					<div id="selection_tree_container">
 						<table id="selection_tree">

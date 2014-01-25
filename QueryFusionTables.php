@@ -7,10 +7,10 @@
 		$try_db_query = $_GET['try_db_query'];
 	//	$ameriflux_query = $_GET['ameriflux_query'];
 	}
-	else{ // to test from command line 
-		$sts_is_query = "SELECT%20icon_name,tree_id,lat,lng,num_sequences,num_genotypes,num_phenotypes,species%20FROM%201bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI%20WHERE%20ST_INTERSECTS('lat'%2C%20RECTANGLE(LATLNG(47.628873510464814%2C%20-122.87109375)%2CLATLNG(49.31843827419398%2C%20-120.76171875)))";
-        	$tgdr_query = "SELECT%20icon_name,tree_id,lat,lng,num_sequences,num_genotypes,num_phenotypes,species%20FROM%20118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M%20WHERE%20ST_INTERSECTS('lat'%2C%20RECTANGLE(LATLNG(47.628873510464814%2C%20-122.87109375)%2CLATLNG(49.31843827419398%2C%20-120.76171875)))";
-          	$try_db_query = "SELECT%20icon_name,tree_id,lat,lng,num_sequences,num_genotypes,num_phenotypes,species%20FROM%201XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw%20WHERE%20ST_INTERSECTS('lat'%2C%20RECTANGLE(LATLNG(47.628873510464814%2C%20-122.87109375)%2CLATLNG(49.31843827419398%2C%20-120.76171875)))";
+	else{ // to test from command line and get all ids for autocomplete 
+		$sts_is_query = "SELECT%20tree_id%20FROM%201bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI";
+        	$tgdr_query = "SELECT%tree_id%20FROM%20118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M";
+          	$try_db_query = "SELECT%20tree_id%20FROM%201XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw";
         //  	$ameriflux_query = "SELECT%20icon_name,site_id,lat,lng,num_sequences,num_genotypes,num_phenotypes,species%20FROM%201XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw%20WHERE%20ST_INTERSECTS('lat'%2C%20RECTANGLE(LATLNG(47.628873510464814%2C%20-122.87109375)%2CLATLNG(49.31843827419398%2C%20-120.76171875)))";
 	}
 		

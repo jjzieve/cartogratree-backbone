@@ -8,7 +8,7 @@ define([
   'treetable',
   'models/tree_node',
   'collections/queries',
-  // 'goog!maps,3,other_params:sensor=false'
+  'select2'
 ], function($, _, Backbone, TreeNodeModel , QueriesCollection){
 		var SelectionTreeView = Backbone.View.extend({
 			el: "#selection_tree",
@@ -93,74 +93,97 @@ define([
     			}
     		},
 
-			initialize: function(){
-				// open to depth of 2
-				var that = this;
-				this.$el.treetable({expandable:true});
-				this.$el.treetable("expandNode","1");
-
-				$.getJSON('data/studies.JSON',
-					function(data){
-						that.loadBranch(data,"1-1",0,0,"studies");
-						that.$el.treetable("expandNode","1-1");
+		initTreeIDSearch: function(){
+			$("#tree_id_search").select2({
+				placeholder: "Search for a tree id",
+				//data: [{id:0,text:'test'},{id:1,text:'test1'}],
+				multiple: true,
+				width: "resolve",
+				minimumInputLength: 4,
+				ajax: {
+					url: "QueryFusionTables.php",
+					dataType:"json",
+					results: function(data){
+						var select2Data = [];
+						
+						$.each(data.slice(1,20),function(index,tree_id){
+							console.log(tree_id);
+							select2Data.push({id:tree_id[0],text:tree_id[0]});
+						});
+						return {results: select2Data};
 					}
-				);
-				$.getJSON('data/taxa.JSON',
-					function(data){
-						that.loadBranch(data,"1-2",0,0,"taxa");
-						that.$el.treetable("expandNode","1-2");
-					}
-				);
+				}	
+			});	
+		},
 
-				this.$el.treetable("expandNode","1-3");
-				this.$el.treetable("expandNode","1-4");
+		initSelectionTree: function(){
+			// open to depth of 2
+			var that = this;
+			this.$el.treetable({expandable:true});
+			$.getJSON('data/studies.JSON',function(data){
+				that.loadBranch(data,"1-1",0,0,"studies");
+		//		that.$el.treetable("expandNode","1-1");
+			});
 
-				if (this.collection.length == 0){ //if no tree_ids in url
-					this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default	
-					this.collection.add({
-	                	id: "1",
-	                	column: "all",
-	               		value: "all"
-	              	});  
-				}
-			
-			},
+			$.getJSON('data/taxa.JSON', function(data){
+				that.loadBranch(data,"1-2",0,0,"taxa");
+		//		that.$el.treetable("expandNode","1-2");
+			});
+		//	this.$el.treetable("expandNode","1-3");
+		//	this.$el.treetable("expandNode","1-4");
 
-			events: {
-			    "click": "toggleSelection",
-			},
-
-			toggleSelection: function(event){
-		  		var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
-  				var column = $(event.target).attr('name');
-				var value = $(event.target).attr('value');
-  				if (column && value){
-  					if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the queries
-  						this.collection.reset();
-  					}
-					$(event.target).toggleClass('selected');
-	  				if ($(event.target).hasClass('selected'))
-  					{
-						this.collection.add(
-	  					{
-	  						id: id,
-	  						column: column,
-	  						value: value,
-	  					});
-  					}
-  					else {
-						this.collection.remove(id);
-					}
-  					if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the selected classes (i.e. highlighted rows)
-  						$("#selection_tree .selected").not(event.target).removeClass("selected");
-  					}
-		  			
-		  		}
-	  		},
-	  				
-			render: function(){
-				return this
+			if (this.collection.length == 0){ //if no tree_ids in url
+				this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default	
+				this.collection.add({
+	        			id: "1",
+	        			column: "all",
+	        			value: "all"
+	        		});  
 			}
+			
+			this.$el.treetable("expandNode","1");
+		},		
+		
+		initialize: function(){
+			this.initTreeIDSearch();
+			this.initSelectionTree();		
+		},
+
+		events: {
+		    "click": "toggleSelection",
+		},
+
+		toggleSelection: function(event){
+			var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
+  			var column = $(event.target).attr('name');
+			var value = $(event.target).attr('value');
+  			if (column && value){
+  				if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the queries
+  					this.collection.reset();
+  				}
+				$(event.target).toggleClass('selected');
+	  			if ($(event.target).hasClass('selected'))
+  				{
+					this.collection.add(
+	  				{
+	  					id: id,
+	  					column: column,
+	  					value: value,
+	  				});
+  				}
+  				else {
+					this.collection.remove(id);
+				}
+  				if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the selected classes (i.e. highlighted rows)
+  					$("#selection_tree .selected").not(event.target).removeClass("selected");
+  				}
+		  			
+		  	}
+	  	},
+	  				
+		render: function(){
+			return this
+		}
 	});
   return SelectionTreeView;
   // What we return here will be used by other modules

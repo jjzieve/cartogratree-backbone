@@ -33,12 +33,17 @@ h4{
 }*/
 
 /*SIDE-BAR*/
+#tree_id_search_container {
+	margin-bottom:15px;
+}
+
 #select_tree_header {
   position:absolute;
 }
 
 #display_description{
 	margin-left: 35px;
+	margin-bottom:15px;
 	font-size: 10;
 	color: #999999;
 }
@@ -62,7 +67,7 @@ h4{
 
 #selection_tree_container {
   overflow:auto;
-  height: 370px;
+  height: 150px;
 }
 
 /*#selection_tree td.selected {
@@ -86,7 +91,7 @@ h4{
 }
 /*MAP*/
 #map_canvas {
-  height: 686px;
+  height: 515;
   width: 100%;
 }
 
