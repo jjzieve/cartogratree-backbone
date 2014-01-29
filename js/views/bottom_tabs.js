@@ -11,7 +11,19 @@ define([
   'sswap',
   'tablesorter',
   'metadata',
-  'tablecloth'
+  'tablecloth',
+  'jquery_migrate',
+  'jquery_drag',
+  'jquery_core',
+  'jquery_widget',
+  'jquery_mouse',
+  'jquery_resizable',
+  'jquery_sortable',
+  'slick_core',
+  'slick_grid',
+  'slick_dataview',
+  'slick_checkbox',
+  'slick_selection',
 ], function($, _, Backbone, Tree_IDModel, Tree_IDCollection){
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
@@ -24,6 +36,87 @@ define([
       "click .close" : "closeTab",
       "click #run_tool" : "runTool",
     },
+
+/*    initColumns: function(columns){
+      this.columns = [
+        {id: "TreeID", name: "Type", field: "type",width: 75, sortable:true,formatter:this.showIcon},
+        {id: "id", name: "ID", field: "id",width: 150, sortable:true},
+        {id: "lat", name: "Latitude", field: "lat",width: 100, sortable:true},
+        {id: "lng", name: "Longitude", field: "lng",width: 100, sortable:true},
+        {id: "sequences", name: "Total sequences", field: "sequences",width: 130, sortable:true},
+        {id: "genotypes", name: "Total genotypes", field: "genotypes",width: 130, sortable:true},
+        {id: "phenotypes", name: "Total phenotypes", field: "phenotypes",width: 135, sortable:true},
+        {id: "species", name: "Species", field: "species",width: 150, sortable:true},
+      ],
+      this.checkboxSelector = new Slick.CheckboxSelectColumn({});
+      this.columns.unshift(this.checkboxSelector.getColumnDefinition());
+    },
+
+    initGrid: function(){
+      this.dataView = new Slick.Data.DataView();
+      this.grid = new Slick.Grid("#grid", this.dataView, this.columns, this.options);
+      this.grid.setSelectionModel(new Slick.RowSelectionModel());
+      this.grid.registerPlugin(this.checkboxSelector);
+    },
+success: function (response) {
+          that.unsetLoaderIcon();
+          that.data = that.data.concat($.map(response,function(a,i){
+            return that.toObj(a,i);
+          }));
+          var sortCol = undefined;
+          var sortDir = true;
+          function comparer(a, b) {
+            var x = a[sortCol], y = b[sortCol];
+            return (x == y ? 0 : (x > y ? 1 : -1));
+          }
+          that.grid.onSort.subscribe(function (e, args) {
+              sortDir = args.sortAsc;
+              sortCol = args.sortCol.field;
+              that.dataView.sort(comparer, sortDir);
+              that.grid.invalidateAllRows();
+              that.grid.render();
+          });
+ if (sortCol) {
+              that.grid.setSortColumn(sortCol, sortDir);
+          }
+
+          that.dataView.beginUpdate();
+          that.dataView.setItems(that.data);
+          that.dataView.endUpdate();
+
+          that.grid.updateRowCount();
+          that.grid.render();
+
+          that.dataView.syncGridSelection(that.grid, true);
+
+          that.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
+                  $("#sample_count").html(that.grid.getSelectedRows().length);
+            that.sub_collection.reset();//remove all previous ids
+            $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
+              var id = that.dataView.getItemByIdx(idx)["id"].replace(/\.\d+$/,"");
+              var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
+              var lng = that.dataView.getItemByIdx(idx)["lng"];
+              that.sub_collection.add({
+                id: id,
+                lat: lat,
+                lng: lng
+              });
+            });
+          });
+
+
+    toObj: function(a,i){
+      var o = {};
+      o["type"] = a[0];
+      o["id"] = a[1]+"."+i;//just because try-db is not unique
+      o["lat"] = new Number(a[2]).toFixed(4);
+      o["lng"] = new Number(a[3]).toFixed(4);
+      o["sequences"] = a[4];
+      o["genotypes"] = a[5];
+      o["phenotypes"] = a[6];
+      o["species"] = a[7];
+      return o;
+    },*/
 
     changeTitle: function(e){
       $('#tools_title').html($(e.target).html());
@@ -49,6 +142,7 @@ define([
       if(ids.length > 0){
         switch(tool){
           case 'common_amplicon_tool':
+		this.openCommonAmplicon(ids);
             break;
           case 'common_phenotype_tool':
             this.openCommonPheno(ids);
@@ -107,6 +201,32 @@ define([
 		window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
 	});
     },
+    openCommonAmplicon: function(ids){
+	var that = this;
+	// only allow one tab for one type at a time
+	$("#amplicon_tab").remove();
+	$("#amplicon_phenotypes").remove();
+     	$("#data_tabs").append("<li id='amplicon_tab'><a href='#common_amplicons' data-toggle='tab'><button class='close' type='button'>x</button>Common Amplicons</a></li>");
+	$("#data_table_container").append("<div id='common_amplicons' class='tab-pane active'>"+
+					 "<div class='button-wrapper'><div class='btn-group'><button class='btn btn-default' type='button' id='amplicon_csv'>Download CSV</button><button class='btn btn-default' type='button' id='amplicon_sswap'>Phylo analysis via SSWAP</button></div></div></div>");				
+	this.setLoaderIcon("#data_table_container");
+      	this.$("ul.nav-tabs li a:last").tab('show');
+	$.get('GetCommonAmplicon.php?tid='+ids, function(html){
+		that.unsetLoaderIcon("#data_table_container");
+		$("#common_amplicons").append(html);		
+		$("#common_amplicon_table").tablecloth({
+			theme: "default",
+			condensed: true,
+			striped: true,
+			sortable: true,
+		});
+	
+	});
+
+	$("#amplicon_csv").click(function(){// if download button clicked
+		window.location.href = 'GetCommonAmplicon.php?tid='+ids+'&csv';
+	});
+    },
 
     openDiversitree: function(ids){
       window.location.href = 'DiversitreeDownload.php?tid='+ids+'&csv';
@@ -122,6 +242,7 @@ define([
 	this.setLoaderIcon("#data_table_container");
       	this.$("ul.nav-tabs li a:last").tab('show');
 	$.get('GetCommonSNP.php?tid='+ids, function(html){
+	//slickgrid
 		that.unsetLoaderIcon("#data_table_container");
 		$("#common_snps").append(html);		
 		$("#common_snp_table").tablecloth({

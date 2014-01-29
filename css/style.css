@@ -36,6 +36,13 @@ h4{
 #tree_id_search_container {
 	margin-bottom:15px;
 }
+.select2-container-multi .select2-dropdown-open .select2-choices{
+	overflow-y: hidden;
+}
+.select2-container-multi .select2-choices{
+	max-height: 30px;
+	overflow-y: auto;
+}
 
 #select_tree_header {
   position:absolute;
@@ -154,7 +161,7 @@ h4{
 	overflow: auto;
   	font-size: 10px;
   	font-weight: normal;
-	height:200px;
+	max-height:200px;
 	width:200px;
         background-color:white;
         border:3px solid gray;

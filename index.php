@@ -190,7 +190,7 @@ Updated:
 						<button class="btn btn-default" type="button" data-toggle="dropdown"><span id="tools_title">Select tool</span> <span class="caret"></span></button>
 						<ul class="dropdown-menu">
 						    <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Select tool</a></li>
-						  	<li class="disabled" role="presentation"><a id="common_amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Amplicon</a></li>
+						  	<li role="presentation"><a id="common_amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Amplicon</a></li>
 						    <li role="presentation"><a id="common_phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Phenotype</a></li>
 						    <li role="presentation"><a id="common_snp_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common SNP</a></li>
 						    <li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get WorldClim data</a></li>

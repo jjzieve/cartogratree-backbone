@@ -8,7 +8,6 @@ define([
   'treetable',
   'models/tree_node',
   'collections/queries',
-  'select2'
 ], function($, _, Backbone, TreeNodeModel , QueriesCollection){
 		var SelectionTreeView = Backbone.View.extend({
 			el: "#selection_tree",
@@ -93,30 +92,19 @@ define([
     			}
     		},
 
-		initTreeIDSearch: function(){
-			$("#tree_id_search").select2({
-				placeholder: "Search for a tree id",
-				//data: [{id:0,text:'test'},{id:1,text:'test1'}],
-				multiple: true,
-				width: "resolve",
-				minimumInputLength: 4,
-				ajax: {
-					url: "QueryFusionTables.php",
-					dataType:"json",
-					results: function(data){
-						var select2Data = [];
-						
-						$.each(data.slice(1,20),function(index,tree_id){
-							console.log(tree_id);
-							select2Data.push({id:tree_id[0],text:tree_id[0]});
-						});
-						return {results: select2Data};
-					}
-				}	
-			});	
+		addTreeID: function(column,tree_id){
+			this.collection.add({
+				id: tree_id,
+				column: column,
+				value: tree_id
+			});
 		},
 
-		initSelectionTree: function(){
+		getColumn: function(column){
+          		return (this.collection.filter(function(query){return query.get("column") === column}).map(function(query){return query.get("value")}));
+        	},  
+	
+		initialize: function(){
 			// open to depth of 2
 			var that = this;
 			this.$el.treetable({expandable:true});
@@ -144,15 +132,10 @@ define([
 			this.$el.treetable("expandNode","1");
 		},		
 		
-		initialize: function(){
-			this.initTreeIDSearch();
-			this.initSelectionTree();		
-		},
-
 		events: {
 		    "click": "toggleSelection",
 		},
-
+		
 		toggleSelection: function(event){
 			var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
   			var column = $(event.target).attr('name');

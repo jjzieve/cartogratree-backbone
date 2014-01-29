@@ -16,8 +16,8 @@ include_once("../includes/db_access/db_connect_sswap.php");
 //include_once("includes/incPGSQL.php");
 session_start();
 
-if (isset($_POST['tid'])) {
-	$escapedTids = pg_escape_string(trim($_POST['tid']));
+if (isset($_GET['tid'])) {
+	$escapedTids = pg_escape_string(trim($_GET['tid']));
 	$tidarray = explode(',', $escapedTids);
 } else {
 	$tidarray = array();
@@ -30,7 +30,7 @@ function scrub($data)
     return $str;
 }
 
-if (isset($_POST['download_csv'])) {
+if (isset($_GET['csv'])) {
 //	header('Content-Type: text/plain');
 	// Prepare for download.
 	header("Cache-control: private");
@@ -558,170 +558,6 @@ if (isset($_POST['download_csv'])) {
 }
 ?>
 
-<html>
-<head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-<link type="text/css" href="css/style_map.css" rel="stylesheet" />
-<link rel="stylesheet" type="text/css" href="css/dd.css" />
-<link rel="stylesheet" type="text/css" href="css/reveal.css" />
-<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="js/picnet.table.filter.min.js"></script>
-<script type="text/javascript" src="js/jquery.fixheadertable.min.js"></script>
-<script type="text/javascript" src="js/jquery.dd.js" ></script>
-<script type="text/javascript" src="js/jquery.reveal.js"></script>
-<script type="text/javascript" src="js/cvi_busy_lib.js"></script>
-
-<script type='text/javascript'>
-	function back(){
-		window.history.go(-1);
-	}
-
-	$(document).ready(function() {
-		$(window).keydown(function(event){
-			if(event.keyCode == 13) {
-				event.preventDefault();
-				return false;
-			}
-		});
-  			
-		<?php
-			if(!isset($_SESSION['preview_flag'])){
-				print "$('#tool_kit_run').hide();";
-				print "$(\"#tool_kit option[value='more_info']\").attr(\"selected\",\"selected\");";
-			}
-			else{
-				print "$('#tool_kit_more').hide();";
-				print "$(\"#tool_kit option[value='sswap']\").attr(\"selected\",\"selected\");";
-			}
-		?>	
-		$("#tool_kit").msDropDown();
-		$('#datatable').tableFilter({enableCookies:false});
-		/* $('#datatable').fixheadertable({
-		 		 height: 500,
-		 		 minColWidth:1,
-		 		 
-		 });
-		*/
-		
-		$('#selected_opt_checkall').click(function(){
-				if($(this).val() == "Select All"){
-					$('input[type=checkbox]').attr('checked',true); 
-					$(this).val('Unselect All');
-				}
-				else{
-					$('input[type=checkbox]').attr('checked',false);
-					$(this).val('Select All');
-				}
-				
-		});
-		
-		$('#tool_kit_run').click(function(){
-				if($("input:checked").length > 0){
-					return true;
-				}
-				else{
-					alert("Please select an amplicon.");
-					return false;
-				}
-		});
-		
-		$('#tool_kit').change(function(){
-				var selected = document.getElementById('tool_kit').value;
-				
-				if(selected == 'more_info'){
-					$('#tool_kit_more').show();
-					$('#tool_kit_more').val('View');
-					$('#tool_kit_run').hide();
-				}
-				else if(selected == 'clear_select'){
-					$('#tool_kit_more').show();
-					$('#tool_kit_more').val('Clear');
-					$('#tool_kit_run').hide();
-				}
-				else if(selected == 'csv_file'){
-					$('#tool_kit_more').hide();
-					$('#tool_kit_run').show();
-					$('#tool_kit_run').val('Download')
-					$('#tool_kit_run').attr("name","download_csv");
-				}
-				else if(selected == 'sswap'){
-					$('#tool_kit_more').hide();
-					$('#tool_kit_run').show();
-					$('#tool_kit_run').val('Proceed');
-					$('#tool_kit_run').attr("name","submit");
-				}
-		});
-				
-		$('#tool_kit_more').click(function(e) {
-				e.preventDefault();
-				
-				if($('#tool_kit').val() == 'more_info'){
-					$('#page_more_info').reveal();
-				}
-				else if($('#tool_kit').val() == 'clear_select'){
-					$('input[type=checkbox]').attr('checked',false);
-				}
-		});
-		
-		<?php 
-			/*if(!isset($_SESSION['preview_flag'])){
-					print "$('#page_more_info').reveal();";
-			}*/
-		?>
-	});
-</script>
-<style>
-div.result_div table{
-	width:100%;
-	clear:both;
-}
-div.reveal-modal p, table tr td, ul li{
-	font-size:0.75em;
-}
-
-</style>
-</head>
-<body style="background-color:#efefef">
-<br>
-<!--<img src="images/logo_tsw.png">-->
-<?php
-if (isset($_POST['submit'])) {
-?>
-
-	<script src="http://sswap.info/sswap.js" type="text/javascript"></script>
-
-	<?php
-		//header('Content-Type: text/plain');
-		$checkedAmplicons = $_POST["checkedAmplicons"];
-		$_SESSION['checkedAmplicons'] = $checkedAmplicons;
-		$_SESSION['preview_flag'] = 'no';
-		print "You have selected the following amplicons to be sent to the SSWAP pipeline.<br>Press the sswap.info button to proceed if this list is correct.<br><br>";
-		print '<div style="overflow:scroll;max-height:500px;width:50%;border:1px solid black;padding:10px;">';
-		foreach($checkedAmplicons as $amp) {
-			print $amp."<br>";
-		}
-		print '</div>';
-		$jsonRRGPHP = generateJsonAmpliconById($checkedAmplicons);
-	?>
-
-	<script type="text/javascript">
-	function getJson()
-	{
-		var jsonRRG = <?php echo $jsonRRGPHP;?>;
-		return jsonRRG;
-	}
-	</script>
-
-	<script type="text/javascript">
-	SSWAP.discover(getJson(), "#pipelineButton");
-	</script>
-	<br><br><div id="pipelineButton"></div>
-	<br>
-	<form method=post action="<?=$_SERVER['PHP_SELF']?>">
-	<input type=hidden name=tid value="<?=$_POST['tid']?>">
-	<!--<input type=button value='Back to Amplicon Selection' onClick="back();">-->
-	<input type=submit value='Back to Amplicon Selection'>
-	</form>
 <?php
 } else if(count($tidarray) > 1) {
 	$qCommonAmp = "SELECT * FROM sswap_get_common_amplicons_per_sample(ARRAY['".implode("','",$tidarray)."'])";
@@ -959,35 +795,10 @@ if (isset($_POST['submit'])) {
 
 		if($countCommonAnnot > 0) {
 		?>
-		<div id="content_window">
-			<form method="post" action="<?=$_SERVER['PHP_SELF']?>" >
-			<input type=hidden name="tid" value="<?=$_POST['tid']?>">
-			<div class=result_div>
-				<div id="selected_opt" style="float:left;vertical-align:bottom;margin-bottom:3px;">
-					&nbsp;&nbsp;<input type=button id="selected_opt_checkall" value="Select All"/>
-				</div>
-				<div id="send_button" style="float:right;vertical-align:center;margin-right:15px;margin-bottom:3px;">
-					<div style="float:right;vertical-align:bottom">
-						<input type=button id="tool_kit_more" value="View"/>
-						<input type=submit id='tool_kit_run' value="Proceed" name="submit"/>
-					</div>
-					<div style="float:right;">
-						<select id="tool_kit" style="width:200px;">
-							<option value='more_info' title="images/tg_icon_small.png">Summary/Guidelines</option>
-							<option value='sswap' title="images/sswapinfoicon.png">Send to sswap.info</option>
-							<option value='csv_file' title="images/tg_icon_small.png">CSV File</option>
-							<option value='clear_select' title="images/tg_icon_small.png">Clear Selection</option>
-						</select>
-					</div>
-					<div style="float:right;">
-						<span><a href="help.php?" target=blank><img src='images/qmark.png' style="height:15px;"></a></span>
-					</div>
-				</div>
-				<div>
-					<table id=datatable class=results>
+					<table id='common_amplicon_table' style='font-size:14px'>"
 						<thead>
-							<tr style="background-color:#d0d0d0">
-								<th style="width:20px" filter='false'><b>Number</b></th>
+							<tr>
+								<th><b>Number</b></th>
 								<th><b>Amplicon Id</b></th>
 								<th><b>Top Blast Description <br>(BLAST nr)</b></th>
 								<th><b>Species-Specific BLASTs</b></th>
@@ -1007,23 +818,6 @@ if (isset($_POST['submit'])) {
 							$annot_type = $annotRes['annot_type'];
 							$annot_id = $annotRes['annot_id'];
 							$annot_term = $annotRes['annot_term'];
-							
-							//jQuery loads
-							/*if(!in_array($ampliconId,$allAmpId)){
-								$allAmpId[] = $ampliconId;
-								//print '<script>$("#datatable > tbody").append("<tr id='.$ampliconId.'><td></td><td>'.$ampliconId.'</td><td name=blast-nr></td><td name=blast-species></td><td name=go></td><td name=interpro></td><td name=pfam></td><td name=ec></td><td name=tmhmmsignalp></td></tr>");</script>'."\n";
-								print "<tr id=$ampliconId><td></td><td>$ampliconId</td><td name=blast-nr></td><td name=blast-species></td><td name=go></td><td name=interpro></td><td name=pfam></td><td name=ec></td><td name=tmhmmsignalp></td></tr>";
-							}
-							
-							if($annot_type == 'blast-nr' || $annot_type =='tmhmmsignalp'){
-								print '<script>$("tr#'.$ampliconId.' > td[name='.$annot_type.']").append("'.$annot_term.'");</script>'."\n";
-							}
-							else if($annot_type == 'blast-species'){
-								print '<script>$("tr#'.$ampliconId.' > td[name='.$annot_type.']").append("'.$annot_term.'<br><br>");</script>'."\n";
-							}
-							else{
-								print '<script>$("tr#'.$ampliconId.' > td[name='.$annot_type.']").append("'.$annot_id." ".$annot_term.'<br><br>");</script>'."\n";
-							}*/
 							
 							//hash loads
 							if(!in_array($ampliconId,$allAmpId)){
@@ -1068,26 +862,6 @@ if (isset($_POST['submit'])) {
 						?>
 						</tbody>
 					</table>
-				</div>
-			
-			</div>
-			</form>
-		</div>
-		
-		<div id="page_more_info" class="reveal-modal">
-			<h3>Common Amplicon Summary</h3>
-			<p><table>
-				<tr><td style="text-align:right;">Number of Common Amplicons: </td><td><b><?=$countCommonAnnot?></b></td>
-				<tr><td style="text-align:right;">Number of Common Amplicons with Functional Annotations: </td><td><b><?=$iterator?></b></td>
-			</table></p>
-			<h3>Guidelines</h3>
-			<p><ul>
-				<li>Please select 10 amplicons or less for Phylogeny Analysis within the SSWAP Pipeline.</li>
-				<li>To download a CSV of interested amplicons, you may select any number of amplicons.</li>
-			</ul></p>
-			<p>To view this section again, please select 'More Info' from the right hand menu</p>
-			<a class="close-reveal-modal">&#215;</a>
-		</div>
 		
 		<?php
 		} else {
@@ -1180,5 +954,3 @@ function generateJsonAmpliconById($array) {
 
 ?>
 
-</body>
-</html>

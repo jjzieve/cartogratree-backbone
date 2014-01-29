@@ -12,12 +12,13 @@ define([
 	'views/navbar',
 	'views/map',
 	'views/sidebar_selection_tree',
+	'views/sidebar_tree_id_search',
 	'views/sidebar_filters',
 	'views/bottom_tabs',
 	'views/bottom_table',
 	], function($, _, Backbone, QueryModel, TreeNodeModel, TreeIDModel,
 		QueriesCollection, TreeIDCollection,
-		NavBarView, MapView, SelectionTreeView, FiltersView, BottomTabsView, BottomTableView) {
+		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, BottomTabsView, BottomTableView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'(/)(?tid=:tree_ids)':'index',
@@ -56,6 +57,7 @@ define([
  				var treeNode = new TreeNodeModel();
 				var map = new MapView({collection: queries,model: query}); //get rid of generic endings "view,map"
 				var selectionTree = new SelectionTreeView({collection: queries, model: treeNode});
+				var treeIDSearch = new TreeIDSearchView({collection: queries});
 				var filters = new FiltersView({collection: queries,model: query});
 				var tabs = new BottomTabsView({collection: selected_tree_ids,model: selected_tree_id});
 				var table = new BottomTableView({collection: queries, sub_collection: selected_tree_ids, model: query});

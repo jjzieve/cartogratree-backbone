@@ -95,18 +95,19 @@ define([
 				dataType: "json",
 				data: {"url":url+"/legend?f=json&pretty=true"},
 				success: function(response){
-					var legendHTML = "<table class='table table-borderless table-condensed table-hover infowindow'><thead><th><a target='_blank' href='"+url+"'>ArcGIS Legend</a></th></thead>";
+					var legendHTML = "<h5><a target='_blank' href='"+url+"'>ArcGIS Legend</a></h5>";
 					_.each(response["layers"],function(layer){
 						var layerName = layer["layerName"];
-						legendHTML += "<tr><td>"+layerName+"</td></tr>";
+						legendHTML += "<table class='table table-borderless table-condensed table-hover infowindow'>";
+						legendHTML += "<tr><td colspan='2'>"+layerName+"</td></tr>";
 						 _.each(layer["legend"],function(key){
 							var label = key["label"];
 							var image = key["imageData"];
 							var imageType = key["contentType"];
 							legendHTML += "<tr><td>"+label+"</td>"+"<td><img src='data:"+imageType+";base64,"+image+"'></td></tr>";
 						});
-					});
 					legendHTML += "</table>";
+					});
 					$("#legend").empty();
 					$("#legend").append(legendHTML);
 					$("#legend").css({"display":"block"});

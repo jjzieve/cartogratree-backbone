@@ -14,7 +14,15 @@ define([
       $('#credits').popover({
           trigger:'hover',
           html:'true',
-          content:'Backbone<br>Bootstrap<br>Google Fusion Table<br>Google Maps<br>jQuery<br>SlickGrid<br>TreeTable'
+          content:
+		"<a href='http://backbonejs.org/' target='_blank'>Backbone</a><br>"+
+		"<a href='http://getbootstrap.com/'target='_blank'>Bootstrap</a><br>"+
+		"<a href='http://jquery.com/' target='_blank'>jQuery</a><br>"+
+		"<a href='https://developers.google.com/fusiontables/' target='_blank'>Google Fusion Tables</a><br>"+
+		"<a href='https://developers.google.com/maps/' target='_blank'>Google Maps</a><br>"+
+		"<a href='https://github.com/mleibman/SlickGrid/wiki' target='_blank'>Slickgrid</a><br>"+
+		"<a href='http://ivaynberg.github.io/select2/' target='_blank'>Select2</a>",
+	  delay: { hide: 2000 }
       });
       
     }
