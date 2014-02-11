@@ -16,13 +16,15 @@ include_once("../includes/db_access/db_connect_sswap.php");
 //include_once("includes/incPGSQL.php");
 session_start();
 
-if (isset($_GET['tid'])) {
-	$escapedTids = pg_escape_string(trim($_GET['tid']));
-	$tidarray = explode(',', $escapedTids);
-} else {
-	$tidarray = array();
+function GETlist($id)
+{
+	if (isset($_GET[$id])) {
+		$escapedTids = pg_escape_string(trim($_GET[$id]));
+		return explode(',', $escapedTids);
+	} else {
+		return array();
+	}
 }
-
 
 function scrub($data)
 {
@@ -30,8 +32,233 @@ function scrub($data)
     return $str;
 }
 
+function genQuery($ampliconINString)
+{
+	return " SELECT * FROM (
+		(
+			SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
+				'go' AS annot_type, est_contig_go_term.go_term_acc AS annot_id, go_term.name AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
+			INNER JOIN est_contig_go_term ON est_contig_go_term.est_contig_name = est_contig.est_contig_name
+			INNER JOIN go_term ON go_term.acc = est_contig_go_term.go_term_acc
+			WHERE amplicon_name IN ( $ampliconINString )
+
+		) UNION (
+
+			SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
+				'go' AS annot_type, est_contiggroup_go_term.go_term_acc AS annot_id, go_term.name AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
+			INNER JOIN est_contiggroup_go_term ON est_contiggroup_go_term.est_contig_group_name = est_contiggroup.est_contig_group_name
+			INNER JOIN go_term ON go_term.acc = est_contiggroup_go_term.go_term_acc
+			WHERE amplicon_name IN ( $ampliconINString )
+
+		) UNION (
+
+			SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
+				'ec' AS annot_type, ec_enzyme.ec_number AS annot_id, ec_enzyme.description AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
+			INNER JOIN est_contig_ec_enzyme ON est_contig_ec_enzyme.est_contig_name = est_contig.est_contig_name
+			INNER JOIN ec_enzyme ON ec_enzyme.ec_number = est_contig_ec_enzyme.ec_number
+			WHERE amplicon_name IN ( $ampliconINString )
+			
+		) UNION (
+
+			SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
+				'ec' AS annot_type, ec_enzyme.ec_number AS annot_id, ec_enzyme.description AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
+			INNER JOIN est_contiggroup_ec_enzyme ON est_contiggroup_ec_enzyme.est_contig_group_name = est_contiggroup.est_contig_group_name
+			INNER JOIN ec_enzyme ON ec_enzyme.ec_number = est_contiggroup_ec_enzyme.ec_number
+			WHERE amplicon_name IN ( $ampliconINString )
+		
+		) UNION (
+
+			SELECT 
+				seq_amplicons.amplicon_name, 
+				est_contig.est_contig_name AS contig_name,
+				'tmhmmsignalp' AS annot_type, 
+				'tmhmmsignalp' AS annot_id, 
+				CASE
+					WHEN est_contig.tmhmm IS NULL AND  est_contig.signalp IS NULL
+					THEN ''
+					WHEN est_contig.tmhmm IS NULL AND est_contig.signalp IS NOT NULL
+					THEN 'SignalP:&nbsp;(' || est_contig.signalp || ')' 
+					WHEN est_contig.tmhmm IS NOT NULL AND est_contig.signalp IS NULL
+					THEN 'tmhmm:&nbsp;(' || est_contig.tmhmm || ')'
+					ELSE 'tmhmm:&nbsp;(' || est_contig.tmhmm || ') SignalP:&nbsp;(' || est_contig.signalp || ')' 
+				END AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
+			WHERE amplicon_name IN ( $ampliconINString )
+
+		) UNION (
+
+			SELECT 
+				seq_amplicons.amplicon_name, 
+				est_contiggroup.est_contig_group_name AS contig_name,
+				'tmhmmsignalp' AS annot_type, 
+				'tmhmmsignalp' AS annot_id, 
+				CASE
+					WHEN est_contiggroup.tmhmm IS NULL AND  est_contiggroup.signalp IS NULL
+					THEN ''
+					WHEN est_contiggroup.tmhmm IS NULL AND est_contiggroup.signalp IS NOT NULL
+					THEN 'SignalP:&nbsp;(' || est_contiggroup.signalp || ')' 
+					WHEN est_contiggroup.tmhmm IS NOT NULL AND est_contiggroup.signalp IS NULL
+					THEN 'tmhmm:&nbsp;(' || est_contiggroup.tmhmm || ')'
+					ELSE 'tmhmm:&nbsp;(' || est_contiggroup.tmhmm || ') SignalP:&nbsp;(' || est_contiggroup.signalp || ')' 
+				END AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
+			WHERE amplicon_name IN ( $ampliconINString )
+
+		) UNION (
+
+			SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
+				'interpro' AS annot_type, est_contig_interpro.interpro_id AS annot_id, est_contig_interpro.name AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
+			INNER JOIN est_contig_interpro ON est_contig_interpro.est_contig_name = est_contig.est_contig_name
+			WHERE amplicon_name IN ( $ampliconINString )
+			
+		) UNION (
+
+			SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
+				'interpro' AS annot_type, est_interpro.interpro_id AS annot_id, est_interpro.name AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
+			INNER JOIN est_interpro ON est_interpro.est_contig_group_name = est_contiggroup.est_contig_group_name
+			WHERE amplicon_name IN ( $ampliconINString )
+			
+		) UNION (
+
+			SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
+				'pfam' AS annot_type, est_contig_pfam.pfam_id AS annot_id, pfam.pfam_def AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
+			INNER JOIN est_contig_pfam ON est_contig_pfam.est_contig_name = est_contig.est_contig_name
+			INNER JOIN pfam ON pfam.pfam_id = est_contig_pfam.pfam_id
+			WHERE amplicon_name IN ( $ampliconINString )
+
+		) UNION (
+
+			SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
+				'pfam' AS annot_type, est_contiggroup_pfam.pfam_id AS annot_id, pfam.pfam_def AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
+			INNER JOIN est_contiggroup_pfam ON est_contiggroup_pfam.est_contig_group_name = est_contiggroup.est_contig_group_name
+			INNER JOIN pfam ON pfam.pfam_id = est_contiggroup_pfam.pfam_id
+			WHERE amplicon_name IN ( $ampliconINString )
+
+		) UNION (
+
+			SELECT 
+				seq_amplicons.amplicon_name, 
+				est_contig.est_contig_name AS contig_name,
+				'blast-species' AS annot_type, 
+				est_contig_blast.genbank_acc AS annot_id, 
+				CASE
+					WHEN est_contig_blast.seq_description='---NA---'
+					THEN ''
+					WHEN est_contig_blast.seq_description IS NULL
+					THEN ''
+					WHEN est_contig_blast.eval IS NULL AND  (est_contig_blast.species_name IS NULL OR est_contig_blast.species_name = '')
+					THEN est_contig_blast.seq_description
+					WHEN est_contig_blast.eval IS NULL AND est_contig_blast.species_name IS NOT NULL
+					THEN est_contig_blast.seq_description || ' (' || est_contig_blast.species_name || ')' 
+					WHEN est_contig_blast.eval IS NOT NULL AND  (est_contig_blast.species_name IS NULL OR est_contig_blast.species_name = '')
+					THEN est_contig_blast.seq_description || ' (' || est_contig_blast.eval || ')'
+					ELSE est_contig_blast.seq_description || ' (' || est_contig_blast.eval || ') (' || est_contig_blast.species_name || ')' 
+				END AS annot_term	FROM seq_amplicons
+			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
+			INNER JOIN est_contig_blast ON est_contig_blast.est_contig_name = est_contig.est_contig_name
+			WHERE amplicon_name IN ( $ampliconINString )
+
+		) UNION (
+
+			SELECT 
+				seq_amplicons.amplicon_name, 
+				est_contiggroup.est_contig_group_name AS contig_name,
+				'blast-species' AS annot_type, 
+				est_contiggroup_blast.genbank_acc AS annot_id, 
+				CASE
+					WHEN est_contiggroup_blast.seq_description='---NA---'
+					THEN ''
+					WHEN est_contiggroup_blast.seq_description IS NULL
+					THEN ''
+					WHEN est_contiggroup_blast.eval IS NULL AND  (est_contiggroup_blast.species_name IS NULL OR est_contiggroup_blast.species_name = '')
+					THEN est_contiggroup_blast.seq_description
+					WHEN est_contiggroup_blast.eval IS NULL AND est_contiggroup_blast.species_name IS NOT NULL
+					THEN est_contiggroup_blast.seq_description || ' (' || est_contiggroup_blast.species_name || ')' 
+					WHEN est_contiggroup_blast.eval IS NOT NULL AND  (est_contiggroup_blast.species_name IS NULL OR est_contiggroup_blast.species_name = '')
+					THEN est_contiggroup_blast.seq_description || ' (' || est_contiggroup_blast.eval || ')'
+					ELSE est_contiggroup_blast.seq_description || ' (' || est_contiggroup_blast.eval || ') (' || est_contiggroup_blast.species_name || ')' 
+				END AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
+			INNER JOIN est_contiggroup_blast ON est_contiggroup_blast.est_contig_group_name = est_contiggroup.est_contig_group_name
+			WHERE amplicon_name IN ( $ampliconINString )
+
+		) UNION (
+
+			SELECT 
+				seq_amplicons.amplicon_name, 
+				est_contig.est_contig_name AS contig_name,
+				'blast-nr' AS annot_type, 
+				est_contig.genbank_acc AS annot_id, 
+				CASE
+					WHEN est_contig.seq_description='---NA---'
+					THEN ''
+					WHEN est_contig.seq_description IS NULL
+					THEN ''
+					WHEN est_contig.eval IS NULL AND  (est_contig.species_name IS NULL OR est_contig.species_name = '')
+					THEN est_contig.seq_description
+					WHEN est_contig.eval IS NULL AND est_contig.species_name IS NOT NULL
+					THEN est_contig.seq_description || ' (' || est_contig.species_name || ')' 
+					WHEN est_contig.eval IS NOT NULL AND  (est_contig.species_name IS NULL OR est_contig.species_name = '')
+					THEN est_contig.seq_description || ' (' || est_contig.eval || ')'
+					ELSE est_contig.seq_description || ' (' || est_contig.eval || ') (' || est_contig.species_name || ')' 
+				END AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
+			WHERE amplicon_name IN ( $ampliconINString )
+
+		) UNION (
+
+			SELECT 
+				seq_amplicons.amplicon_name, 
+				est_contiggroup.est_contig_group_name AS contig_name,
+				'blast-nr' AS annot_type, 
+				est_contiggroup.genbank_acc AS annot_id, 
+				CASE
+					WHEN est_contiggroup.seq_description='---NA---'
+					THEN ''
+					WHEN est_contiggroup.seq_description IS NULL
+					THEN ''
+					WHEN est_contiggroup.eval IS NULL AND  (est_contiggroup.species_name IS NULL OR est_contiggroup.species_name = '')
+					THEN est_contiggroup.seq_description
+					WHEN est_contiggroup.eval IS NULL AND est_contiggroup.species_name IS NOT NULL
+					THEN est_contiggroup.seq_description || ' (' || est_contiggroup.species_name || ')' 
+					WHEN est_contiggroup.eval IS NOT NULL AND  (est_contiggroup.species_name IS NULL OR est_contiggroup.species_name = '')
+					THEN est_contiggroup.seq_description || ' (' || est_contiggroup.eval || ')'
+					ELSE est_contiggroup.seq_description || ' (' || est_contiggroup.eval || ') (' || est_contiggroup.species_name || ')' 
+				END AS annot_term
+			FROM seq_amplicons
+			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
+			WHERE amplicon_name IN ( $ampliconINString )
+			
+		) ) AS tmp
+		WHERE annot_id <> '' AND annot_term <> ''
+		ORDER BY amplicon_name, annot_type";
+}
+
+$tidarray = GETlist("tid");
+$checkedAmplicons = GETList("checkedAmplicons");
+
 if (isset($_GET['csv'])) {
-//	header('Content-Type: text/plain');
+	header('Content-Type: text/plain');
 	// Prepare for download.
 	header("Cache-control: private");
 	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -40,234 +267,14 @@ if (isset($_GET['csv'])) {
 	header("Content-Type: text/csv; charset=ansi");
 	header("Content-disposition: attachment; filename=\"amplicon_spreadsheet.csv\"");
 	header("Expires: 0");
-	$checkedAmplicons = $_POST["checkedAmplicons"];
+
 	$ampliconINString = "";
 	foreach($checkedAmplicons as $ampliconId) {
 		$ampliconINString = $ampliconINString . "'" . $ampliconId . "',";
 	}
 	$ampliconINString = substr($ampliconINString, 0, -1);
-
-
-	$q2 = " SELECT * FROM (
-	(
-		SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
-			'go' AS annot_type, est_contig_go_term.go_term_acc AS annot_id, go_term.name AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-		INNER JOIN est_contig_go_term ON est_contig_go_term.est_contig_name = est_contig.est_contig_name
-		INNER JOIN go_term ON go_term.acc = est_contig_go_term.go_term_acc
-		WHERE amplicon_name IN ( $ampliconINString )
-
-	) UNION (
-
-		SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
-			'go' AS annot_type, est_contiggroup_go_term.go_term_acc AS annot_id, go_term.name AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-		INNER JOIN est_contiggroup_go_term ON est_contiggroup_go_term.est_contig_group_name = est_contiggroup.est_contig_group_name
-		INNER JOIN go_term ON go_term.acc = est_contiggroup_go_term.go_term_acc
-		WHERE amplicon_name IN ( $ampliconINString )
-
-	) UNION (
-
-		SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
-			'ec' AS annot_type, ec_enzyme.ec_number AS annot_id, ec_enzyme.description AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-		INNER JOIN est_contig_ec_enzyme ON est_contig_ec_enzyme.est_contig_name = est_contig.est_contig_name
-		INNER JOIN ec_enzyme ON ec_enzyme.ec_number = est_contig_ec_enzyme.ec_number
-		WHERE amplicon_name IN ( $ampliconINString )
-		
-	) UNION (
-
-		SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
-			'ec' AS annot_type, ec_enzyme.ec_number AS annot_id, ec_enzyme.description AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-		INNER JOIN est_contiggroup_ec_enzyme ON est_contiggroup_ec_enzyme.est_contig_group_name = est_contiggroup.est_contig_group_name
-		INNER JOIN ec_enzyme ON ec_enzyme.ec_number = est_contiggroup_ec_enzyme.ec_number
-		WHERE amplicon_name IN ( $ampliconINString )
-	
-	) UNION (
-
-		SELECT 
-			seq_amplicons.amplicon_name, 
-			est_contig.est_contig_name AS contig_name,
-			'tmhmmsignalp' AS annot_type, 
-			'tmhmmsignalp' AS annot_id, 
-			CASE
-				WHEN est_contig.tmhmm IS NULL AND  est_contig.signalp IS NULL
-				THEN ''
-				WHEN est_contig.tmhmm IS NULL AND est_contig.signalp IS NOT NULL
-				THEN 'SignalP:&nbsp;(' || est_contig.signalp || ')' 
-				WHEN est_contig.tmhmm IS NOT NULL AND est_contig.signalp IS NULL
-				THEN 'tmhmm:&nbsp;(' || est_contig.tmhmm || ')'
-				ELSE 'tmhmm:&nbsp;(' || est_contig.tmhmm || ') SignalP:&nbsp;(' || est_contig.signalp || ')' 
-			END AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-		WHERE amplicon_name IN ( $ampliconINString )
-
-	) UNION (
-
-		SELECT 
-			seq_amplicons.amplicon_name, 
-			est_contiggroup.est_contig_group_name AS contig_name,
-			'tmhmmsignalp' AS annot_type, 
-			'tmhmmsignalp' AS annot_id, 
-			CASE
-				WHEN est_contiggroup.tmhmm IS NULL AND  est_contiggroup.signalp IS NULL
-				THEN ''
-				WHEN est_contiggroup.tmhmm IS NULL AND est_contiggroup.signalp IS NOT NULL
-				THEN 'SignalP:&nbsp;(' || est_contiggroup.signalp || ')' 
-				WHEN est_contiggroup.tmhmm IS NOT NULL AND est_contiggroup.signalp IS NULL
-				THEN 'tmhmm:&nbsp;(' || est_contiggroup.tmhmm || ')'
-				ELSE 'tmhmm:&nbsp;(' || est_contiggroup.tmhmm || ') SignalP:&nbsp;(' || est_contiggroup.signalp || ')' 
-			END AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-		WHERE amplicon_name IN ( $ampliconINString )
-
-	) UNION (
-
-		SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
-			'interpro' AS annot_type, est_contig_interpro.interpro_id AS annot_id, est_contig_interpro.name AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-		INNER JOIN est_contig_interpro ON est_contig_interpro.est_contig_name = est_contig.est_contig_name
-		WHERE amplicon_name IN ( $ampliconINString )
-		
-	) UNION (
-
-		SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
-			'interpro' AS annot_type, est_interpro.interpro_id AS annot_id, est_interpro.name AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-		INNER JOIN est_interpro ON est_interpro.est_contig_group_name = est_contiggroup.est_contig_group_name
-		WHERE amplicon_name IN ( $ampliconINString )
-		
-	) UNION (
-
-		SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
-			'pfam' AS annot_type, est_contig_pfam.pfam_id AS annot_id, pfam.pfam_def AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-		INNER JOIN est_contig_pfam ON est_contig_pfam.est_contig_name = est_contig.est_contig_name
-		INNER JOIN pfam ON pfam.pfam_id = est_contig_pfam.pfam_id
-		WHERE amplicon_name IN ( $ampliconINString )
-
-	) UNION (
-
-		SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
-			'pfam' AS annot_type, est_contiggroup_pfam.pfam_id AS annot_id, pfam.pfam_def AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-		INNER JOIN est_contiggroup_pfam ON est_contiggroup_pfam.est_contig_group_name = est_contiggroup.est_contig_group_name
-		INNER JOIN pfam ON pfam.pfam_id = est_contiggroup_pfam.pfam_id
-		WHERE amplicon_name IN ( $ampliconINString )
-
-	) UNION (
-
-		SELECT 
-			seq_amplicons.amplicon_name, 
-			est_contig.est_contig_name AS contig_name,
-			'blast-species' AS annot_type, 
-			est_contig_blast.genbank_acc AS annot_id, 
-			CASE
-				WHEN est_contig_blast.seq_description='---NA---'
-				THEN ''
-				WHEN est_contig_blast.seq_description IS NULL
-				THEN ''
-				WHEN est_contig_blast.eval IS NULL AND  (est_contig_blast.species_name IS NULL OR est_contig_blast.species_name = '')
-				THEN est_contig_blast.seq_description
-				WHEN est_contig_blast.eval IS NULL AND est_contig_blast.species_name IS NOT NULL
-				THEN est_contig_blast.seq_description || ' (' || est_contig_blast.species_name || ')' 
-				WHEN est_contig_blast.eval IS NOT NULL AND  (est_contig_blast.species_name IS NULL OR est_contig_blast.species_name = '')
-				THEN est_contig_blast.seq_description || ' (' || est_contig_blast.eval || ')'
-				ELSE est_contig_blast.seq_description || ' (' || est_contig_blast.eval || ') (' || est_contig_blast.species_name || ')' 
-			END AS annot_term	FROM seq_amplicons
-		INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-		INNER JOIN est_contig_blast ON est_contig_blast.est_contig_name = est_contig.est_contig_name
-		WHERE amplicon_name IN ( $ampliconINString )
-
-	) UNION (
-
-		SELECT 
-			seq_amplicons.amplicon_name, 
-			est_contiggroup.est_contig_group_name AS contig_name,
-			'blast-species' AS annot_type, 
-			est_contiggroup_blast.genbank_acc AS annot_id, 
-			CASE
-				WHEN est_contiggroup_blast.seq_description='---NA---'
-				THEN ''
-				WHEN est_contiggroup_blast.seq_description IS NULL
-				THEN ''
-				WHEN est_contiggroup_blast.eval IS NULL AND  (est_contiggroup_blast.species_name IS NULL OR est_contiggroup_blast.species_name = '')
-				THEN est_contiggroup_blast.seq_description
-				WHEN est_contiggroup_blast.eval IS NULL AND est_contiggroup_blast.species_name IS NOT NULL
-				THEN est_contiggroup_blast.seq_description || ' (' || est_contiggroup_blast.species_name || ')' 
-				WHEN est_contiggroup_blast.eval IS NOT NULL AND  (est_contiggroup_blast.species_name IS NULL OR est_contiggroup_blast.species_name = '')
-				THEN est_contiggroup_blast.seq_description || ' (' || est_contiggroup_blast.eval || ')'
-				ELSE est_contiggroup_blast.seq_description || ' (' || est_contiggroup_blast.eval || ') (' || est_contiggroup_blast.species_name || ')' 
-			END AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-		INNER JOIN est_contiggroup_blast ON est_contiggroup_blast.est_contig_group_name = est_contiggroup.est_contig_group_name
-		WHERE amplicon_name IN ( $ampliconINString )
-
-	) UNION (
-
-		SELECT 
-			seq_amplicons.amplicon_name, 
-			est_contig.est_contig_name AS contig_name,
-			'blast-nr' AS annot_type, 
-			est_contig.genbank_acc AS annot_id, 
-			CASE
-				WHEN est_contig.seq_description='---NA---'
-				THEN ''
-				WHEN est_contig.seq_description IS NULL
-				THEN ''
-				WHEN est_contig.eval IS NULL AND  (est_contig.species_name IS NULL OR est_contig.species_name = '')
-				THEN est_contig.seq_description
-				WHEN est_contig.eval IS NULL AND est_contig.species_name IS NOT NULL
-				THEN est_contig.seq_description || ' (' || est_contig.species_name || ')' 
-				WHEN est_contig.eval IS NOT NULL AND  (est_contig.species_name IS NULL OR est_contig.species_name = '')
-				THEN est_contig.seq_description || ' (' || est_contig.eval || ')'
-				ELSE est_contig.seq_description || ' (' || est_contig.eval || ') (' || est_contig.species_name || ')' 
-			END AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-		WHERE amplicon_name IN ( $ampliconINString )
-
-	) UNION (
-
-		SELECT 
-			seq_amplicons.amplicon_name, 
-			est_contiggroup.est_contig_group_name AS contig_name,
-			'blast-nr' AS annot_type, 
-			est_contiggroup.genbank_acc AS annot_id, 
-			CASE
-				WHEN est_contiggroup.seq_description='---NA---'
-				THEN ''
-				WHEN est_contiggroup.seq_description IS NULL
-				THEN ''
-				WHEN est_contiggroup.eval IS NULL AND  (est_contiggroup.species_name IS NULL OR est_contiggroup.species_name = '')
-				THEN est_contiggroup.seq_description
-				WHEN est_contiggroup.eval IS NULL AND est_contiggroup.species_name IS NOT NULL
-				THEN est_contiggroup.seq_description || ' (' || est_contiggroup.species_name || ')' 
-				WHEN est_contiggroup.eval IS NOT NULL AND  (est_contiggroup.species_name IS NULL OR est_contiggroup.species_name = '')
-				THEN est_contiggroup.seq_description || ' (' || est_contiggroup.eval || ')'
-				ELSE est_contiggroup.seq_description || ' (' || est_contiggroup.eval || ') (' || est_contiggroup.species_name || ')' 
-			END AS annot_term
-		FROM seq_amplicons
-		INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-		WHERE amplicon_name IN ( $ampliconINString )
-		
-	) ) AS tmp
-	WHERE annot_id <> '' AND annot_term <> ''
-	ORDER BY amplicon_name, annot_type";
-	$setup2 = $q2;
-	$res2 = DBQuery($setup2);
+	$query = genQuery($ampliconINString);
+	$res2 = DBQuery($query);
 	$countRes2 = pg_num_rows($res2);
 
 	if($countRes2 > 0) {
@@ -553,7 +560,7 @@ if (isset($_GET['csv'])) {
 		$iterator = $iterator - 1;
 		$finalOutput = "\"Amplicon Id\",\"Top Blast Description (BLAST nr)\",\"Species-Specific BLASTs\",\"GO Annotations\",\"Interpro Annotations\",\"PFAM Annotations\",\"ExPASY EC Annotations\",\"thmm / SignalP\"".$finalOutput;
 		echo $finalOutput;
-	}
+	
 	exit;
 }
 ?>
@@ -571,231 +578,14 @@ if (isset($_GET['csv'])) {
 			$ampliconINString .= "'" . $idRes['amplicon_name'] . "',";
 		}
 		$ampliconINString = substr($ampliconINString, 0, -1);
-		$qCommonAnnot = " SELECT * FROM (
-		(
-			SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
-				'go' AS annot_type, est_contig_go_term.go_term_acc AS annot_id, go_term.name AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-			INNER JOIN est_contig_go_term ON est_contig_go_term.est_contig_name = est_contig.est_contig_name
-			INNER JOIN go_term ON go_term.acc = est_contig_go_term.go_term_acc
-			WHERE amplicon_name IN ( $ampliconINString )
-
-		) UNION (
-
-			SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
-				'go' AS annot_type, est_contiggroup_go_term.go_term_acc AS annot_id, go_term.name AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-			INNER JOIN est_contiggroup_go_term ON est_contiggroup_go_term.est_contig_group_name = est_contiggroup.est_contig_group_name
-			INNER JOIN go_term ON go_term.acc = est_contiggroup_go_term.go_term_acc
-			WHERE amplicon_name IN ( $ampliconINString )
-
-		) UNION (
-
-			SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
-				'ec' AS annot_type, ec_enzyme.ec_number AS annot_id, ec_enzyme.description AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-			INNER JOIN est_contig_ec_enzyme ON est_contig_ec_enzyme.est_contig_name = est_contig.est_contig_name
-			INNER JOIN ec_enzyme ON ec_enzyme.ec_number = est_contig_ec_enzyme.ec_number
-			WHERE amplicon_name IN ( $ampliconINString )
-			
-		) UNION (
-
-			SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
-				'ec' AS annot_type, ec_enzyme.ec_number AS annot_id, ec_enzyme.description AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-			INNER JOIN est_contiggroup_ec_enzyme ON est_contiggroup_ec_enzyme.est_contig_group_name = est_contiggroup.est_contig_group_name
-			INNER JOIN ec_enzyme ON ec_enzyme.ec_number = est_contiggroup_ec_enzyme.ec_number
-			WHERE amplicon_name IN ( $ampliconINString )
 		
-		) UNION (
-
-			SELECT 
-				seq_amplicons.amplicon_name, 
-				est_contig.est_contig_name AS contig_name,
-				'tmhmmsignalp' AS annot_type, 
-				'tmhmmsignalp' AS annot_id, 
-				CASE
-					WHEN est_contig.tmhmm IS NULL AND  est_contig.signalp IS NULL
-					THEN ''
-					WHEN est_contig.tmhmm IS NULL AND est_contig.signalp IS NOT NULL
-					THEN 'SignalP:&nbsp;(' || est_contig.signalp || ')' 
-					WHEN est_contig.tmhmm IS NOT NULL AND est_contig.signalp IS NULL
-					THEN 'tmhmm:&nbsp;(' || est_contig.tmhmm || ')'
-					ELSE 'tmhmm:&nbsp;(' || est_contig.tmhmm || ') SignalP:&nbsp;(' || est_contig.signalp || ')' 
-				END AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-			WHERE amplicon_name IN ( $ampliconINString )
-
-		) UNION (
-
-			SELECT 
-				seq_amplicons.amplicon_name, 
-				est_contiggroup.est_contig_group_name AS contig_name,
-				'tmhmmsignalp' AS annot_type, 
-				'tmhmmsignalp' AS annot_id, 
-				CASE
-					WHEN est_contiggroup.tmhmm IS NULL AND  est_contiggroup.signalp IS NULL
-					THEN ''
-					WHEN est_contiggroup.tmhmm IS NULL AND est_contiggroup.signalp IS NOT NULL
-					THEN 'SignalP:&nbsp;(' || est_contiggroup.signalp || ')' 
-					WHEN est_contiggroup.tmhmm IS NOT NULL AND est_contiggroup.signalp IS NULL
-					THEN 'tmhmm:&nbsp;(' || est_contiggroup.tmhmm || ')'
-					ELSE 'tmhmm:&nbsp;(' || est_contiggroup.tmhmm || ') SignalP:&nbsp;(' || est_contiggroup.signalp || ')' 
-				END AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-			WHERE amplicon_name IN ( $ampliconINString )
-
-		) UNION (
-
-			SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
-				'interpro' AS annot_type, est_contig_interpro.interpro_id AS annot_id, est_contig_interpro.name AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-			INNER JOIN est_contig_interpro ON est_contig_interpro.est_contig_name = est_contig.est_contig_name
-			WHERE amplicon_name IN ( $ampliconINString )
-			
-		) UNION (
-
-			SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
-				'interpro' AS annot_type, est_interpro.interpro_id AS annot_id, est_interpro.name AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-			INNER JOIN est_interpro ON est_interpro.est_contig_group_name = est_contiggroup.est_contig_group_name
-			WHERE amplicon_name IN ( $ampliconINString )
-			
-		) UNION (
-
-			SELECT seq_amplicons.amplicon_name, est_contig.est_contig_name AS contig_name,
-				'pfam' AS annot_type, est_contig_pfam.pfam_id AS annot_id, pfam.pfam_def AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-			INNER JOIN est_contig_pfam ON est_contig_pfam.est_contig_name = est_contig.est_contig_name
-			INNER JOIN pfam ON pfam.pfam_id = est_contig_pfam.pfam_id
-			WHERE amplicon_name IN ( $ampliconINString )
-
-		) UNION (
-
-			SELECT seq_amplicons.amplicon_name, est_contiggroup.est_contig_group_name AS contig_name,
-				'pfam' AS annot_type, est_contiggroup_pfam.pfam_id AS annot_id, pfam.pfam_def AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-			INNER JOIN est_contiggroup_pfam ON est_contiggroup_pfam.est_contig_group_name = est_contiggroup.est_contig_group_name
-			INNER JOIN pfam ON pfam.pfam_id = est_contiggroup_pfam.pfam_id
-			WHERE amplicon_name IN ( $ampliconINString )
-
-		) UNION (
-
-			SELECT 
-				seq_amplicons.amplicon_name, 
-				est_contig.est_contig_name AS contig_name,
-				'blast-species' AS annot_type, 
-				est_contig_blast.genbank_acc AS annot_id, 
-				CASE
-					WHEN est_contig_blast.seq_description='---NA---'
-					THEN ''
-					WHEN est_contig_blast.seq_description IS NULL
-					THEN ''
-					WHEN est_contig_blast.eval IS NULL AND  (est_contig_blast.species_name IS NULL OR est_contig_blast.species_name = '')
-					THEN est_contig_blast.seq_description
-					WHEN est_contig_blast.eval IS NULL AND est_contig_blast.species_name IS NOT NULL
-					THEN est_contig_blast.seq_description || ' (' || est_contig_blast.species_name || ')' 
-					WHEN est_contig_blast.eval IS NOT NULL AND  (est_contig_blast.species_name IS NULL OR est_contig_blast.species_name = '')
-					THEN est_contig_blast.seq_description || ' (' || est_contig_blast.eval || ')'
-					ELSE est_contig_blast.seq_description || ' (' || est_contig_blast.eval || ') (' || est_contig_blast.species_name || ')' 
-				END AS annot_term	FROM seq_amplicons
-			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-			INNER JOIN est_contig_blast ON est_contig_blast.est_contig_name = est_contig.est_contig_name
-			WHERE amplicon_name IN ( $ampliconINString )
-
-		) UNION (
-
-			SELECT 
-				seq_amplicons.amplicon_name, 
-				est_contiggroup.est_contig_group_name AS contig_name,
-				'blast-species' AS annot_type, 
-				est_contiggroup_blast.genbank_acc AS annot_id, 
-				CASE
-					WHEN est_contiggroup_blast.seq_description='---NA---'
-					THEN ''
-					WHEN est_contiggroup_blast.seq_description IS NULL
-					THEN ''
-					WHEN est_contiggroup_blast.eval IS NULL AND  (est_contiggroup_blast.species_name IS NULL OR est_contiggroup_blast.species_name = '')
-					THEN est_contiggroup_blast.seq_description
-					WHEN est_contiggroup_blast.eval IS NULL AND est_contiggroup_blast.species_name IS NOT NULL
-					THEN est_contiggroup_blast.seq_description || ' (' || est_contiggroup_blast.species_name || ')' 
-					WHEN est_contiggroup_blast.eval IS NOT NULL AND  (est_contiggroup_blast.species_name IS NULL OR est_contiggroup_blast.species_name = '')
-					THEN est_contiggroup_blast.seq_description || ' (' || est_contiggroup_blast.eval || ')'
-					ELSE est_contiggroup_blast.seq_description || ' (' || est_contiggroup_blast.eval || ') (' || est_contiggroup_blast.species_name || ')' 
-				END AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-			INNER JOIN est_contiggroup_blast ON est_contiggroup_blast.est_contig_group_name = est_contiggroup.est_contig_group_name
-			WHERE amplicon_name IN ( $ampliconINString )
-
-		) UNION (
-
-			SELECT 
-				seq_amplicons.amplicon_name, 
-				est_contig.est_contig_name AS contig_name,
-				'blast-nr' AS annot_type, 
-				est_contig.genbank_acc AS annot_id, 
-				CASE
-					WHEN est_contig.seq_description='---NA---'
-					THEN ''
-					WHEN est_contig.seq_description IS NULL
-					THEN ''
-					WHEN est_contig.eval IS NULL AND  (est_contig.species_name IS NULL OR est_contig.species_name = '')
-					THEN est_contig.seq_description
-					WHEN est_contig.eval IS NULL AND est_contig.species_name IS NOT NULL
-					THEN est_contig.seq_description || ' (' || est_contig.species_name || ')' 
-					WHEN est_contig.eval IS NOT NULL AND  (est_contig.species_name IS NULL OR est_contig.species_name = '')
-					THEN est_contig.seq_description || ' (' || est_contig.eval || ')'
-					ELSE est_contig.seq_description || ' (' || est_contig.eval || ') (' || est_contig.species_name || ')' 
-				END AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contig ON est_contig.est_contig_id = seq_amplicons.est_contig_id
-			WHERE amplicon_name IN ( $ampliconINString )
-
-		) UNION (
-
-			SELECT 
-				seq_amplicons.amplicon_name, 
-				est_contiggroup.est_contig_group_name AS contig_name,
-				'blast-nr' AS annot_type, 
-				est_contiggroup.genbank_acc AS annot_id, 
-				CASE
-					WHEN est_contiggroup.seq_description='---NA---'
-					THEN ''
-					WHEN est_contiggroup.seq_description IS NULL
-					THEN ''
-					WHEN est_contiggroup.eval IS NULL AND  (est_contiggroup.species_name IS NULL OR est_contiggroup.species_name = '')
-					THEN est_contiggroup.seq_description
-					WHEN est_contiggroup.eval IS NULL AND est_contiggroup.species_name IS NOT NULL
-					THEN est_contiggroup.seq_description || ' (' || est_contiggroup.species_name || ')' 
-					WHEN est_contiggroup.eval IS NOT NULL AND  (est_contiggroup.species_name IS NULL OR est_contiggroup.species_name = '')
-					THEN est_contiggroup.seq_description || ' (' || est_contiggroup.eval || ')'
-					ELSE est_contiggroup.seq_description || ' (' || est_contiggroup.eval || ') (' || est_contiggroup.species_name || ')' 
-				END AS annot_term
-			FROM seq_amplicons
-			INNER JOIN est_contiggroup ON est_contiggroup.est_contig_group_id = seq_amplicons.est_contig_group_id
-			WHERE amplicon_name IN ( $ampliconINString )
-			
-		) ) AS tmp
-		WHERE annot_id <> '' AND annot_term <> ''
-		ORDER BY amplicon_name, annot_type";
-		
-		$resCommonAnnot = DBQuery($qCommonAnnot);
+		$query = genQuery($ampliconINString);
+		$resCommonAnnot = DBQuery($query);
 		$countCommonAnnot = pg_num_rows($resCommonAnnot);
 
 		if($countCommonAnnot > 0) {
 		?>
-					<table id='common_amplicon_table' style='font-size:14px'>"
+					<table id='common_amplicon_table' style='font-size:14px'>
 						<thead>
 							<tr>
 								<th><b>Number</b></th>
@@ -952,5 +742,5 @@ function generateJsonAmpliconById($array) {
 }
 
 
-?>
 
+?>

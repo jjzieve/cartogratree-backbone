@@ -30,9 +30,12 @@ define([
       enableCellNavigation: true,
       enableColumnReorder: true,
       forceFitColumns: true,
-      rowHeight: 35
+      rowHeight: 35,
+      topPanelHeight: 25
     },
     data: [],
+//    sortcol: "id",
+//    sortdir: 1,
 
     showIcon: function (row, cell, value, columnDef, dataContext){
       return "<img class='inline_image' src='images/"+value+".png'>";
@@ -41,7 +44,7 @@ define([
     toObj: function(a,i){
       var o = {};
       o["type"] = a[0];
-      o["id"] = a[1]+"."+i;//just because try-db is not unique
+      o["id"] = a[1];//+"."+i;//just because try-db is not unique
       o["lat"] = new Number(a[2]).toFixed(4);
       o["lng"] = new Number(a[3]).toFixed(4);
       o["sequences"] = a[4];
@@ -102,6 +105,13 @@ define([
       this.sub_collection.reset(); //reset collection
     },
 
+    getCleanedIDs: function(){
+      var cleaned = _.map(_.pluck(this.data,"id"),function(id){
+        return id.substr(0,id.indexOf('.'))
+      });
+      return cleaned;
+    },
+
     updateSlickGrid: function(rectangleQuery){
       var that = this;
 
@@ -120,9 +130,12 @@ define([
 
         success: function (response) {
           that.unsetLoaderIcon();
-          that.data = that.data.concat($.map(response,function(a,i){
-            return that.toObj(a,i);
-          }));
+          var prev_ids = that.getCleanedIDs();
+          var filtered = _.filter(response,function(row){// checks for overlapping markers
+            return prev_ids.indexOf(row[1]) === -1
+          });
+          that.data = that.data.concat($.map(filtered,function(a,i){return that.toObj(a,i)}));
+
           var sortCol = undefined;
           var sortDir = true;
           function comparer(a, b) {
@@ -144,6 +157,10 @@ define([
 
           that.dataView.beginUpdate();
           that.dataView.setItems(that.data);
+          // that.dataView.setFilterArgs({
+          //   searchString: that.searchString
+          // });
+          // that.dataView.setFilter(that.myFilter);
           that.dataView.endUpdate();
 
           that.grid.updateRowCount();
@@ -151,20 +168,6 @@ define([
 
           that.dataView.syncGridSelection(that.grid, true);
 
-      	  that.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-      		  $("#sample_count").html(that.grid.getSelectedRows().length);
-            that.sub_collection.reset();//remove all previous ids
-            $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
-              var id = that.dataView.getItemByIdx(idx)["id"].replace(/\.\d+$/,"");
-              var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
-              var lng = that.dataView.getItemByIdx(idx)["lng"];
-              that.sub_collection.add({
-                id: id,
-                lat: lat,
-                lng: lng
-              }); 
-            });
-      	  });
 
           //console.log("Total samples: "+that.grid.getDataLength());
         }
@@ -194,43 +197,53 @@ define([
 		}
 	},
 
+  listenToSelectedRows: function(){
+    var that = this;
+    this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
+      $("#sample_count").html(that.grid.getSelectedRows().length);
+      that.sub_collection.reset();//remove all previous ids
+      $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
+        var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
+        var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
+        var lng = that.dataView.getItemByIdx(idx)["lng"];
+        var index = index;
+        that.sub_collection.add({
+          id: id,
+          lat: lat,
+          lng: lng,
+          index: index
+        }); 
+      });
+      that.sub_collection.trigger("done");
+    });
+  },
+
 	initialize: function(options){
     this.sub_collection = options.sub_collection; //allows passing of tree_ids between this view and the tabs view
     var that = this;
     this.initColumns();
     this.initGrid();
 		this.clearSlickGrid();//clear at first
+    this.listenToSelectedRows();
 		this.collection.on('add change remove',this.refreshTable,this); //possibly reset?
 
-	$("#sswap_demo").on("click",function(){// just for demo
-		var demoData = [{"type":"small_yellow","id":"GRI0001.0","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"647","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0002.1","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"643","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0003.2","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"648","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0004.3","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"646","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0005.4","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"646","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0006.5","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"644","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0007.6","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"650","phenotypes":"0","species":"Populus nigra"}];
-      that.dataView.beginUpdate();
-	console.log(demoData);
-      that.dataView.setItems(demoData);
-      that.dataView.endUpdate();
+    
 
-      that.grid.updateRowCount();
-	that.grid.render();
-      that.dataView.syncGridSelection(that.grid, true);
-	  that.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-      		  $("#sample_count").html(that.grid.getSelectedRows().length);
-            that.sub_collection.reset();//remove all previous ids
-            $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
-              var id = that.dataView.getItemByIdx(idx)["id"].replace(/\.\d+$/,"");
-              var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
-              var lng = that.dataView.getItemByIdx(idx)["lng"];
-              that.sub_collection.add({
-                id: id,
-                lat: lat,
-                lng: lng
-              }); 
-            });
-      	  });
+  //  $("#inlineFilterPanel").appendTo(this.grid.getTopPanel()).show();
+  //   $("#txtSearch").keyup(function (e) {
+  //     Slick.GlobalEditorLock.cancelCurrentEdit();
 
-          console.log("Total samples: "+that.grid.getDataLength());
+  //     // clear on Esc
+  //     if (e.which == 27) {
+  //       this.value = "";
+  //     }
 
-	});
+  //     that.searchString = this.value;
+  //     console.log(searchString);
+  //     that.updateFilter();
+  // });
 },
+
   removeSelected: function(){
     var that = this;
     if (this.grid.getSelectedRows().length == this.grid.getDataLength()){ // clear if all selected, not iterate remove
@@ -246,10 +259,45 @@ define([
     }
   },
 
+  sswapDemo: function(){
+    var demoData = [{"type":"small_yellow","id":"GRI0001","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"647","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0002","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"643","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0003","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"648","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0004","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"646","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0005","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"646","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0006","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"644","phenotypes":"4","species":"Populus nigra"},{"type":"small_yellow","id":"GRI0007","lat":"45.4505","lng":"-119.6246","sequences":"0","genotypes":"650","phenotypes":"0","species":"Populus nigra"}];
+    this.dataView.beginUpdate();
+    this.dataView.setItems(demoData);
+    this.dataView.endUpdate();
+
+    this.grid.updateRowCount();
+    this.grid.render();
+    this.dataView.syncGridSelection(this.grid, true);
+  },
+
             
   events:{
-    "click #remove_selected": "removeSelected",
+    "click #remove_samples": "removeSelected",
+    "click #sswap_demo": "sswapDemo"
   }
+
+
+  //filtering code
+
+  // updateFilter: function() {
+  //   this.dataView.setFilterArgs({
+  //     searchString: this.searchString
+  //   });
+  //   this.dataView.refresh();
+  // },
+
+  // myFilter: function(item, args) {
+  //   if (args.searchString != "" && item["id"].indexOf(args.searchString) == -1) {
+  //     return false;
+  //   }
+
+  //   return true;
+  // },
+
+  // toggleFilterRow: function(){
+  //   this.grid.setTopPanelVisibility(!this.grid.setOptions().showTopPanel);
+  // },
+
 
 	});
   // Above we have passed in jQuery, Underscore and Backbone

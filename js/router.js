@@ -14,16 +14,22 @@ define([
 	'views/sidebar_selection_tree',
 	'views/sidebar_tree_id_search',
 	'views/sidebar_filters',
+	'views/snp_grid',
+	/*'views/phenotype_grid',
+	'views/worldclim_grid',
+	'views/amplicon_grid',
+	'views/samples_grid',*/
 	'views/bottom_tabs',
 	'views/bottom_table',
 	], function($, _, Backbone, QueryModel, TreeNodeModel, TreeIDModel,
 		QueriesCollection, TreeIDCollection,
-		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, BottomTabsView, BottomTableView) {
+		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, SNPView,/*PhenotypesView,WorldClimView,AmpliconsView,SamplesView*/ BottomTabsView, BottomTableView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'(/)(?tid=:tree_ids)':'index',
-				// '/about':'about',
+				 '(/)about':'about',
 			},
+			navigate: function (url) { window.location = url; }
 		});
 	
 		var initialize = function(){
@@ -61,13 +67,15 @@ define([
 				var filters = new FiltersView({collection: queries,model: query});
 				var tabs = new BottomTabsView({collection: selected_tree_ids,model: selected_tree_id});
 				var table = new BottomTableView({collection: queries, sub_collection: selected_tree_ids, model: query});
+				var snp_table = new SNPView({collection: selected_tree_ids,model:selected_tree_id});
 
 
 			});
-			// appRouter.on('about', function(){
-   //    			this.navigate("about.html")
-   //  		});
-			// Backbone.history.start({pushState:true});
+			appRouter.on('route:about', function(){
+				console.log('about');
+   	   			this.navigate("about.html");
+   	  		});
+			//Backbone.history.start({pushState:true});
 			Backbone.history.start();
 		};
 		return {

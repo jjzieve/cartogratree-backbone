@@ -100,25 +100,18 @@ define([
       							    "tgdr_query":tgdrQuery,
       							    "try_db_query":try_dbQuery},
 							success: function(response){
-								var sum = _.reduce(_.map(_.flatten(response),function(n){return parseInt(n)}),function(memo,num){return memo+num;});
-		    						$("#"+id+"_count").html(sum);
+								var counts = _.map(_.flatten(response),function(n){return parseInt(n)});
+								if (counts.length > 0){
+									var sum = _.reduce(counts,function(first,next){return first+next;});
+								}
+								else{
+		    						var sum = 0;	
+		    					}
+		    					$("#"+id+"_count").html(sum);
 							}
 						});
-						/*$.getJSON(url+tgdrQuery+key).success(function(data){
-							var tgdrCount = that.addCount(data);
-		    				$.getJSON(url+sts_isQuery+key).success(function(data){
-								var sts_isCount = that.addCount(data);
-								$.getJSON(url+try_dbQuery+key).success(function(data){
-	    							var try_dbCount = that.addCount(data); 
-		    						$.getJSON(url+amerifluxQuery+key).success(function(data){
-	    								var amerifluxCount = that.addCount(data); 
-		    							// $("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount+try_dbCount+amerifluxCount));
-		    							$("#"+id+"_count").html(tgdrCount+sts_isCount+try_dbCount+amerifluxCount);
-			    					});
-		    					});
-				 			});
-						});*/
 					}
+
 				});
 			},
   		

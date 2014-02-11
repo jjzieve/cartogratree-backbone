@@ -66,7 +66,7 @@ define([
           this.map =  new google.maps.Map(this.el, this.mapOptions);
           this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById("toggle_heatmap"));
           this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById("layers"));
-          this.map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(document.getElementById("legend"));
+          this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById("legend"));
 
         },
         
@@ -195,7 +195,7 @@ define([
       	  this.heatmap.set('maxIntensity', 150);
       	  this.heatmap.set('dissipating', true);
       	  this.heatmap.set('gradient', gradient);
-	  this.toggleHeatMap($("#toggle_heatmap"));//initially on 
+	  // this.toggleHeatMap($("#toggle_heatmap"));//initially off 
 	  
 	//listener
 	  $("#toggle_heatmap").on("click", function(){

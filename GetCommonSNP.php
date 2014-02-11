@@ -85,6 +85,10 @@ $numrows = pg_num_rows($res);
 $numsamples = count($idArr);
 $numsnps = $numrows / $numsamples;
 
+// echo "num samples: ".$numsamples."\n";
+// echo "num rows: ".$numrows."\n";
+// echo "num snps: ".$numsnps."\n";
+
 
 ## CSV STUFF HERE
 if(isset($_GET['csv'])) {
@@ -138,49 +142,32 @@ if(isset($_GET['csv'])) {
 	}
 } //csv
 else {
-
-	if($numrows > 0) {
-		echo "<table id='common_snp_table' style='font-size:14px'>";
-		$tree_data_string = array();
-		$col_flag = true;
-		$col_names = array('<th>TreeID</th>');
-		
-		$prev_identifer = '';
-		while ($r = pg_fetch_assoc($res)) {
-			$identifier = $r["identifier"];
-			$allele1 = $r["allele1"];
-			$allele2 = $r["allele2"];
-			$snp_accession = $r["snp_accession"];
-
-			if($prev_identifier == ''){
-				$prev_identifier = $identifier;
-			}
-			if($identifier != $prev_identifier){
-				if($col_flag){
-					echo "<thead><tr>".implode('',$col_names)."</tr></thead><tbody>\n";
-					$col_flag = false;
-				}
-				
-				echo "<tr><td>$prev_identifier</td>".implode('',$tree_data_string)."</tr>\n";
-				$prev_identifier = $identifier;
-				$tree_data_string = array();
-			}
-			
-			if($col_flag){
-				$col_names[] = "<th>$snp_accession</th>";
-			}
-			
-			$tree_data_string[] = "<td>$allele1$allele2</td>";
-		}
-		if($col_flag){
-			echo "<thead><tr>".implode('',$col_names)."</tr></thead><tbody>\n";
-			$col_flag = false;
-		}
-		echo "<tr><td>$prev_identifier</td>".implode('',$tree_data_string)."</tr>\n";
-		echo "</tbody></table>";
+	if($numrows >= 25){// to prevent rendering all 25 columns on the clientside
+		$over_limit = true;
 	}
 	else{
-		echo "N/A";
+		$over_limit = false;
 	}
+
+	$snps = array(
+		"snp_accessions" => array(),
+		"tree_ids" => array(),
+		"over_limit" => $over_limit
+		);
+
+	$tree_id_prev = '';
+
+	while($row = pg_fetch_assoc($res)){
+		if($tree_id_prev === $row["identifier"]){
+			array_push($snps["snp_accessions"],$row["snp_accession"]);
+			array_push($snps["tree_ids"][$tree_id_prev],array("snp_accession" => $row["snp_accession"], "allele" => $row["allele1"].$row["allele2"]));
+		}
+		else{
+			$tree_id_prev = $row["identifier"];
+			$snps["tree_ids"][$tree_id_prev] = array();
+		}
+	}
+	echo json_encode($snps);
+	
 }
 ?>

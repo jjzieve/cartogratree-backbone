@@ -1,3 +1,18 @@
+<?php
+function ae_detect_ie()
+{
+        if (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false))
+                return true;
+        else 
+                return false;
+}
+
+if(ae_detect_ie()) {
+        print "Currently, the CartograTree Interface is not compatible with Microsft Internet Explorer but will be shortly.<br>In the meantime, please switch to a standard-complaint brower, like <a href=\"http://www.mozilla.com/firefox/\">Mozilla Firefox</a> or <a href=\"http://www.google.com/chrome\">Google Chrome</a>.<br>-TreeGenes Team";
+        exit;
+}  
+?>
+
 <!--
 
 Author: Jacob Zieve <jjzieve@ucdavis.edu>
@@ -188,19 +203,19 @@ Updated:
 					<h4>Analyze the data</h4>
 					<div id="tools" class="btn-group pull-right">
 						<button class="btn btn-default" type="button" data-toggle="dropdown"><span id="tools_title">Select tool</span> <span class="caret"></span></button>
-						<ul class="dropdown-menu">
+						<ul id="tools_dropdown" class="dropdown-menu">
 						    <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Select tool</a></li>
-						  	<li role="presentation"><a id="common_amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Amplicon</a></li>
-						    <li role="presentation"><a id="common_phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common Phenotype</a></li>
-						    <li role="presentation"><a id="common_snp_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get Common SNP</a></li>
-						    <li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Get WorldClim data</a></li>
+						  	<li role="presentation"><a id="common_amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Amplicons</a></li>
+						    <li role="presentation"><a id="common_phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Traits</a></li>
+						    <li role="presentation"><a id="common_snp_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Genotypes</a></li>
+						    <li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Environmental data</a></li>
 						    <li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>
 						    <li role="presentation" class="divider"></li>
 						    <li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>
-				    		    <li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>
+				    		<li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>
 						</ul>
 						<div class="btn-group">
-				 			<button id="run_tool" type="button" class="btn btn-default">Run tool on selected samples</button>		
+				 			<button id="run_tool" type="button" class="btn btn-default">Run tool on selected</button>		
 				 		</div>
 					</div>
 					<ul class="nav nav-tabs" id="data_tabs"> <!--Diversitree, SSWAP, and TASSEL don't have tabs -->
@@ -212,7 +227,7 @@ Updated:
 						<div class="tab-pane fade in" id="samples">
 							<div class="button-wrapper">
 								<div class="btn-group">
-									<button class="btn btn-default" type="button" id="remove_selected">Remove selected samples</button>
+									<button class="btn btn-default" type="button" id="remove_samples">Remove selected samples</button>
 									<button id="sswap_demo" type="button" style="color:white;"class="btn btn-success">Tassel demo data</button>
 								</div>
 							</div>

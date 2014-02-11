@@ -9,7 +9,7 @@ require.config({
 	// jquery: 'libs/jquery/jquery',
 	// underscore: 'libs/underscore/underscore',
 	// backbone: 'libs/backbone/backbone',
-    jquery_migrate: 'libs/jquery/jquery.migrate-1.2.1.min',
+    	jquery_migrate: 'libs/jquery/jquery.migrate-1.2.1.min',
     jquery_ui: 'libs/jquery/jquery-ui-1.10.3.custom.min',
     jquery_drag: 'libs/jquery/jquery.event.drag-2.0.min',
     jquery_core: 'libs/jquery/jquery.ui.core',
@@ -32,21 +32,14 @@ require.config({
 	slick_selection: 'libs/slickgrid/slick.rowselectionmodel',
     treetable: 'libs/jquery/jquery.treetable',
     dataTables: 'libs/jquery/jquery.dataTables',
-	async: 'libs/require/async',
+    async: 'libs/require/async',
     goog: 'libs/require/goog',
     templates: '../templates',
     propertyParser : 'libs/require/propertyParser',
     text: 'libs/require/text',
     heatmap_data: 'heatmapdata',
     arcgis: 'libs/maps/arcgislink',
-    //sswap: 'http://sswap.info/sswap'
     sswap: 'sswap'
-    //font: 'libs/require/font',
-    //image: 'libs/require/image',
-    //json: 'libs/require/json',
-    //noext: 'libs/require/noext',
-    //mdown: 'libs/require/mdown',
-    //markdownConverter : 'libs/require/Markdown.Converter'
 	},
 	shim: {
     	'backbone': {
@@ -57,16 +50,13 @@ require.config({
             exports: '_'
         },
     	'context_menu': {
-    	   //deps: ['goog!maps,3,other_params:libraries=drawing,visualization&sensor=false']
 	   deps: ['async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization']
     	},
     	'heatmap_data': {
 	   deps: ['async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization']
-    //	   deps: ['goog!maps,3,other_params:libraries=drawing,visualization&sensor=false']
     	},
     	'arcgis': {
 	   deps: ['async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization']
-    //	   deps: ['goog!maps,3,other_params:libraries=drawing,visualization&sensor=false']
     	},
         'jquery_migrate': {
             deps: ['jquery']

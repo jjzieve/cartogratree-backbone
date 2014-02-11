@@ -1,4 +1,5 @@
 #!usr/bin/python
+# should be converted to php to act dynamically on the server....
 # Generates JSON files, must be on machine with db_connect script in python path, and tunneled to treegenes
 from db_connect import db_query
 from collections import defaultdict

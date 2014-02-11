@@ -24,99 +24,31 @@ define([
   'slick_dataview',
   'slick_checkbox',
   'slick_selection',
-], function($, _, Backbone, Tree_IDModel, Tree_IDCollection){
+  // 'text!templates/default_tool_dropdown.html',
+  // 'text!templates/sample_tool_dropdown.html',
+], function($, _, Backbone, Tree_IDModel, Tree_IDCollection ){ //, DefaultToolTemplate, SampleToolTemplate){
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
   var BottomTabsView = Backbone.View.extend({
     el: "#tabs_container",
     model: Tree_IDModel,
+    sampleToolHTML: '<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Select tool</a></li>'+
+                    '<li role="presentation"><a id="common_amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Amplicons</a></li>'+
+                    '<li role="presentation"><a id="common_phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Traits</a></li>'+
+                    '<li role="presentation"><a id="common_snp_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Genotypes</a></li>'+
+                    '<li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Environmental Data</a></li>'+
+                    '<li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>'+
+                    '<li role="presentation" class="divider"></li>'+
+                    '<li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>'+
+                    '<li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>',
+    defaultToolTemplate: _.template('<li role="presentation"><a id="<%= tool %>_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>'),
     collection: Tree_IDCollection,
     events:{
       "click #tools ul li a" : "changeTitle",
       "click .close" : "closeTab",
       "click #run_tool" : "runTool",
+      "show.bs.tab a[data-toggle='tab']" : "changeTools"    
     },
-
-/*    initColumns: function(columns){
-      this.columns = [
-        {id: "TreeID", name: "Type", field: "type",width: 75, sortable:true,formatter:this.showIcon},
-        {id: "id", name: "ID", field: "id",width: 150, sortable:true},
-        {id: "lat", name: "Latitude", field: "lat",width: 100, sortable:true},
-        {id: "lng", name: "Longitude", field: "lng",width: 100, sortable:true},
-        {id: "sequences", name: "Total sequences", field: "sequences",width: 130, sortable:true},
-        {id: "genotypes", name: "Total genotypes", field: "genotypes",width: 130, sortable:true},
-        {id: "phenotypes", name: "Total phenotypes", field: "phenotypes",width: 135, sortable:true},
-        {id: "species", name: "Species", field: "species",width: 150, sortable:true},
-      ],
-      this.checkboxSelector = new Slick.CheckboxSelectColumn({});
-      this.columns.unshift(this.checkboxSelector.getColumnDefinition());
-    },
-
-    initGrid: function(){
-      this.dataView = new Slick.Data.DataView();
-      this.grid = new Slick.Grid("#grid", this.dataView, this.columns, this.options);
-      this.grid.setSelectionModel(new Slick.RowSelectionModel());
-      this.grid.registerPlugin(this.checkboxSelector);
-    },
-success: function (response) {
-          that.unsetLoaderIcon();
-          that.data = that.data.concat($.map(response,function(a,i){
-            return that.toObj(a,i);
-          }));
-          var sortCol = undefined;
-          var sortDir = true;
-          function comparer(a, b) {
-            var x = a[sortCol], y = b[sortCol];
-            return (x == y ? 0 : (x > y ? 1 : -1));
-          }
-          that.grid.onSort.subscribe(function (e, args) {
-              sortDir = args.sortAsc;
-              sortCol = args.sortCol.field;
-              that.dataView.sort(comparer, sortDir);
-              that.grid.invalidateAllRows();
-              that.grid.render();
-          });
- if (sortCol) {
-              that.grid.setSortColumn(sortCol, sortDir);
-          }
-
-          that.dataView.beginUpdate();
-          that.dataView.setItems(that.data);
-          that.dataView.endUpdate();
-
-          that.grid.updateRowCount();
-          that.grid.render();
-
-          that.dataView.syncGridSelection(that.grid, true);
-
-          that.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-                  $("#sample_count").html(that.grid.getSelectedRows().length);
-            that.sub_collection.reset();//remove all previous ids
-            $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
-              var id = that.dataView.getItemByIdx(idx)["id"].replace(/\.\d+$/,"");
-              var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
-              var lng = that.dataView.getItemByIdx(idx)["lng"];
-              that.sub_collection.add({
-                id: id,
-                lat: lat,
-                lng: lng
-              });
-            });
-          });
-
-
-    toObj: function(a,i){
-      var o = {};
-      o["type"] = a[0];
-      o["id"] = a[1]+"."+i;//just because try-db is not unique
-      o["lat"] = new Number(a[2]).toFixed(4);
-      o["lng"] = new Number(a[3]).toFixed(4);
-      o["sequences"] = a[4];
-      o["genotypes"] = a[5];
-      o["phenotypes"] = a[6];
-      o["species"] = a[7];
-      return o;
-    },*/
 
     changeTitle: function(e){
       $('#tools_title').html($(e.target).html());
@@ -125,12 +57,31 @@ success: function (response) {
     },
     
     closeTab: function(e){
-	console.log('closed');
         //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
         var tabContentId = $(e.target).parent().attr("href");
+
+        switch(tabContentId){// send flag to the shared tree id collection that the tab is closed and to create instead of update
+          case '#common_snps':
+            this.collection.meta("snp_tab_open",false);
+            console.log("common_snps closed");
+            break;
+          case '#common_phenotypes':
+            this.collection.meta("phenotype_tab_open",false);
+            break;
+          case '#common_amplicons':
+            this.collection.meta("amplicon_tab_open",false);
+            break;
+          case '#world_clims':
+            this.collection.meta("worldclim_tab_open",false);
+            break;
+          default:
+            console.log('default: '+tabContentId);
+            break;
+        }
         $(e.target).parent().parent().remove(); //remove li of tab
         this.$("ul.nav-tabs li a:last").tab('show'); // Select first tab
         $(tabContentId).remove(); //remove respective tab content
+        
     },
     
 
@@ -142,16 +93,27 @@ success: function (response) {
       if(ids.length > 0){
         switch(tool){
           case 'common_amplicon_tool':
-		this.openCommonAmplicon(ids);
+		        this.openCommonAmplicon(ids);
+            this.collection.meta("amplicon_tab_open",true);
+            break;
+          case 'amplicon_csv':
+            var checked = $('#common_amplicon_table').find('input[type="checkbox"]:checked');
+            var checked = _.pluck(checked,"value").join();
+            window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked+'&csv';
             break;
           case 'common_phenotype_tool':
             this.openCommonPheno(ids);
+            this.collection.meta("phenotype_tab_open",true);
+            this.collection.trigger("done");
             break;
           case 'worldclim_tool':
-	    this.openWorldClim(ids,lats,lngs);
+            this.openWorldClim(ids,lats,lngs);
+            this.collection.meta("worldclim_tab_open",true);
             break;
           case 'common_snp_tool':
             this.openSNP(ids);
+            this.collection.meta("snp_tab_open",true);
+            this.collection.trigger("done");
             break;
           case 'diversitree_tool':
             this.openDiversitree(ids);
@@ -176,56 +138,56 @@ success: function (response) {
     },  
 
     openCommonPheno: function(ids){
-	var that = this;
-	// only allow one tab for one type at a time
-	$("#phenotypes_tab").remove();
-	$("#common_phenotypes").remove();
-     	$("#data_tabs").append("<li id='phenotypes_tab'><a href='#common_phenotypes' data-toggle='tab'><button class='close' type='button'>x</button>Common Phenotypes</a></li>");
-	$("#data_table_container").append("<div id='common_phenotypes' class='tab-pane active'>"+
-					 "<div class='button-wrapper'><button class='btn btn-default' type='button' id='phenotype_csv'>Download CSV</button></div></div>");				
-	this.setLoaderIcon("#data_table_container");
-      	this.$("ul.nav-tabs li a:last").tab('show');
-	$.get('GetCommonPheno.php?tid='+ids, function(html){
-		that.unsetLoaderIcon("#data_table_container");
-		$("#common_phenotypes").append(html);		
-		$("#common_pheno_table").tablecloth({
-			theme: "default",
-			condensed: true,
-			striped: true,
-			sortable: true,
-		});
-	
-	});
+    	var that = this;
+    	// only allow one tab for one type at a time
+    	$("#phenotypes_tab").remove();
+    	$("#common_phenotypes").remove();
+      $("#data_tabs").append("<li id='phenotypes_tab'><a href='#common_phenotypes' data-toggle='tab'><button class='close' type='button'>x</button>Traits</a></li>");
+    	$("#data_table_container").append("<div id='common_phenotypes' class='tab-pane active'>");
+    					 // "<div class='button-wrapper'><button class='btn btn-default' type='button' id='phenotype_csv'>Download CSV</button></div></div>");				
+      // $("#tools_dropdown").clear();
+      $("#tools_dropdown").append('<li role="presentation"><a id="phenotype_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>');
 
-	$("#phenotype_csv").click(function(){// if download button clicked
-		window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
-	});
+    	this.setLoaderIcon("#data_table_container");
+     	this.$("ul.nav-tabs li a:last").tab('show');
+    	$.get('GetCommonPheno.php?tid='+ids, function(html){
+    		that.unsetLoaderIcon("#data_table_container");
+    		$("#common_phenotypes").append(html);		
+    		$("#common_pheno_table").tablecloth({
+    			theme: "default",
+    			condensed: true,
+    			striped: true,
+    			sortable: true,
+    		});
+    	});
+
+    	$("#phenotype_csv").click(function(){// if download button clicked
+    		window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
+    	});
     },
     openCommonAmplicon: function(ids){
-	var that = this;
-	// only allow one tab for one type at a time
-	$("#amplicon_tab").remove();
-	$("#amplicon_phenotypes").remove();
-     	$("#data_tabs").append("<li id='amplicon_tab'><a href='#common_amplicons' data-toggle='tab'><button class='close' type='button'>x</button>Common Amplicons</a></li>");
-	$("#data_table_container").append("<div id='common_amplicons' class='tab-pane active'>"+
-					 "<div class='button-wrapper'><div class='btn-group'><button class='btn btn-default' type='button' id='amplicon_csv'>Download CSV</button><button class='btn btn-default' type='button' id='amplicon_sswap'>Phylo analysis via SSWAP</button></div></div></div>");				
-	this.setLoaderIcon("#data_table_container");
-      	this.$("ul.nav-tabs li a:last").tab('show');
-	$.get('GetCommonAmplicon.php?tid='+ids, function(html){
-		that.unsetLoaderIcon("#data_table_container");
-		$("#common_amplicons").append(html);		
-		$("#common_amplicon_table").tablecloth({
-			theme: "default",
-			condensed: true,
-			striped: true,
-			sortable: true,
-		});
-	
-	});
+    	var that = this;
+    	// only allow one tab for one type at a time
+    	$("#amplicon_tab").remove();
+    	$("#amplicon_phenotypes").remove();
+      $("#data_tabs").append("<li id='amplicon_tab'><a href='#common_amplicons' data-toggle='tab'><button class='close' type='button'>x</button>Amplicons</a></li>");
+    	$("#data_table_container").append("<div id='common_amplicons' class='tab-pane active'>");
 
-	$("#amplicon_csv").click(function(){// if download button clicked
-		window.location.href = 'GetCommonAmplicon.php?tid='+ids+'&csv';
-	});
+      
+
+    	this.setLoaderIcon("#data_table_container");
+      this.$("ul.nav-tabs li a:last").tab('show');
+    	$.get('GetCommonAmplicon.php?tid='+ids, function(html){
+    		that.unsetLoaderIcon("#data_table_container");
+    		$("#common_amplicons").append(html);		
+    		$("#common_amplicon_table").tablecloth({
+    			theme: "default",
+    			condensed: true,
+    			striped: true,
+    			sortable: true,
+    		});
+    	
+    	});
     },
 
     openDiversitree: function(ids){
@@ -233,77 +195,84 @@ success: function (response) {
     },
 
     openSNP: function(ids){
-	var that = this;
-	$("#snps_tab").remove();
-	$("#common_snps").remove();
-     	$("#data_tabs").append("<li id='snps_tab'><a href='#common_snps' data-toggle='tab'><button class='close' type='button'>x</button>Common SNPs</a></li>");
-	$("#data_table_container").append("<div id='common_snps' class='tab-pane active'>"+
-					 "<div class='button-wrapper'><button class='btn btn-default' type='button' id='snp_csv'>Download CSV</button></div></div>");		
-	this.setLoaderIcon("#data_table_container");
-      	this.$("ul.nav-tabs li a:last").tab('show');
-	$.get('GetCommonSNP.php?tid='+ids, function(html){
-	//slickgrid
-		that.unsetLoaderIcon("#data_table_container");
-		$("#common_snps").append(html);		
-		$("#common_snp_table").tablecloth({
-			theme: "default",
-			condensed: true,
-			striped: true,
-			sortable: true,
-		});
-	
-	});
-
-	$("#snp_csv").click(function(){// if download button clicked
-		window.location.href = 'GetCommonSNP.php?tid='+ids+'&csv';
-	});
+    	var that = this;
+    	$("#snps_tab").remove();
+    	$("#common_snps").remove();
+      $("#data_tabs").append("<li id='snps_tab'><a href='#common_snps' data-toggle='tab'><button class='close' type='button'>x</button>Genotypes</a></li>");
+    	$("#data_table_container").append("<div id='common_snps' class='tab-pane active'>"+
+                                        "<div class='button-wrapper'><button class='btn btn-default' type='button' id='remove_snps'>Remove selected samples</button></div>"+
+                                        "<table><td valign='top' class='grid-col'><div id='snp_grid' class='grid'></div></td></table>"+
+                                        "Total samples selected: <span id='snp_sample_count'>0</span></div>");
+      this.$("ul.nav-tabs li a:last").tab('show');
+    	$("#snp_csv").click(function(){// if download button clicked
+    		window.location.href = 'GetCommonSNP.php?tid='+ids+'&csv';
+    	});
     },
     openWorldClim: function(ids,lats,lngs){
-	var that = this;
-	$("#world_clim_tab").remove();
-	$("#world_clims").remove();
-     	$("#data_tabs").append("<li id='world_clim_tab'><a href='#world_clims' data-toggle='tab'><button class='close' type='button'>x</button>WorldClim Data</a></li>");
-	$("#data_table_container").append("<div id='world_clims' class='tab-pane active'>"+
-					 "<div class='button-wrapper'><button class='btn btn-default' type='button' id='world_clim_csv'>Download CSV</button></div></div>");		
-	this.setLoaderIcon("#data_table_container");
-      	this.$("ul.nav-tabs li a:last").tab('show');
-	$.get('GetWorldClimData.php?id='+ids+'&lat='+lats+'&lon='+lngs, function(html){
-		that.unsetLoaderIcon("#data_table_container");
-		$("#world_clims").append(html);		
-		$("#world_clim_table").tablecloth({
-			theme: "default",
-			condensed: true,
-			striped: true,
-			sortable: true,
-		});
-	
-	});
-
-	$("#world_clim_csv").click(function(){// if download button clicked
-      		window.location.href = 'GetWorldClimData.php?id='+ids+'&lat='+lats+'&lon='+lngs+'&csv';
-	});
+    	var that = this;
+    	$("#world_clim_tab").remove();
+    	$("#world_clims").remove();
+      $("#data_tabs").append("<li id='world_clim_tab'><a href='#world_clims' data-toggle='tab'><button class='close' type='button'>x</button>Environmental Data</a></li>");
+    	$("#data_table_container").append("<div id='world_clims' class='tab-pane active'>"+
+    	                           				 "<div class='button-wrapper'><button class='btn btn-default' type='button' id='world_clim_csv'>Download CSV</button></div></div>");		
+    	this.setLoaderIcon("#data_table_container");
+      this.$("ul.nav-tabs li a:last").tab('show');
+    	$.get('GetWorldClimData.php?id='+ids+'&lat='+lats+'&lon='+lngs, function(html){
+    		that.unsetLoaderIcon("#data_table_container");
+    		$("#world_clims").append(html);		
+    		$("#world_clim_table").tablecloth({
+    			theme: "default",
+    			condensed: true,
+    			striped: true,
+    			sortable: true,
+    		});
+	   	});
+    	$("#world_clim_csv").click(function(){// if download button clicked
+        window.location.href = 'GetWorldClimData.php?id='+ids+'&lat='+lats+'&lon='+lngs+'&csv';
+    	});
     },
+
     openSSWAPTassel: function(ids){
-	var that = this;
-	$.getJSON('AssociationRRG.php?tid='+ids).success(function(jsonRRG){
-      	    SSWAP.discover(jsonRRG, "#pipelineButton");
-	    $("#sswap_form").submit();
-	});
+    	var that = this;
+    	$.getJSON('AssociationRRG.php?tid='+ids).success(function(jsonRRG){
+          	    SSWAP.discover(jsonRRG, "#pipelineButton");
+    	    $("#sswap_form").submit();
+    	});
     },
     
     toggleRunDisabled: function(){
-	if(this.collection.length > 0){
-		$("#run_tool").removeClass("disabled");
-	}
-	else{
-		$("#run_tool").addClass("disabled");
-	}
+    	if(this.collection.length > 0){
+    		$("#run_tool").removeClass("disabled");
+    	}
+    	else{
+    		$("#run_tool").addClass("disabled");
+    	}
+   },
+
+   changeTools: function(e){
+    var id = $(e.target).parent().attr("id"); // activated tab
+    // .substring(0, str.length - 1)
+    $("#tools_dropdown").empty();
+    $("#tools_title").html("Select tool");
+    if(id === "samples_tab"){
+      $("#tools_dropdown").append(this.sampleToolHTML);
+    }
+    else if(id === "amplicon_tab"){
+      $("#tools_dropdown").append(this.defaultToolTemplate({"tool":id})+'<li role="presentation" class="divider"></li>'+
+                                                                        '<li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>'+
+                                                                        '<li role="presentation"><a id="sswap_amplicon" role="menuitem" tabindex="-1" href="javascript:void(0);">Discover pipelines at SSWAP</a></li>');
+    }
+    else{
+      $("#tools_dropdown").append(this.defaultToolTemplate({"tool":id}));
+    }
+    
    },
 	
     initialize: function(){
       var that = this;
       this.$("ul.nav-tabs li a:first").tab('show');
-      this.collection.on('add remove reset',this.toggleRunDisabled,this);
+      // this.collection.on('add remove reset',this.toggleRunDisabled,this);
+      this.listenTo(this.collection,'add remove reset',this.toggleRunDisabled);
       this.toggleRunDisabled();         
     },
 
@@ -314,6 +283,5 @@ success: function (response) {
   });
  
   return BottomTabsView; 
-  // What we return here will be used by other modules
 });
 
