@@ -22,7 +22,7 @@ define([
   'slick_selection',
   'bootstrap'
  ], function($, _, Backbone, QueryModel, QueriesCollection, TreeIDCollection){
-	var BottomTableView = Backbone.View.extend({
+	var SamplesView = Backbone.View.extend({
 		el: '#data_table_container',
     model: QueryModel,
     collection: QueriesCollection,
@@ -302,7 +302,7 @@ define([
 	});
   // Above we have passed in jQuery, Underscore and Backbone
   // They will not be accessible in the global scope
-  return BottomTableView;
+  return SamplesView;
   // What we return here will be used by other modules
 });
 

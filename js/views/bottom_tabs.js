@@ -96,7 +96,7 @@ define([
 		        this.openCommonAmplicon(ids);
             this.collection.meta("amplicon_tab_open",true);
             break;
-          case 'amplicon_csv':
+          case 'amplicons_tab_csv': //this may change
             var checked = $('#common_amplicon_table').find('input[type="checkbox"]:checked');
             var checked = _.pluck(checked,"value").join();
             window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked+'&csv';
@@ -106,14 +106,23 @@ define([
             this.collection.meta("phenotype_tab_open",true);
             this.collection.trigger("done");
             break;
+          case 'phenotypes_tab_csv':
+            window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
+            break;
           case 'worldclim_tool':
             this.openWorldClim(ids,lats,lngs);
             this.collection.meta("worldclim_tab_open",true);
+            break;
+          case 'worldclims_tab_csv':
+            window.location.href = 'GetWorldClimData.php?tid='+ids+'&csv';
             break;
           case 'common_snp_tool':
             this.openSNP(ids);
             this.collection.meta("snp_tab_open",true);
             this.collection.trigger("done");
+            break;
+          case 'snps_tab_csv':
+            window.location.href = 'GetCommonSNP.php?tid='+ids+'&csv';
             break;
           case 'diversitree_tool':
             this.openDiversitree(ids);
@@ -146,7 +155,7 @@ define([
     	$("#data_table_container").append("<div id='common_phenotypes' class='tab-pane active'>");
     					 // "<div class='button-wrapper'><button class='btn btn-default' type='button' id='phenotype_csv'>Download CSV</button></div></div>");				
       // $("#tools_dropdown").clear();
-      $("#tools_dropdown").append('<li role="presentation"><a id="phenotype_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>');
+      // $("#tools_dropdown").append('<li role="presentation"><a id="phenotype_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>');
 
     	this.setLoaderIcon("#data_table_container");
      	this.$("ul.nav-tabs li a:last").tab('show');
@@ -213,8 +222,7 @@ define([
     	$("#world_clim_tab").remove();
     	$("#world_clims").remove();
       $("#data_tabs").append("<li id='world_clim_tab'><a href='#world_clims' data-toggle='tab'><button class='close' type='button'>x</button>Environmental Data</a></li>");
-    	$("#data_table_container").append("<div id='world_clims' class='tab-pane active'>"+
-    	                           				 "<div class='button-wrapper'><button class='btn btn-default' type='button' id='world_clim_csv'>Download CSV</button></div></div>");		
+    	$("#data_table_container").append("<div id='world_clims' class='tab-pane active'>");		
     	this.setLoaderIcon("#data_table_container");
       this.$("ul.nav-tabs li a:last").tab('show');
     	$.get('GetWorldClimData.php?id='+ids+'&lat='+lats+'&lon='+lngs, function(html){
@@ -263,6 +271,7 @@ define([
                                                                         '<li role="presentation"><a id="sswap_amplicon" role="menuitem" tabindex="-1" href="javascript:void(0);">Discover pipelines at SSWAP</a></li>');
     }
     else{
+      console.log("change tool")
       $("#tools_dropdown").append(this.defaultToolTemplate({"tool":id}));
     }
     

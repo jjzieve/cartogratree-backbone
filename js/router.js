@@ -14,16 +14,15 @@ define([
 	'views/sidebar_selection_tree',
 	'views/sidebar_tree_id_search',
 	'views/sidebar_filters',
+	'views/sample_grid',
 	'views/snp_grid',
-	/*'views/phenotype_grid',
+	'views/phenotype_grid',
 	'views/worldclim_grid',
 	'views/amplicon_grid',
-	'views/samples_grid',*/
 	'views/bottom_tabs',
-	'views/bottom_table',
 	], function($, _, Backbone, QueryModel, TreeNodeModel, TreeIDModel,
 		QueriesCollection, TreeIDCollection,
-		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, SNPView,/*PhenotypesView,WorldClimView,AmpliconsView,SamplesView*/ BottomTabsView, BottomTableView) {
+		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, SamplesView, SNPView,PhenotypesView,WorldClimView,AmpliconsView,BottomTabsView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'(/)(?tid=:tree_ids)':'index',
@@ -66,8 +65,11 @@ define([
 				var treeIDSearch = new TreeIDSearchView({collection: queries});
 				var filters = new FiltersView({collection: queries,model: query});
 				var tabs = new BottomTabsView({collection: selected_tree_ids,model: selected_tree_id});
-				var table = new BottomTableView({collection: queries, sub_collection: selected_tree_ids, model: query});
+				var sample_table = new SamplesView({collection: queries, sub_collection: selected_tree_ids, model: query}); //parent of the other tables
 				var snp_table = new SNPView({collection: selected_tree_ids,model:selected_tree_id});
+				// var pheno_table = new PhenotypesView({collection: selected_tree_ids,model:selected_tree_id});
+				// var worldclim_table = new WorldClimView({collection: selected_tree_ids,model:selected_tree_id});
+				// var amplicon_table = new AmpliconsView({collection: selected_tree_ids,model:selected_tree_id});
 
 
 			});
