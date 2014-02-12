@@ -68,7 +68,7 @@ define([
 				var sample_table = new SamplesView({collection: queries, sub_collection: selected_tree_ids, model: query}); //parent of the other tables
 				var snp_table = new SNPView({collection: selected_tree_ids,model:selected_tree_id});
 				// var pheno_table = new PhenotypesView({collection: selected_tree_ids,model:selected_tree_id});
-				// var worldclim_table = new WorldClimView({collection: selected_tree_ids,model:selected_tree_id});
+				var worldclim_table = new WorldClimView({collection: selected_tree_ids,model:selected_tree_id});
 				// var amplicon_table = new AmpliconsView({collection: selected_tree_ids,model:selected_tree_id});
 
 

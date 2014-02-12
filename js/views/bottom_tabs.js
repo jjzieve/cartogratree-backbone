@@ -112,6 +112,7 @@ define([
           case 'worldclim_tool':
             this.openWorldClim(ids,lats,lngs);
             this.collection.meta("worldclim_tab_open",true);
+            this.collection.trigger("done");
             break;
           case 'worldclims_tab_csv':
             window.location.href = 'GetWorldClimData.php?tid='+ids+'&csv';
@@ -204,40 +205,24 @@ define([
     },
 
     openSNP: function(ids){
-    	var that = this;
     	$("#snps_tab").remove();
     	$("#common_snps").remove();
       $("#data_tabs").append("<li id='snps_tab'><a href='#common_snps' data-toggle='tab'><button class='close' type='button'>x</button>Genotypes</a></li>");
     	$("#data_table_container").append("<div id='common_snps' class='tab-pane active'>"+
-                                        "<div class='button-wrapper'><button class='btn btn-default' type='button' id='remove_snps'>Remove selected samples</button></div>"+
+                                        "<div class='button-wrapper' id='column_alert'><button class='btn btn-default' type='button' id='remove_snps'>Remove selected samples</button></div>"+
                                         "<table><td valign='top' class='grid-col'><div id='snp_grid' class='grid'></div></td></table>"+
-                                        "Total samples selected: <span id='snp_sample_count'>0</span></div>");
+                                        "Total samples selected: <span id='snp_count'>0</span></div>");
       this.$("ul.nav-tabs li a:last").tab('show');
-    	$("#snp_csv").click(function(){// if download button clicked
-    		window.location.href = 'GetCommonSNP.php?tid='+ids+'&csv';
-    	});
     },
     openWorldClim: function(ids,lats,lngs){
-    	var that = this;
-    	$("#world_clim_tab").remove();
-    	$("#world_clims").remove();
-      $("#data_tabs").append("<li id='world_clim_tab'><a href='#world_clims' data-toggle='tab'><button class='close' type='button'>x</button>Environmental Data</a></li>");
-    	$("#data_table_container").append("<div id='world_clims' class='tab-pane active'>");		
-    	this.setLoaderIcon("#data_table_container");
+      $("#worldclim_tab").remove();
+      $("#world_clims").remove();
+      $("#data_tabs").append("<li id='worldclim_tab'><a href='#world_clims' data-toggle='tab'><button class='close' type='button'>x</button>Environmental</a></li>");
+      $("#data_table_container").append("<div id='world_clims' class='tab-pane active'>"+
+                                        "<div class='button-wrapper'><button class='btn btn-default' type='button' id='remove_worldclims'>Remove selected samples</button></div>"+
+                                        "<table><td valign='top' class='grid-col'><div id='worldclim_grid' class='grid'></div></td></table>"+
+                                        "Total samples selected: <span id='worldclim_count'>0</span></div>");
       this.$("ul.nav-tabs li a:last").tab('show');
-    	$.get('GetWorldClimData.php?id='+ids+'&lat='+lats+'&lon='+lngs, function(html){
-    		that.unsetLoaderIcon("#data_table_container");
-    		$("#world_clims").append(html);		
-    		$("#world_clim_table").tablecloth({
-    			theme: "default",
-    			condensed: true,
-    			striped: true,
-    			sortable: true,
-    		});
-	   	});
-    	$("#world_clim_csv").click(function(){// if download button clicked
-        window.location.href = 'GetWorldClimData.php?id='+ids+'&lat='+lats+'&lon='+lngs+'&csv';
-    	});
     },
 
     openSSWAPTassel: function(ids){
@@ -271,7 +256,6 @@ define([
                                                                         '<li role="presentation"><a id="sswap_amplicon" role="menuitem" tabindex="-1" href="javascript:void(0);">Discover pipelines at SSWAP</a></li>');
     }
     else{
-      console.log("change tool")
       $("#tools_dropdown").append(this.defaultToolTemplate({"tool":id}));
     }
     

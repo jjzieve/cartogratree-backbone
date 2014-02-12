@@ -53,36 +53,36 @@ if(isset($_GET['csv'])) {
 
 	$arrayForCSV[] = $tempArray;
 	
-        for($i = 0; $i < count($latArr); $i++) {
-                $lat = $latArr[$i];
-                $lon = $lonArr[$i];
-                $id = $idArr[$i];
+    for($i = 0; $i < count($latArr); $i++) {
+        $lat = $latArr[$i];
+        $lon = $lonArr[$i];
+        $id = $idArr[$i];
 		$tempArray = array();
-    
-                $jsonurl = "http://castle.iplantcollaborative.org:9000/info?lat=$lat&lon=$lon";
-                $json = file_get_contents($jsonurl);
 
-                $jsonarray = json_decode($json, true);
+        $jsonurl = "http://castle.iplantcollaborative.org:9000/info?lat=$lat&lon=$lon";
+        $json = file_get_contents($jsonurl);
 
-                $mat = $jsonarray['mat'] / 10; 
-                $mdr = $jsonarray['mdr'] / 10; 
-                $iso = $jsonarray['iso'] / 10; 
-                $tsd = $jsonarray['tsd'] / 100;
-                $maxtwm = $jsonarray['maxtwm'] / 10; 
-                $anntmin = $jsonarray['anntmin'] / 10; 
-                $tar = $jsonarray['tar'] / 10;
-                $meantwq = $jsonarray['meantwq'] / 10;
-                $meantdq = $jsonarray['meantdq'] / 10;
-                $meantwaq = $jsonarray['meantwaq'] / 10;
-                $meantcq = $jsonarray['meantcq'] / 10;
-                $annprec = $jsonarray['annprec'];
-                $precwm = $jsonarray['precwm'];
-                $precdm = $jsonarray['precdm'];
-                $precwq = $jsonarray['precwq'];
-                $precdq = $jsonarray['precdq'];
-                $precs = $jsonarray['precs'] / 100;
-                $precwarmq = $jsonarray['precwarmq'];
-                $preccq = $jsonarray['preccq'];
+        $jsonarray = json_decode($json, true);
+
+        $mat = $jsonarray['mat'] / 10; 
+        $mdr = $jsonarray['mdr'] / 10; 
+        $iso = $jsonarray['iso'] / 10; 
+        $tsd = $jsonarray['tsd'] / 100;
+        $maxtwm = $jsonarray['maxtwm'] / 10; 
+        $anntmin = $jsonarray['anntmin'] / 10; 
+        $tar = $jsonarray['tar'] / 10;
+        $meantwq = $jsonarray['meantwq'] / 10;
+        $meantdq = $jsonarray['meantdq'] / 10;
+        $meantwaq = $jsonarray['meantwaq'] / 10;
+        $meantcq = $jsonarray['meantcq'] / 10;
+        $annprec = $jsonarray['annprec'];
+        $precwm = $jsonarray['precwm'];
+        $precdm = $jsonarray['precdm'];
+        $precwq = $jsonarray['precwq'];
+        $precdq = $jsonarray['precdq'];
+        $precs = $jsonarray['precs'] / 100;
+        $precwarmq = $jsonarray['precwarmq'];
+        $preccq = $jsonarray['preccq'];
 
 		$tempArray[0] = "$id";
 		$tempArray[1] = "$lat";
@@ -120,95 +120,27 @@ if(isset($_GET['csv'])) {
 	header("Expires: 0");
 	outputCSV($arrayForCSV);
 } else {
-
-?>
-	<table id='world_clim_table' style='font-size:14px'>
-		<thead>
-		<tr>
-			<th ><b title="Identifier">Identifier</b></th>
-			<th ><b title="Latitude">Latitude<br>[ &deg; ]</b></th>
-			<th ><b title="Longitude">Longitude<br>[ &deg; ]</b></th>
-			<th ><b title="Mean Annual Temperature">TempAnnMean<br>[ &deg;C ]</b></th>
-			<th ><b title="Annual Temperature Range">AnnTempRange<br>[ &deg;C ]</b></th>
-			<th ><b title="Max Temperature of Warmest Month">MaxTempWarmMonth<br>[ &deg;C ]</b></th>
-			<th ><b title="Min Temperature of Coldest Month">MinTempColdMonth<br>[ &deg;C ]</b></th>
-			<th ><b title="Mean Temperature of Wettest Quarter">TempMeanWetQuarter<br>[ &deg;C ]</b></th>
-			<th ><b title="Mean Temperature of Driest Quarter">TempMeanDryQuarter<br>[ &deg;C ]</b></th>
-			<th ><b title="Mean Temperature of Warmest Quarter">TempMeanWarmQuarter<br>[ &deg;C ]</b></th>
-			<th ><b title="Mean Temperature of Coldest Quarter">TempMeanColdQuarter<br>[ &deg;C ]</b></th>
-			<th ><b title="Temperature Seasonality (standard deviation)">TemperatureSeasonality</b></th>
-			<th ><b title="Mean Diurnal Range (Mean of monthly temp (max temp - min temp)) ">MeanDiurnalRange<br>[ &deg;C ]</b></th>
-			<th ><b title="Isothermality (Mean Diurnal Range  / ((Max Temperature of Warmest Month) - (Min Temperature of Coldest Month)))">Isothermality<br>[ &deg;C ]</b></th>
-			<th ><b title="Mean Annual Precipitation">PrecipAnnMean<br>[ mm ]</b></th>
-			<th ><b title="Precipitation of Wettest Month">PrecipWetMonth<br>[ mm ]</b></th>
-			<th ><b title="Precipitation of Driest Month">PrecipDryMonth<br>[ mm ]</b></th>
-			<th ><b title="Precipitation of Wettest Quarter">PrecipWetQuarter<br>[ mm ]</b></th>
-			<th ><b title="Precipitation of Driest Quarter">PrecipDryQuarter<br>[ mm ]</b></th>
-			<th ><b title="Precipitation of Warmest Quarter">PrecipWarmQuarter<br>[ mm ]</b></th>
-			<th ><b title="Precipitation of Coldest Quarter">PrecipColdQuarter<br>[ mm ]</b></th>
-			<th ><b title="Precipitation Seasonality (standard deviation)">PrecipSeasonality</b></th>
-		</tr>
-		</thead>
-		<tbody>
-
-
-<?php
-//echo "$json<br>";
+	$json_array = array();
 	for($i = 0; $i < count($latArr); $i++) {
 		$lat = $latArr[$i];
 		$lon = $lonArr[$i];
 		$id = $idArr[$i];
 		$jsonurl = "http://castle.iplantcollaborative.org:9000/info?lat=$lat&lon=$lon";
-		$json = file_get_contents($jsonurl);
-
-		$jsonarray = json_decode($json, true);
-
-		$mat = $jsonarray['mat'] / 10;
-		$mdr = $jsonarray['mdr'] / 10;
-		$iso = $jsonarray['iso'] / 10;
-		$tsd = $jsonarray['tsd'] / 100;
-		$maxtwm = $jsonarray['maxtwm'] / 10;
-		$anntmin = $jsonarray['anntmin'] / 10;
-		$tar = $jsonarray['tar'] / 10;
-		$meantwq = $jsonarray['meantwq'] / 10;
-		$meantdq = $jsonarray['meantdq'] / 10;
-		$meantwaq = $jsonarray['meantwaq'] / 10;
-		$meantcq = $jsonarray['meantcq'] / 10;
-		$annprec = $jsonarray['annprec'];
-		$precwm = $jsonarray['precwm'];
-		$precdm = $jsonarray['precdm'];
-		$precwq = $jsonarray['precwq'];
-		$precdq = $jsonarray['precdq'];
-		$precs = $jsonarray['precs'] / 100;
-		$precwarmq = $jsonarray['precwarmq'];
-		$preccq = $jsonarray['preccq'];
-
-		$OUTPUT .= "<tr>";
-		$OUTPUT .= "<td>$id</td>";
-		$OUTPUT .= "<td>$lat</td>";
-		$OUTPUT .= "<td>$lon</td>";
-		$OUTPUT .= "<td>$mat</td>";
-		$OUTPUT .= "<td>$tar</td>";
-		$OUTPUT .= "<td>$maxtwm</td>";
-		$OUTPUT .= "<td>$anntmin</td>";
-		$OUTPUT .= "<td>$meantwq</td>";
-		$OUTPUT .= "<td>$meantdq</td>";
-		$OUTPUT .= "<td>$meantwaq</td>";
-		$OUTPUT .= "<td>$meantcq</td>";
-		$OUTPUT .= "<td>$tsd</td>";
-		$OUTPUT .= "<td>$mdr</td>";
-		$OUTPUT .= "<td>$iso</td>";
-		$OUTPUT .= "<td>$annprec</td>";
-		$OUTPUT .= "<td>$precwm</td>";
-		$OUTPUT .= "<td>$precdm</td>";
-		$OUTPUT .= "<td>$precwq</td>";
-		$OUTPUT .= "<td>$precdq</td>";
-		$OUTPUT .= "<td>$precwarmq</td>";
-		$OUTPUT .= "<td>$preccq</td>";
-		$OUTPUT .= "<td>$precs</td>";
-		$OUTPUT .= "</tr>";
+		$json = json_decode(file_get_contents($jsonurl));
+		$json->mat = $json->mat / 10; 
+        $json->mdr = $json->mdr / 10; 
+        $json->iso = $json->iso / 10; 
+        $json->tsd = $json->tsd / 100;
+        $json->maxtwm = $json->maxtwm / 10; 
+        $json->anntmin = $json->anntmin / 10; 
+        $json->tar = $json->tar / 10;
+        $json->meantwq = $json->meantwq / 10;
+        $json->meantdq = $json->meantdq / 10;
+        $json->meantwaq = $json->meantwaq / 10;
+        $json->meantcq = $json->meantcq / 10;
+        $json->precs = $json->precs / 100;
+		$json->id = $id;
+		array_push($json_array,$json);
 	}
-		$OUTPUT .= "</tbody></table>";
-		echo $OUTPUT;
+	echo json_encode($json_array);
 }
-?>

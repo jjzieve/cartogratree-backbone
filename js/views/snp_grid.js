@@ -38,7 +38,7 @@ define([
 
       initColumns: function(snp_accessions,over_limit){
         if (over_limit){
-          alert("Too many SNPs to load in view, only the first 25 columns shown. Please download the CSV to view every genotype.");
+          $("#column_alert").append(" <span class='badge'>25 of "+snp_accessions.length+" columns shown. Please download the CSV to view every genotype.</span>")
         }
 
         var that = this;
@@ -160,7 +160,7 @@ define([
       if(this.grid){
         var that = this;
         this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-        $("#snp_sample_count").html(that.grid.getSelectedRows().length);
+        $("#snp_count").html(that.grid.getSelectedRows().length);
           // that.collection.reset();//remove all previous ids
           // $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
           //   var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
@@ -211,7 +211,7 @@ define([
       this.grid.render();
       this.dataView.syncGridSelection(this.grid, true);
       $(".slick-column-name input[type=checkbox]").attr('checked',false);
-      $("#snp_sample_count").html(0); //reset selected count
+      $("#snp_count").html(0); //reset selected count
       this.collection.reset(); // reset checked rows
     },
 
