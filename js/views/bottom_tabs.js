@@ -63,24 +63,28 @@ define([
         switch(tabContentId){// send flag to the shared tree id collection that the tab is closed and to create instead of update
           case '#common_snps':
             this.collection.meta("snp_tab_open",false);
-            console.log("common_snps closed");
+            this.collection.trigger("close_snps_tab");
             break;
           case '#common_phenotypes':
             this.collection.meta("phenotype_tab_open",false);
+            this.collection.trigger("close_phenotypes_tab");
             break;
           case '#common_amplicons':
             this.collection.meta("amplicon_tab_open",false);
+            this.collection.trigger("close_amplicons_tab");
             break;
           case '#world_clims':
             this.collection.meta("worldclim_tab_open",false);
+            this.collection.trigger("close_worldclims_tab");
             break;
           default:
             console.log('default: '+tabContentId);
             break;
         }
+	this.collection.trigger("done");// let this event bubble to the views after closing
         $(e.target).parent().parent().remove(); //remove li of tab
         this.$("ul.nav-tabs li a:last").tab('show'); // Select first tab
-        $(tabContentId).remove(); //remove respective tab content
+      //  $(tabContentId).remove(); //remove respective tab content
         
     },
     
@@ -132,6 +136,7 @@ define([
             this.openSSWAPTassel(ids);
             break;
         }
+	console.log(this.collection._meta);
       }
     },
 
@@ -147,75 +152,62 @@ define([
     	$("#data_table_container").css({"background-image":"none"}).removeClass("loading");
     },  
 
+    openCommonAmplicon: function(ids){
+      var that = this;
+      // only allow one tab for one type at a time
+      $("#amplicon_tab").remove();
+      $("#amplicon_phenotypes").remove();
+      $("#data_tabs").append("<li id='amplicon_tab'><a href='#common_amplicons' data-toggle='tab'><button class='close' type='button'>x</button>Amplicons</a></li>");
+      $("#data_table_container").append("<div id='common_amplicons' class='tab-pane active'>");
+      this.setLoaderIcon("#data_table_container");
+      this.$("ul.nav-tabs li a:last").tab('show');
+      $.get('GetCommonAmplicon.php?tid='+ids, function(html){
+        that.unsetLoaderIcon("#data_table_container");
+        $("#common_amplicons").append(html);    
+        $("#common_amplicon_table").tablecloth({
+          theme: "default",
+          condensed: true,
+          striped: true,
+          sortable: true,
+        });
+      
+      });
+    },
+
+    // openTab: function(name){ // use a template
+    //   // only allow one tab for one type at a time
+    //   $("#"+name+"_tab").remove();
+    //   $("#common_"+name).remove();
+    //   $("#data_tabs").append("<li id='"+name+"_tab'<a href='#common_"+phenotypes'"
+
+    // }
+
     openCommonPheno: function(ids){
-    	var that = this;
+
     	// only allow one tab for one type at a time
     	$("#phenotypes_tab").remove();
     	$("#common_phenotypes").remove();
       $("#data_tabs").append("<li id='phenotypes_tab'><a href='#common_phenotypes' data-toggle='tab'><button class='close' type='button'>x</button>Traits</a></li>");
-    	$("#data_table_container").append("<div id='common_phenotypes' class='tab-pane active'>");
-    					 // "<div class='button-wrapper'><button class='btn btn-default' type='button' id='phenotype_csv'>Download CSV</button></div></div>");				
-      // $("#tools_dropdown").clear();
-      // $("#tools_dropdown").append('<li role="presentation"><a id="phenotype_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>');
-
-    	this.setLoaderIcon("#data_table_container");
-     	this.$("ul.nav-tabs li a:last").tab('show');
-    	$.get('GetCommonPheno.php?tid='+ids, function(html){
-    		that.unsetLoaderIcon("#data_table_container");
-    		$("#common_phenotypes").append(html);		
-    		$("#common_pheno_table").tablecloth({
-    			theme: "default",
-    			condensed: true,
-    			striped: true,
-    			sortable: true,
-    		});
-    	});
-
-    	$("#phenotype_csv").click(function(){// if download button clicked
-    		window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
-    	});
-    },
-    openCommonAmplicon: function(ids){
-    	var that = this;
-    	// only allow one tab for one type at a time
-    	$("#amplicon_tab").remove();
-    	$("#amplicon_phenotypes").remove();
-      $("#data_tabs").append("<li id='amplicon_tab'><a href='#common_amplicons' data-toggle='tab'><button class='close' type='button'>x</button>Amplicons</a></li>");
-    	$("#data_table_container").append("<div id='common_amplicons' class='tab-pane active'>");
-
-      
-
-    	this.setLoaderIcon("#data_table_container");
+    	$("#data_table_container").append("<div id='common_phenotypes' class='tab-pane active'>"+
+                                        "<div class='button-wrapper' id='message_display_pheno'><button class='btn btn-default' type='button' id='remove_phenotypes'>Remove selected samples</button></div>"+
+                                        "<table><td valign='top' class='grid-col'><div id='pheno_grid' class='grid'></div></td></table>"+
+                                        "Total samples selected: <span id='pheno_count'>0</span></div>");
       this.$("ul.nav-tabs li a:last").tab('show');
-    	$.get('GetCommonAmplicon.php?tid='+ids, function(html){
-    		that.unsetLoaderIcon("#data_table_container");
-    		$("#common_amplicons").append(html);		
-    		$("#common_amplicon_table").tablecloth({
-    			theme: "default",
-    			condensed: true,
-    			striped: true,
-    			sortable: true,
-    		});
-    	
-    	});
-    },
-
-    openDiversitree: function(ids){
-      window.location.href = 'DiversitreeDownload.php?tid='+ids+'&csv';
     },
 
     openSNP: function(ids){
-    	$("#snps_tab").remove();
+    	$("#snps_tab").remove(); 
     	$("#common_snps").remove();
       $("#data_tabs").append("<li id='snps_tab'><a href='#common_snps' data-toggle='tab'><button class='close' type='button'>x</button>Genotypes</a></li>");
     	$("#data_table_container").append("<div id='common_snps' class='tab-pane active'>"+
-                                        "<div class='button-wrapper' id='column_alert'><button class='btn btn-default' type='button' id='remove_snps'>Remove selected samples</button></div>"+
+                                        "<div class='button-wrapper' id='message_display_geno'><button class='btn btn-default' type='button' id='remove_snps'>Remove selected samples</button></div>"+
                                         "<table><td valign='top' class='grid-col'><div id='snp_grid' class='grid'></div></td></table>"+
                                         "Total samples selected: <span id='snp_count'>0</span></div>");
       this.$("ul.nav-tabs li a:last").tab('show');
     },
+
     openWorldClim: function(ids,lats,lngs){
-      $("#worldclim_tab").remove();
+      $("#worldclim_tab").remove(); 
       $("#world_clims").remove();
       $("#data_tabs").append("<li id='worldclim_tab'><a href='#world_clims' data-toggle='tab'><button class='close' type='button'>x</button>Environmental</a></li>");
       $("#data_table_container").append("<div id='world_clims' class='tab-pane active'>"+
@@ -225,6 +217,10 @@ define([
       this.$("ul.nav-tabs li a:last").tab('show');
     },
 
+
+    openDiversitree: function(ids){
+      window.location.href = 'DiversitreeDownload.php?tid='+ids+'&csv';
+    },
     openSSWAPTassel: function(ids){
     	var that = this;
     	$.getJSON('AssociationRRG.php?tid='+ids).success(function(jsonRRG){

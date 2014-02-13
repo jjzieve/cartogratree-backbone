@@ -19,68 +19,23 @@ if (isset($_GET['tid'])) {
 }
 
 $idArr = explode(",", $escapedId);
-
-$snpSearch = array();
-$snp_list = array();
-foreach($idArr as $snpId) {
-	$snpSearch[] = "(
-	SELECT snp_accessions.snp_accession 
-	FROM inv_samples AS ins 
-		LEFT JOIN inv_genotyping_data_genotype_results AS igdgr ON igdgr.inv_samples_id = ins.id 
-		LEFT JOIN snps ON snps.id = igdgr.snps_id 
-		LEFT JOIN snp_accessions ON snp_accessions.id = snps.snp_accessions_id 
-	WHERE 
-		ins.sample_barcode = '$snpId' 
-		AND snp_accessions.snp_accession IS NOT NULL 
-					AND snp_accessions.snp_accession <> 'SNP_NULL'
-	
-	
-	)";
-	$snp_list[] = "'$snpId'";
-}    
-
 $q = "
 SELECT 
 	ins.sample_barcode AS identifier, 
-	s2.species, 
-	CASE 
-		WHEN iss.gps_latitude IS NOT NULL AND strpos(CAST(iss.gps_latitude AS text), '.') > 0 AND substr(rtrim(CAST(iss.gps_latitude AS text),'0'), length(rtrim(CAST(iss.gps_latitude AS text),'0')), 1) = '.' 
-			THEN substr(CAST(iss.gps_latitude AS text), 1, strpos(CAST(iss.gps_latitude AS text), '.') - 1) 
-		WHEN iss.gps_latitude IS NOT NULL AND strpos(CAST(iss.gps_latitude AS text), '.') > 0 
-			THEN rtrim(CAST(iss.gps_latitude AS text), '0') 
-		WHEN iss.gps_latitude IS NOT NULL 
-			THEN CAST(iss.gps_latitude AS text) 
-		ELSE '' 
-	END AS latitude, 
-	CASE 
-		WHEN iss.gps_longitude IS NOT NULL AND strpos(CAST(iss.gps_longitude AS text), '.') > 0 AND substr(rtrim(CAST(iss.gps_longitude AS text),'0'), length(rtrim(CAST(iss.gps_longitude AS text),'0')), 1) = '.' 
-			THEN substr(CAST(iss.gps_longitude AS text), 1, strpos(CAST(iss.gps_longitude AS text), '.') - 1) 
-		WHEN iss.gps_longitude IS NOT NULL AND strpos(CAST(iss.gps_longitude AS text), '.') > 0 
-			THEN rtrim(CAST(iss.gps_longitude AS text), '0') 
-		WHEN iss.gps_longitude IS NOT NULL 
-			THEN CAST(iss.gps_longitude AS text) 
-		ELSE '' 
-	END AS longitude, 
 	igdgr.allele1, 
 	igdgr.allele2, 
 	snp_accessions.snp_accession, 
 	physical_pos 
-FROM species AS s2 
-	LEFT JOIN inv_sample_sources AS iss ON s2.species_id = iss.species_id 
-	LEFT JOIN inv_samples ins ON iss.id = ins.inv_sample_sources_id 
+FROM inv_samples AS ins
 	LEFT JOIN inv_genotyping_data_genotype_results AS igdgr ON igdgr.inv_samples_id = ins.id 
 	LEFT JOIN snps ON snps.id = igdgr.snps_id LEFT JOIN snp_accessions ON snp_accessions.id = snps.snp_accessions_id 
 WHERE 
-	ins.sample_barcode IN ( ".implode(',',$snp_list)." ) 
+	ins.sample_barcode IN ( '".implode("','",$idArr)."' ) 
 	AND snp_accessions.snp_accession IS NOT NULL 
 	AND snp_accessions.snp_accession <> 'SNP_NULL' 
-	AND snp_accessions.snp_accession IN ( 
-		SELECT * FROM (
-		".implode(" INTERSECT ",$snpSearch)."
-	) AS tmp
-)
 ORDER BY identifier ASC, snp_accession ASC;";
 $res = DBQuery($q);
+
 $numrows = pg_num_rows($res);
 $numsamples = count($idArr);
 $numsnps = $numrows / $numsamples;

@@ -171,26 +171,33 @@ define([
     var that = this;
     this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
       $("#worldclim_count").html(that.grid.getSelectedRows().length);
-    //   that.sub_collection.reset();//remove all previous ids
-    //   $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
-    //     var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
-    //     var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
-    //     var lng = that.dataView.getItemByIdx(idx)["lng"];
-    //     var index = index;
-    //     that.sub_collection.add({
-    //       id: id,
-    //       lat: lat,
-    //       lng: lng,
-    //       index: index
-    //     }); 
-    //   });
+      that.collection.reset();//remove all previous ids
+      $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
+        var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
+        var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
+        var lng = that.dataView.getItemByIdx(idx)["lng"];
+        var index = index;
+        that.collection.add({
+          id: id,
+          lat: lat,
+          lng: lng,
+          index: index
+        }); 
+      });
     //   that.sub_collection.trigger("done");
     });
   },
 
+    deleteGrid: function(){
+      delete this.columns;
+      delete this.grid;
+      delete this.dataView;
+    },
+
   pollForOpenTab: function(){
     if(this.collection.meta("worldclim_tab_open")){
       this.updateSlickGrid();
+      this.listenTo(this.collection,"close_worldclims_tab", this.deleteGrid);
     }
   },
 

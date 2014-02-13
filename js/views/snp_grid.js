@@ -34,13 +34,20 @@ define([
         topPanelHeight: 25
       },
       data: [],
-      queryCache: [], //cache of ids to stored so redundant queries aren't made
+      over_limit_html: _.template("<button class='btn btn-default' type='button' id='remove_snps'>Remove selected samples</button> <span class='badge'>25 of <%= num_columns %> columns shown. Please download the CSV to view every genotype.</span>"),
+      no_genotypes_html: " <span class='badge'>No genotypes found. Please select a different set of samples</span>",
+
+      arrayCmp: function(arr1,arr2){ //returns true if same elements and lengths of two arrays, not necessarily in same order
+      return !($(arr1).not(arr2).length == 0 && $(arr1).not(arr2).length == 0);
+      }, 
 
       initColumns: function(snp_accessions,over_limit){
         if (over_limit){
-          $("#column_alert").append(" <span class='badge'>25 of "+snp_accessions.length+" columns shown. Please download the CSV to view every genotype.</span>")
+          $("#message_display_geno").html(this.over_limit_html({num_columns:snp_accessions.length}));
         }
-
+        if(snp_accessions.length === 0){
+          $("#message_display_geno").append(this.no_genotypes_html);
+        }
         var that = this;
         this.columns = [
           {id:"id",name:"ID",field:"id",width:75,sortable:true}
@@ -64,6 +71,8 @@ define([
         this.grid.registerPlugin(this.checkboxSelector);
       },
 
+
+
       updateSlickGrid: function(){
           var that = this;
           this.data = [];
@@ -75,14 +84,13 @@ define([
           $.ajax({
             url : 'GetCommonSNP.php',
             dataType: "json",
-            data: {"tid":checkedSamples.join()//GET url as string tid1,tid2,...
-          },
-
+            data: {"tid":checkedSamples.join()},//GET uri as string tid1,tid2,...
             success: function (response) {
               var prev_accessions = that.snp_accessions;
               var new_accessions = response["snp_accessions"];
-              if (!($(prev_accessions).not(new_accessions).length == 0 && $(new_accessions).not(prev_accessions).length == 0)) { //array comparator
+              if ( that.arrayCmp(prev_accessions,new_accessions) || typeof(this.columns) === "undefined") { 
                 that.initColumns(response["snp_accessions"],response["over_limit"]);
+                that.initGrid();
               }
               
               var i = 0;
@@ -96,13 +104,11 @@ define([
                 i++;
               });
 
-              if (typeof(that.grid) === "undefined"){
-                that.initGrid();
-              }
-              
+              // if (typeof(that.grid) === "undefined"){
+              //   that.initGrid();
+              // }
+
               that.unsetLoaderIcon();
-
-
               var sortCol = undefined;
               var sortDir = true;
               function comparer(a, b) {
@@ -156,25 +162,32 @@ define([
       }
     },
 
+    deleteGrid: function(){
+      delete this.columns;
+      delete this.grid;
+      delete this.dataView;
+      delete this.prev_accessions;
+    },
+
     listenToSelectedRows: function(){
       if(this.grid){
         var that = this;
         this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
         $("#snp_count").html(that.grid.getSelectedRows().length);
-          // that.collection.reset();//remove all previous ids
-          // $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
-          //   var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
-          //   var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
-          //   var lng = that.dataView.getItemByIdx(idx)["lng"];
-          //   var index = index;
-          //   that.collection.add({
-          //     id: id,
-          //     lat: lat,
-          //     lng: lng,
-          //     index: index
-          //   }); 
-          // });
-          // that.collection.trigger("done");
+             that.collection.reset();//remove all previous ids
+             $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
+              var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
+            	var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
+             	var lng = that.dataView.getItemByIdx(idx)["lng"];
+             	var index = index;
+             	that.collection.add({
+               		id: id,
+               		lat: lat,
+              		lng: lng,
+               		index: index
+             	}); 
+           });
+        // that.collection.trigger("done");
       });
     }
   },
@@ -182,6 +195,7 @@ define([
     initialize: function(options){
       var that = this;
       this.listenTo(this.collection,"done",this.pollForOpenTab);
+      this.listenTo(this.collection,"close_snps_tab", this.deleteGrid);
 
     },
 

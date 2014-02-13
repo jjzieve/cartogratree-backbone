@@ -1,4 +1,4 @@
-/*GLOBAL, should use LESS or SASS*/
+/*GLOBAL, should've used LESS or SASS*/
 a{
   color: #3C746B;
 }
@@ -265,6 +265,12 @@ table.table thead .sorting_desc_disabled { background: url('images/sort_desc_dis
 .dropdown-submenu:hover>a:after{border-left-color:#ffffff;}
 .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
 */
+
+.grid *, .grid *:before, .grid *:after { 
+  -webkit-box-sizing: content-box; 
+  -moz-box-sizing: content-box; 
+  box-sizing: content-box; 
+}
 /*FOOTER*/
 #version_num{
     font-family: "Courier New";

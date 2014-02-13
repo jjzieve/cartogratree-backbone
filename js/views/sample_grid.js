@@ -218,6 +218,10 @@ define([
     });
   },
 
+	// updateSelectedRows: function(){
+ //    this.grid.setSelectedRows(this.sub_collection.pluck("index"));
+	// },
+
 	initialize: function(options){
     this.sub_collection = options.sub_collection; //allows passing of tree_ids between this view and the tabs view
     var that = this;
@@ -225,6 +229,7 @@ define([
     this.initGrid();
 		this.clearSlickGrid();//clear at first
     this.listenToSelectedRows();
+    // this.listenTo(this.sub_collection,'change_selection',this.updateSelectedRows);
 		this.collection.on('add change remove',this.refreshTable,this); //possibly reset?
 
     
