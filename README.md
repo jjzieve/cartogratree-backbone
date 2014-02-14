@@ -26,7 +26,7 @@ more simple and usable than the previous iteration.
 
 #### Libraries
 
-![](images/ctree_coden.png?raw=true)
+![](images/ctree_code.png?raw=true)
 
 #### Models & Collections
 
