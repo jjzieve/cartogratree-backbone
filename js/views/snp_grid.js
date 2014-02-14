@@ -34,7 +34,7 @@ define([
         topPanelHeight: 25
       },
       data: [],
-      over_limit_html: _.template("<button class='btn btn-default' type='button' id='remove_snps'>Remove selected samples</button> <span class='badge'>25 of <%= num_columns %> columns shown. Please download the CSV to view every genotype.</span>"),
+      over_limit_html: _.template("<button class='btn btn-default' type='button' id='remove_snps'>Remove selected samples</button> <span class='badge'>25 of <%= num_columns %> columns shown. Download the CSV to view every genotype.</span>"),
       no_genotypes_html: " <span class='badge'>No genotypes found. Please select a different set of samples</span>",
 
       arrayCmp: function(arr1,arr2){ //returns true if same elements and lengths of two arrays, not necessarily in same order

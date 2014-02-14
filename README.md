@@ -26,8 +26,15 @@ more simple and usable than the previous iteration.
 
 #### Libraries
 
+![](images/ctree_coden.png?raw=true)
+
 #### Models & Collections
 
 #### Views
 
 #### Future directions and general thoughts
+
+#### Code notes
+- What the hell is "var that = this;" anyway? I use it alot in my ajax calls, here's a good [reference](http://stackoverflow.com/questions/4886632/what-does-var-that-this-mean-in-javascript). 
+A related topic is [closures](http://stackoverflow.com/questions/111102/how-do-javascript-closures-work).
+- 
