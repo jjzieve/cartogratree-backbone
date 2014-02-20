@@ -38,25 +38,25 @@ define([
     initColumns: function(){
       this.columns = [
         {id: "id", name: "ID", field: "id",width: 75, sortable:true},
-        {id:"mat", name: "Annual Mean Temperature [°C]", field:"mat",width:225,sortable:true},
-        {id:"tar", name: "Temperature Annual Range [°C]", field:"tar",width:230,sortable:true},
-        {id:"maxtwm", name: "Max Temperature of Warmest Month [°C]", field:"maxtwm",width:300,sortable:true},
-        {id:"anntmin", name: "Min Temperature of Coldest Month [°C]", field:"anntmin",width:300,sortable:true},
-        {id:"meantdq", name: "Mean Temperature of Driest Quarter [°C]", field:"meantdq",width:300,sortable:true},
-        {id:"meantwq", name: "Mean Temperature of Wettest Quarter [°C]", field:"meantwq",width:300,sortable:true},
-        {id:"meantwaq", name: "Mean Temperature of Warmest Quarter [°C]", field:"meantwaq",width:310,sortable:true},
-        {id:"meantcq", name: "Mean Temperature of Coldest Quarter [°C]", field:"meantcq",width:300,sortable:true},
-        {id:"tsd", name: "Temperature Seasonality [CV]", field:"tsd",width:225,sortable:true},
-        {id:"mdr", name: "Mean Diurnal Range [°C]", field:"mdr",width:225,sortable:true},
-        {id:"iso", name: "Isothermality [°C]", field:"iso",width:150,sortable:true},
-        {id:"annprec", name: "Annual Precipitation [mm]", field:"annprec",width:225,sortable:true},
-        {id:"precwm", name: "Precipitation of Wettest Month [mm]", field:"precwm",width:275,sortable:true},
-        {id:"precdm", name: "Precipitation of Driest Month [mm]", field:"precdm",width:275,sortable:true},
-        {id:"precwq", name: "Precipitation of Wettest Quarter [mm]", field:"precwq",width:275,sortable:true},
-        {id:"precdq", name: "Precipitation of Driest Quarter [mm]", field:"precdq",width:275,sortable:true},
-        {id:"precwarmq", name: "Precipitation of Warmest Quarter [mm]", field: "precwarmq",width:280,sortable:true},
-        {id:"preccq", name: "Precipitation of Coldest Quarter [mm]", field:"preccq",width:275,sortable:true},
-        {id:"precs", name: "Precipitation Seasonality [CV]", field:"precs",width:250,sortable:true}
+        {id: "mat", name: "Annual Mean Temperature [°C]", field:"mat",width:225,sortable:true},
+        {id: "tar", name: "Temperature Annual Range [°C]", field:"tar",width:230,sortable:true},
+        {id: "maxtwm", name: "Max Temperature of Warmest Month [°C]", field:"maxtwm",width:300,sortable:true},
+        {id: "anntmin", name: "Min Temperature of Coldest Month [°C]", field:"anntmin",width:300,sortable:true},
+        {id: "meantdq", name: "Mean Temperature of Driest Quarter [°C]", field:"meantdq",width:300,sortable:true},
+        {id: "meantwq", name: "Mean Temperature of Wettest Quarter [°C]", field:"meantwq",width:300,sortable:true},
+        {id: "meantwaq", name: "Mean Temperature of Warmest Quarter [°C]", field:"meantwaq",width:310,sortable:true},
+        {id: "meantcq", name: "Mean Temperature of Coldest Quarter [°C]", field:"meantcq",width:300,sortable:true},
+        {id: "tsd", name: "Temperature Seasonality [CV]", field:"tsd",width:225,sortable:true},
+        {id: "mdr", name: "Mean Diurnal Range [°C]", field:"mdr",width:225,sortable:true},
+        {id: "iso", name: "Isothermality [°C]", field:"iso",width:150,sortable:true},
+        {id: "annprec", name: "Annual Precipitation [mm]", field:"annprec",width:225,sortable:true},
+        {id: "precwm", name: "Precipitation of Wettest Month [mm]", field:"precwm",width:275,sortable:true},
+        {id: "precdm", name: "Precipitation of Driest Month [mm]", field:"precdm",width:275,sortable:true},
+        {id: "precwq", name: "Precipitation of Wettest Quarter [mm]", field:"precwq",width:275,sortable:true},
+        {id: "precdq", name: "Precipitation of Driest Quarter [mm]", field:"precdq",width:275,sortable:true},
+        {id: "precwarmq", name: "Precipitation of Warmest Quarter [mm]", field: "precwarmq",width:280,sortable:true},
+        {id: "preccq", name: "Precipitation of Coldest Quarter [mm]", field:"preccq",width:275,sortable:true},
+        {id: "precs", name: "Precipitation Seasonality [CV]", field:"precs",width:250,sortable:true}
       ]
       this.checkboxSelector = new Slick.CheckboxSelectColumn({});
       this.columns.unshift(this.checkboxSelector.getColumnDefinition());
@@ -197,7 +197,7 @@ define([
   pollForOpenTab: function(){
     if(this.collection.meta("worldclim_tab_open")){
       this.updateSlickGrid();
-      this.listenTo(this.collection,"close_worldclims_tab", this.deleteGrid);
+      this.listenTo(this.collection,"close_worldclim_tab", this.deleteGrid);
     }
   },
 
@@ -222,7 +222,7 @@ define([
 
             
   events:{
-    "click #remove_worldclims": "removeSelected",
+    "click #remove_worldclim": "removeSelected",
   }
 
 	});

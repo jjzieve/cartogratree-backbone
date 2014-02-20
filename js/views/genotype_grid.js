@@ -22,7 +22,7 @@ define([
 ], function($, _, Backbone, Tree_IDModel, Tree_IDCollection){
     // Above we have passed in jQuery, Underscore and Backbone
     // They will not be accessible in the global scope
-    var SNPView = Backbone.View.extend({ 
+    var GenotypeView = Backbone.View.extend({ 
       el: '#data_table_container',
       model: Tree_IDModel,
       collection: Tree_IDCollection,
@@ -34,25 +34,25 @@ define([
         topPanelHeight: 25
       },
       data: [],
-      over_limit_html: _.template("<button class='btn btn-default' type='button' id='remove_snps'>Remove selected samples</button> <span class='badge'>25 of <%= num_columns %> columns shown. Download the CSV to view every genotype.</span>"),
+      over_limit_html: _.template("<button class='btn btn-default' type='button' id='remove_genotype'>Remove selected samples</button> <span class='badge'>25 of <%= num_columns %> columns shown. Download the CSV to view every genotype.</span>"),
       no_genotypes_html: " <span class='badge'>No genotypes found. Please select a different set of samples</span>",
 
       arrayCmp: function(arr1,arr2){ //returns true if same elements and lengths of two arrays, not necessarily in same order
       return !($(arr1).not(arr2).length == 0 && $(arr1).not(arr2).length == 0);
       }, 
 
-      initColumns: function(snp_accessions,over_limit){
+      initColumns: function(genotype_accessions,over_limit){
         if (over_limit){
-          $("#message_display_geno").html(this.over_limit_html({num_columns:snp_accessions.length}));
+          $("#message_display_genotype").html(this.over_limit_html({num_columns:genotype_accessions.length}));
         }
-        if(snp_accessions.length === 0){
-          $("#message_display_geno").append(this.no_genotypes_html);
+        if(genotype_accessions.length === 0){
+          $("#message_display_genotype").append(this.no_genotypes_html);
         }
         var that = this;
         this.columns = [
           {id:"id",name:"ID",field:"id",width:75,sortable:true}
         ]; //set the first columns
-        _.each(snp_accessions,function(a,index){
+        _.each(genotype_accessions,function(a,index){
           if (index > 25){
             return
           }
@@ -60,13 +60,13 @@ define([
         })
         this.checkboxSelector = new Slick.CheckboxSelectColumn({});
         this.columns.unshift(this.checkboxSelector.getColumnDefinition());
-        this.snp_accessions = snp_accessions; //save state of columns if not new request
+        this.genotype_accessions = genotype_accessions; //save state of columns if not new request
         
       },
 
       initGrid: function(){
         this.dataView = new Slick.Data.DataView();
-        this.grid = new Slick.Grid("#snp_grid", this.dataView, this.columns, this.options);
+        this.grid = new Slick.Grid("#genotype_grid", this.dataView, this.columns, this.options);
         this.grid.setSelectionModel(new Slick.RowSelectionModel());
         this.grid.registerPlugin(this.checkboxSelector);
       },
@@ -86,7 +86,7 @@ define([
             dataType: "json",
             data: {"tid":checkedSamples.join()},//GET uri as string tid1,tid2,...
             success: function (response) {
-              var prev_accessions = that.snp_accessions;
+              var prev_accessions = that.genotype_accessions;
               var new_accessions = response["snp_accessions"];
               if ( that.arrayCmp(prev_accessions,new_accessions) || typeof(this.columns) === "undefined") { 
                 that.initColumns(response["snp_accessions"],response["over_limit"]);
@@ -138,7 +138,7 @@ define([
 
               that.dataView.syncGridSelection(that.grid, true);
 
-              $("#snp_sample_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
+              $("#genotype_sample_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
               that.listenToSelectedRows();
             }
           });
@@ -157,7 +157,7 @@ define([
     },
     
     pollForOpenTab: function(){
-      if(this.collection.meta("snp_tab_open")){
+      if(this.collection.meta("genotype_tab_open")){
         this.updateSlickGrid();
       }
     },
@@ -173,7 +173,7 @@ define([
       if(this.grid){
         var that = this;
         this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-        $("#snp_count").html(that.grid.getSelectedRows().length);
+        $("#genotype_count").html(that.grid.getSelectedRows().length);
              that.collection.reset();//remove all previous ids
              $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
               var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
@@ -195,7 +195,7 @@ define([
     initialize: function(options){
       var that = this;
       this.listenTo(this.collection,"done",this.pollForOpenTab);
-      this.listenTo(this.collection,"close_snps_tab", this.deleteGrid);
+      this.listenTo(this.collection,"close_genotype_tab", this.deleteGrid);
 
     },
 
@@ -225,19 +225,19 @@ define([
       this.grid.render();
       this.dataView.syncGridSelection(this.grid, true);
       $(".slick-column-name input[type=checkbox]").attr('checked',false);
-      $("#snp_count").html(0); //reset selected count
+      $("#genotype_count").html(0); //reset selected count
       this.collection.reset(); // reset checked rows
     },
 
               
     events:{
-      "click #remove_snps": "removeSelected",
+      "click #remove_genotype": "removeSelected",
     }
 
       
   });
 
-  return SNPView; 
+  return GenotypeView; 
   // What we return here will be used by other modules
 });
 

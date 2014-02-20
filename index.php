@@ -57,12 +57,12 @@ Updated:
 			</div>
 			<div class="col-xs-7 col-xs-offset-1">
 				<ul class="nav nav-pills">
-					<li><a href="about.html">About</a></li>
-					<li><a href="http://dendrome.ucdavis.edu/treegenes/" >TreeGenes</a></li>
-					<li><a href="http://dendrome.ucdavis.edu/DiversiTree/">DiversiTree</a></li>
-					<li class="disabled"><a href="http://loblolly.ucdavis.edu/bipod/ftp/Documentation/CartogratreeDocumentation.pdf">Documentation</a></li>
-					<li><a href="mailto:tg-help.ucdavis.edu">Contact</a>
-					<li><a id="credits" data-toggle="popover" data-placement="bottom" title="Credits" href="#">Credits</a></li>
+					<li><a target="_blank" href="about.html">About</a></li>
+					<li><a target="_blank" href="http://dendrome.ucdavis.edu/treegenes/" >TreeGenes</a></li>
+					<li><a target="_blank" href="http://dendrome.ucdavis.edu/DiversiTree/">DiversiTree</a></li>
+					<li><a target="_blank" href="https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#cartogratree-3">Documentation</a></li>
+					<li><a target="_blank" href="mailto:tg-help.ucdavis.edu">Contact</a>
+					<li><a target="_blank" id="credits" data-toggle="popover" data-placement="bottom" title="Credits" href="#">Credits</a></li>
 				</ul>
 			</div>
 		</div>
@@ -205,9 +205,9 @@ Updated:
 						<button class="btn btn-default" type="button" data-toggle="dropdown"><span id="tools_title">Select tool</span> <span class="caret"></span></button>
 						<ul id="tools_dropdown" class="dropdown-menu">
 						    <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Select tool</a></li>
-						  	<li role="presentation"><a id="common_amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Amplicons</a></li>
-						    <li role="presentation"><a id="common_phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Traits</a></li>
-						    <li role="presentation"><a id="common_snp_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Genotypes</a></li>
+						  	<li role="presentation"><a id="amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Amplicons</a></li>
+						    <li role="presentation"><a id="phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Traits</a></li>
+						    <li role="presentation"><a id="genotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Genotypes</a></li>
 						    <li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Environmental data</a></li>
 						    <li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>
 						    <li role="presentation" class="divider"></li>
@@ -242,22 +242,61 @@ Updated:
 				</div>
 			</div>
 		</div>
-		<!--FOOTER-->
+
+<!-- Nested tabs -->
+<!-- 			<div>
+			    <ul class="nav nav-pills">
+			        <li class="active"><a href="#set1">Map</a>
+			        </li>
+			        <li><a href="#set2">Amplicons</a>
+			        </li>
+			    </ul>
+			    <div class="tab-content">
+			        <div class="tab-pane fade active in" id="set1">
+			            <div>
+			                <ul class="nav nav-tabs">
+			                    <li class="active"><a href="#sub11">Samples</a>
+			                    </li>
+			                    <li><a href="#sub12">Genotypes</a>
+			                    </li>
+			                </ul>
+			                <div class="tab-content">
+			                    <div class="tab-pane fade active in" id="sub11">
+			                        <p>TID001</p>
+			                    </div>
+			                    <div class="tab-pane fade" id="sub12">
+			                        <p>AT</p>
+			                    </div>
+			                </div>
+			            </div>
+			        </div>
+			        <div class="tab-pane fade" id="set2">
+			            <div>
+			                <div class="tab-content">
+			                    AID_001 = ATGACAGT
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+-->	
+
+	 <!--FOOTER-->
 		<div class="row" id="footer">
 			<p>
-      				<a href="http://dendrome.ucdavis.edu/treegenes/" target=new>
+      			<a href="http://dendrome.ucdavis.edu/treegenes/" target=new>
 					<img src="http://dendrome.ucdavis.edu/images/logo_treegenes.png">
 				</a>
-      			        <a href="http://www.iplantcollaborative.org/" target=new>
+      			<a href="http://www.iplantcollaborative.org/" target=new>
 					<img src="http://dendrome.ucdavis.edu/iplant/images/iplant_collab_logo.jpg">
 				</a>
-      			        <a href="http://public.ornl.gov/ameriflux/index.html" target=new>
+      			<a href="http://public.ornl.gov/ameriflux/index.html" target=new>
 					<img src="http://dendrome.ucdavis.edu/iplant/images/amerifluxlogo.gif">
 				</a>
-      			        <a href="http://try-db.org/pmwiki/index.php" target=new>
+		        <a href="http://try-db.org/pmwiki/index.php" target=new>
 					<img src="http://dendrome.ucdavis.edu/iplant/images/try_logo.jpg">
 				</a>
-      			        <a href="http://www.worldclim.org" target=new>
+		        <a href="http://www.worldclim.org" target=new>
 					<img src="http://dendrome.ucdavis.edu/iplant/images/worldclim_logo.png">
 				</a>
       			</p>

@@ -42,7 +42,7 @@ define([
 
       initColumns: function(phenotypes){
         if(phenotypes.length === 0){
-          $("#message_display_pheno").append(this.no_phenotypes_html);
+          $("#message_display_phenotype").append(this.no_phenotypes_html);
         }
         var that = this;
         this.columns = [
@@ -62,7 +62,7 @@ define([
 
       initGrid: function(){
         this.dataView = new Slick.Data.DataView();
-        this.grid = new Slick.Grid("#pheno_grid", this.dataView, this.columns, this.options);
+        this.grid = new Slick.Grid("#phenotype_grid", this.dataView, this.columns, this.options);
         this.grid.setSelectionModel(new Slick.RowSelectionModel());
         this.grid.registerPlugin(this.checkboxSelector);
       },
@@ -129,7 +129,7 @@ define([
 
               that.dataView.syncGridSelection(that.grid, true);
 
-              $("#pheno_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
+              $("#phenotype_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
               that.listenToSelectedRows();
             }
           });
@@ -163,7 +163,7 @@ define([
       if(this.grid){
         var that = this;
         this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-        $("#pheno_count").html(that.grid.getSelectedRows().length);
+        $("#phenotype_count").html(that.grid.getSelectedRows().length);
              that.collection.reset();//remove all previous ids
              $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
               var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
@@ -185,7 +185,7 @@ define([
     initialize: function(options){
       var that = this;
       this.listenTo(this.collection,"done",this.pollForOpenTab);
-      this.listenTo(this.collection,"close_phenotypes_tab", this.deleteGrid);
+      this.listenTo(this.collection,"close_phenotype_tab", this.deleteGrid);
 
     },
 
@@ -215,13 +215,13 @@ define([
       this.grid.render();
       this.dataView.syncGridSelection(this.grid, true);
       $(".slick-column-name input[type=checkbox]").attr('checked',false);
-      $("#pheno_count").html(0); //reset selected count
+      $("#phenotype_count").html(0); //reset selected count
       this.collection.reset(); // reset checked rows
     },
 
               
     events:{
-      "click #remove_phenotypes": "removeSelected",
+      "click #remove_phenotype": "removeSelected",
     }
 
       

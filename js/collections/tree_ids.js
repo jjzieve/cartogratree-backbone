@@ -10,7 +10,7 @@ define([
 	var TreeIDCollection = Backbone.Collection.extend({
     initialize: function(){
       this._meta = { //no other tabs but the samples are open
-        "snp_tab_open" : false,
+        "genotype_tab_open" : false,
         "worldclim_tab_open" : false,
         "phenotype_tab_open" : false,
         "amplicon_tab_open" : false

@@ -22,7 +22,7 @@ more simple and usable than the previous iteration.
 
 **A note: **
 *I decided to write it in a framework to attempt to adhere to best practices (e.g. DRY), how well I did that, is debatable... haha*
-*This project was a learing experience for me in javascript, so forgive me for my noobish mistakes :)*
+*This project was a learing experience for me in javascript, so forgive me for my [callback hell](http://callbackhell.com/) and spaghetti code :)*
 
 #### Libraries
 
@@ -36,5 +36,6 @@ more simple and usable than the previous iteration.
 
 #### Code notes
 - What the hell is "var that = this;" anyway? I use it alot in my ajax calls, here's a good [reference](http://stackoverflow.com/questions/4886632/what-does-var-that-this-mean-in-javascript). 
-A related topic is [closures](http://stackoverflow.com/questions/111102/how-do-javascript-closures-work).
+Related topics are [closures](http://stackoverflow.com/questions/111102/how-do-javascript-closures-work) and [callbacks](https://github.com/maxogden/art-of-node#callbacks)
+
 - 
