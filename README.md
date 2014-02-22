@@ -63,29 +63,27 @@ Tips:
 I highly recommend re-doing all my terrible css with a pre-processor such as [LESS](http://lesscss.org/) or [SASS](http://sass-lang.com/). This was the most hacky part of the project, I'm truly sorry (I will hopefully never touch css again) and if I left any inline styling in index.php, or "! important" tags in the main stylesheet; please email me angry threats. Alas, /css/style.css is the main stylesheet but the libraries also have corresponding sylesheets (e.g. slickgrid -> slick.grid.css + example-bootstrap.css)
 
 #### Models & Collections
+<!-- update with tree_node -->
 ![](images/ctree_code.png?raw=true)
 
 #### Views
-amplicon_grid.js
-bottom_tabs.js
-genotype_grid.js
-map.js
-navbar.js
-phenotype_grid.js
-sample_grid.js
-sidebar_filters.js
-sidebar_selection_tree.js
-sidebar_tree_id_search.js
-worldclim_grid.js
-
-
+js/views/amplicon_grid.js
+js/views/bottom_tabs.js
+js/views/genotype_grid.js
+js/views/map.js
+js/views/navbar.js
+js/views/phenotype_grid.js
+js/views/sample_grid.js
+js/views/sidebar_filters.js
+js/views/sidebar_selection_tree.js
+js/views/sidebar_tree_id_search.js
+js/views/worldclim_grid.js
 
 #### Code & design caveats
 - What the hell is "var that = this;" anyway? I use it alot in my ajax calls, here's a good [reference](http://stackoverflow.com/questions/4886632/what-does-var-that-this-mean-in-javascript). 
 Related topics are [closures](http://stackoverflow.com/questions/111102/how-do-javascript-closures-work) and [callbacks](https://github.com/maxogden/art-of-node#callbacks)
 - I made a _meta variable for the queries collection to hold the dynamic query strings that would be sent off to google. In object-orientated-speak you can think of this like a static class variable shared across the "query" objects/models.
 - Often "snp", "genotype", "geno" and similarily for "pheno",etc. are used interchangeably in variable names, sorry about that...
-
 
 #### TODO (in order of importance)
 1. Allow map display to reflect URI. 
