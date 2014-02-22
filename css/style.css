@@ -23,7 +23,7 @@ h4{
   padding-bottom: 15px;
 }
 
-.nav-pills li a {
+.navbar li a {
   padding-top: 50px;
   font-size:  16px;
 }
@@ -221,10 +221,26 @@ h4{
   padding-top: 10px;
 }
 
+.analysis_pills > li.active > a, .analysis_pills > li.active > a:hover, .analysis_pills > li.active > a:focus {
+    color: white;
+}
+
+.analysis_pills_container{
+  padding-bottom: 10px;
+}
+
 .nav-tabs > li .close {
 	margin: -2px 0 0 10px;
 	font-size: 18px;
 }
+
+
+
+
+/*.navbar li a {
+  padding-top: 50px;
+  font-size:  16px;
+}*/
 /*#data_table_container .loading{
   background-image: url(../images/ajax-loader.gif);
   background-repeat: no-repeat;

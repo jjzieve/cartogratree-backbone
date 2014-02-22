@@ -15,22 +15,59 @@ function outputCSV($data) {
 
 if (isset($_GET['tid'])) {
 	$escapedId = pg_escape_string(trim($_GET['tid']));
-} else {
-}
+} 
 
 $idArr = explode(",", $escapedId);
+$tgdrArr = array();
+$dtreeArr = array();
+foreach($idArr as $tid) {
+    if(strpos($tid, 'TGDR') !== false) {
+        //true
+        $tgdrArr[] = $tid;
+        // var_dump($tgdrArr);
+    } else {
+        $dtreeArr[] = $tid;
+    }
+}
 
-$q = "
-SELECT
-	inv_samples.sample_barcode AS tree_identifier,
-	inv_sample_metrics.metric_description,
-	inv_samples_sample_metrics.measurement_value
-FROM inv_samples
-INNER JOIN inv_sample_sources ON inv_samples.inv_sample_sources_id = inv_sample_sources.id
-INNER JOIN inv_samples_sample_metrics ON inv_samples.id = inv_samples_sample_metrics.inv_samples_id
-INNER JOIN inv_sample_metrics ON inv_samples_sample_metrics.inv_sample_metrics_id = inv_sample_metrics.id
-WHERE inv_sample_metrics.metric_type = 'Phenotype' AND sample_barcode IN ( '".implode("','",$idArr)."' ) 
-ORDER BY tree_identifier ASC, metric_description ASC;";
+//need to throw in case if they are disparate datasets
+if (count($tgdrArr) > 0){
+	$q = "
+	SELECT  
+        s.id as sample_id,
+        t.tgdr_accession || '-' || s.id as tree_identifier,
+        tgdr_phenotypes_per_individual.phenotype_name AS metric_description,
+        tgdr_phenotypes_per_individual.value AS metric_value,
+        'tgdr' AS data_source    
+        FROM 
+                tgdr_data_availability_mv t,
+                tgdr_samples s
+        LEFT JOIN tgdr_phenotypes_per_individual ON s.id = tgdr_phenotypes_per_individual.tgdr_samples_id            
+        WHERE 
+                t.tgdr_accession || '-' || s.id IN ('".implode("','",$idArr)."')
+        GROUP BY
+                sample_id, 
+                tree_identifier,
+                tgdr_phenotypes_per_individual.phenotype_name,
+                metric_value
+	ORDER BY tree_identifier ASC, metric_description ASC;";
+}
+else if(count($dtreeArr)){
+	$q = "
+	SELECT
+		inv_samples.sample_barcode AS tree_identifier,
+		inv_sample_metrics.metric_description,
+		inv_samples_sample_metrics.metric_measurement as metric_value
+	FROM inv_samples
+	INNER JOIN inv_sample_sources ON inv_samples.inv_sample_sources_id = inv_sample_sources.id
+	INNER JOIN inv_samples_sample_metrics ON inv_samples.id = inv_samples_sample_metrics.inv_samples_id
+	INNER JOIN inv_sample_metrics ON inv_samples_sample_metrics.inv_sample_metrics_id = inv_sample_metrics.id
+	WHERE inv_sample_metrics.metric_type = 'Phenotype' AND sample_barcode IN ( '".implode("','",$idArr)."' ) 
+	ORDER BY tree_identifier ASC, metric_description ASC;";
+}
+else{
+	$q = "";
+}
 
 $res = DBQuery($q);
 $numrows = pg_num_rows($res);
@@ -89,7 +126,7 @@ if(isset($_GET['csv'])) {
 	}
 }//csv
 
-else {
+else {// echo to populate slickgrid
 
 	if($numrows > 0) {
 		$phenos = array(
@@ -99,10 +136,9 @@ else {
 
 		$tree_id_prev = '';
 		while($row = pg_fetch_assoc($res)){
-
 			if($tree_id_prev === $row["tree_identifier"]){
 				array_push($phenos["phenotypes"],$row["metric_description"]);
-				array_push($phenos["tree_ids"][$tree_id_prev],array("phenotype" => $row["metric_description"], "value" => $row["measurement_value"]));
+				array_push($phenos["tree_ids"][$tree_id_prev],array("phenotype" => $row["metric_description"], "value" => $row["metric_value"]));
 			}
 			else{
 				$tree_id_prev = $row["tree_identifier"];
@@ -113,47 +149,4 @@ else {
 	}
 }
 
-
-// 		echo "<table id='common_pheno_table' style='font-size:14px'>";
-// 		$tree_data_string = array();
-// 		$col_flag = true;
-// 		$col_names = array('<th>TreeID</th>');
-		
-// 		$prev_identifer = '';
-// 		while ($r = pg_fetch_assoc($res)) {
-// 			$identifier = $r["tree_identifier"];
-// 			$metric_description = $r["metric_description"];
-// 			$measurement_value = $r["measurement_value"];
-			
-// 			if($prev_identifier == ''){
-// 				$prev_identifier = $identifier;
-// 			}
-// 			if($identifier != $prev_identifier){
-// 				if($col_flag){
-// 					echo "<thead><tr>".implode('',$col_names)."</tr></thead><tbody>\n";
-// 					$col_flag = false;
-// 				}
-				
-// 				echo "<tr><td>$prev_identifier</td>".implode('',$tree_data_string)."</tr>\n";
-// 				$prev_identifier = $identifier;
-// 				$tree_data_string = array();
-// 			}
-			
-// 			if($col_flag){
-// 				$col_names[] = "<th>$metric_description</th>";
-// 			}
-			
-// 			$tree_data_string[] = "<td>$measurement_value</td>";
-// 		}
-// 		if($col_flag){
-// 			echo "<thead><tr>".implode('',$col_names)."</tr></thead><tbody>\n";
-// 			$col_flag = false;
-// 		}
-// 		echo "<tr><td>$prev_identifier</td>".implode('',$tree_data_string)."</tr>\n";
-// 		echo "</tbody></table>";
-// 	}
-// 	else{
-// 		echo "N/A";
-// 	}
-// }
 ?>

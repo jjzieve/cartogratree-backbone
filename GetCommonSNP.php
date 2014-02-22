@@ -15,27 +15,59 @@ function outputCSV($data) {
 
 if (isset($_GET['tid'])) {
 	$escapedId = pg_escape_string(trim($_GET['tid']));
-} else {
-}
+} 
 
 $idArr = explode(",", $escapedId);
-$q = "
-SELECT 
-	ins.sample_barcode AS identifier, 
-	igdgr.allele1, 
-	igdgr.allele2, 
-	snp_accessions.snp_accession, 
-	physical_pos 
-FROM inv_samples AS ins
-	LEFT JOIN inv_genotyping_data_genotype_results AS igdgr ON igdgr.inv_samples_id = ins.id 
-	LEFT JOIN snps ON snps.id = igdgr.snps_id LEFT JOIN snp_accessions ON snp_accessions.id = snps.snp_accessions_id 
-WHERE 
-	ins.sample_barcode IN ( '".implode("','",$idArr)."' ) 
-	AND snp_accessions.snp_accession IS NOT NULL 
-	AND snp_accessions.snp_accession <> 'SNP_NULL' 
-ORDER BY identifier ASC, snp_accession ASC;";
-$res = DBQuery($q);
+$tgdrArr = array();
+$dtreeArr = array();
+foreach($idArr as $tid) {
+    if(strpos($tid, 'TGDR') !== false) {
+        //true
+        $tgdrArr[] = $tid;
+        // var_dump($tgdrArr);
+    } else {
+        $dtreeArr[] = $tid;
+    }
+}
 
+//need to throw in case if they are disparate datasets
+if (count($tgdrArr) > 0){
+	$q = "
+		SELECT  
+	        t.tgdr_accession || '-' || s.id as identifier,
+	        split_part(tgdr_genotypes.genotype_value, ':', 1) as allele1,
+	        split_part(tgdr_genotypes.genotype_value, ':', 2) as allele2,
+	        tgdr_genotypes.genetic_marker_name as snp_accession
+	        FROM 
+	                tgdr_data_availability_mv t,
+	                tgdr_samples s
+	        LEFT JOIN tgdr_genotypes ON s.id = tgdr_genotypes.tgdr_samples_id            
+	       WHERE 
+	                t.tgdr_accession || '-' || s.id IN ('".implode("','",$tgdrArr)."' )
+	     ORDER BY identifier ASC, snp_accession ASC;";
+	}
+else if(count($dtreeArr)){
+	$q = "
+		SELECT 
+			ins.sample_barcode AS identifier, 
+			igdgr.allele1, 
+			igdgr.allele2, 
+			snp_accessions.snp_accession 
+		FROM inv_samples AS ins
+			LEFT JOIN inv_genotyping_data_genotype_results AS igdgr ON igdgr.inv_samples_id = ins.id 
+			LEFT JOIN snps ON snps.id = igdgr.snps_id LEFT JOIN snp_accessions ON snp_accessions.id = snps.snp_accessions_id 
+		WHERE 
+			ins.sample_barcode IN ( '".implode("','",$dtreeArr)."' ) 
+			AND snp_accessions.snp_accession IS NOT NULL 
+			AND snp_accessions.snp_accession <> 'SNP_NULL' 
+		ORDER BY identifier ASC, snp_accession ASC;";
+}
+else{
+	$q = "";
+}
+
+// var_dump($q);
+$res = DBQuery($q);
 $numrows = pg_num_rows($res);
 $numsamples = count($idArr);
 $numsnps = $numrows / $numsamples;
@@ -103,7 +135,6 @@ else {
 	else{
 		$over_limit = false;
 	}
-
 	$snps = array(
 		"snp_accessions" => array(),
 		"tree_ids" => array(),

@@ -50,7 +50,7 @@ define([
         }
         var that = this;
         this.columns = [
-          {id:"id",name:"ID",field:"id",width:75,sortable:true}
+          {id:"id",name:"ID",field:"id",width:150,sortable:true}
         ]; //set the first columns
         _.each(genotype_accessions,function(a,index){
           if (index > 25){

@@ -71,6 +71,7 @@ foreach($idArr as $tid) {
     if(strpos($tid, 'TGDR') !==false) {
         //true
         $tgdrArr[] = $tid;
+        // var_dump($tgdrArr);
     } else {
         $dtreeArr[] = $tid;
     }
@@ -166,6 +167,7 @@ if(count($tgdrArr) > 0) {
 header("Content-Type: text/plain; charset=ansi");
 //echo $q;
 //exit();
+// var_dump($q);
 $res = DBQuery($q);
 $numrows = pg_num_rows($res);
 $numsamples = count($idArr);
@@ -322,7 +324,7 @@ else{
                 $dataArray[$chrom][$pos][$identifier] = $genotype;
             }
             $dataArray = sortByChromAndPos($dataArray);
-            //echo var_dump($dataArray);
+            // echo var_dump($dataArray);
             printTable($dataArray, $idArr);
             
         } //iftgdr
