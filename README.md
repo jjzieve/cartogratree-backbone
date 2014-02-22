@@ -3,10 +3,10 @@ This is a user and technical guide intended for Cartogratree.
 
 ### Table of Contents (Technical)
 1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#overview)
-2. Backend/Database
-2. Core frontend libraries
+2. [Backend/Database](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#backenddatabase)
+2. [Core frontend libraries](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#core-frontend-libraries)
 3. [Models & Collections](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#models--collections)
-4. Code & design caveats
+4. [Code & design caveats](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#code--design-caveats)
 4. [Views](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#views)
 5. [TODO](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#todo)
 
@@ -17,13 +17,12 @@ Here's the ones I relied on most:
 - [Backbone tutorials](http://backbonetutorials.com/organizing-backbone-using-modules/) <- Organizational tips and using [require.js](http://requirejs.org/) for AMD
 - google and [stackoverflow!](http://stackoverflow.com/questions/tagged/backbone.js) (by far my best resources)
 
-**
-Tools:
-If you are an experience web developer, just ignore me because you probably have better tools than me. But if you aren't, here are some that helped me along the way:
+*Tips:
+If you are an experience web developer, just ignore me because you probably have better tools than me. But if you aren't, here are some tools that helped me along the way:
 - [RESTClient](https://addons.mozilla.org/en-US/firefox/addon/restclient/), Cool plugin Damian showed me for testing REST requests in your browser (like curl on command line)
 - [Firebug](https://addons.mozilla.org/en-US/firefox/addon/firebug/), best development tool (imho) for my favorite browser
-- [Empty Cache](https://addons.mozilla.org/en-US/firefox/addon/empty-cache-button/), useful for those times when "you don't know why your styles haven't been updated" 
-**
+- [Empty Cache](https://addons.mozilla.org/en-US/firefox/addon/empty-cache-button/), useful for those times when "you don't know why your styles haven't been updated"* 
+
 
 I decided to write ctree in a framework to attempt to adhere to coding best practices (e.g. DRY), how well I did that, is debatable... haha
 This project was a learning experience for me, so forgive me for my [callback hell](http://callbackhell.com/) and spaghetti code :)
@@ -33,10 +32,10 @@ Have Fun!
 We essentially have two backends, Google's and our own (i.e. treegenes). We have 4 fusion tables that effectively mirror what we have in our db but provide the fast rendering on google maps.
 
 Fusion table layers:
-- tgdr -> https://www.google.com/fusiontables/DataSource?docid=118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M#rows:id=1
-- sts_is -> https://www.google.com/fusiontables/DataSource?docid=1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI#rows:id=1
-- try_db -> https://www.google.com/fusiontables/DataSource?docid=1XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw#rows:id=1
-- ameriflux -> https://www.google.com/fusiontables/DataSource?docid=1huZ12FnVaWgeUZKaXozbLR0lZfLcxZ_y9RF2h-A#rows:id=1
+- [tgdr](https://www.google.com/fusiontables/DataSource?docid=118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M#rows:id=1)
+- [sts_is](https://www.google.com/fusiontables/DataSource?docid=1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI#rows:id=1)
+- [try_db](https://www.google.com/fusiontables/DataSource?docid=1XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw#rows:id=1)
+- [ameriflux](https://www.google.com/fusiontables/DataSource?docid=1huZ12FnVaWgeUZKaXozbLR0lZfLcxZ_y9RF2h-A#rows:id=1)
 
 For the more data-intensive queries such as viewing the genotypes, we query treegenes. See GetCommon*.php scripts
 
@@ -45,11 +44,9 @@ Some static postgres tables worth mentioning:
 - tgdr_data_availability_mv
 The "_mv" was my convenition to denote materialized views. However, they ARE NOT real materialized views, if we have postgres 9.3+ installed on treegenes by the time this document is read, then they can be made into real materialized views. But for now, run the scripts in sql/ everytime there is an update to the tgdr_* tables to re-generate these tables.
 
-**
-Tips:
+*Tips:
 - sts_is == inv_* tables, look at the queries in the php scripts to clarify
-- sswap_agent is the db role calling all the queries to treegenes. So, if there is a wierd issue where you get a 200K and no data, check the permissions on this guy or check the apache logs
-**
+- sswap_agent is the db role calling all the queries to treegenes. So, if there is a wierd issue where you get a 200K and no data, check the permissions on this guy or check the apache logs*
 
 #### Core frontend libraries
 - [jQuery](http://jquery.com/), basically the backbone of Backbone.js, used extensively in the DOM manipulation and event binding
@@ -67,17 +64,17 @@ I highly recommend re-doing all my terrible css with a pre-processor such as [LE
 ![](images/ctree_code.png?raw=true)
 
 #### Views
-js/views/amplicon_grid.js
-js/views/bottom_tabs.js
-js/views/genotype_grid.js
-js/views/map.js
-js/views/navbar.js
-js/views/phenotype_grid.js
-js/views/sample_grid.js
-js/views/sidebar_filters.js
-js/views/sidebar_selection_tree.js
-js/views/sidebar_tree_id_search.js
-js/views/worldclim_grid.js
+- js/views/amplicon_grid.js
+- js/views/bottom_tabs.js
+- js/views/genotype_grid.js
+- js/views/map.js
+- js/views/navbar.js
+- js/views/phenotype_grid.js
+- js/views/sample_grid.js
+- js/views/sidebar_filters.js
+- js/views/sidebar_selection_tree.js
+- js/views/sidebar_tree_id_search.js
+- js/views/worldclim_grid.js
 
 #### Code & design caveats
 - What the hell is "var that = this;" anyway? I use it alot in my ajax calls, here's a good [reference](http://stackoverflow.com/questions/4886632/what-does-var-that-this-mean-in-javascript). 
@@ -87,14 +84,14 @@ Related topics are [closures](http://stackoverflow.com/questions/111102/how-do-j
 
 #### TODO (in order of importance)
 1. Allow map display to reflect URI. 
-*This is a significant problem because google won't allow a GET parameter to go beyond a certain number of chars and this is how the map is currently being filtered down (see [models and collections](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#models--collections))*
+**This is a significant problem because google won't allow a GET parameter to go beyond a certain number of chars and this is how the map is currently being filtered down (see [models and collections](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#models--collections))**
 1. Merge backend scripts and general code refactoring. 
-*(ex. GetCommonSNP.php and GetGenoData.php, effectively run the same query; they just return different things. My code for the grids often uses the same functions, I realize it was bad design on my part but I was in a hurry, Modularize!)*
+**(ex. GetCommonSNP.php and GetGenoData.php, effectively run the same query; they just return different things. My code for the grids often uses the same functions, I realize it was bad design on my part but I was in a hurry, Modularize!)**
 3. Allow filtering in analysis tables. 
-*Because the analysis tables are linked, this will allow a user to subset their data based on knowledge of metadata (e.g. only analyze the samples with a certain genotype). See the original [cartogratree](https://dendrome.ucdavis.edu/cartogratree/) and how filtering works for the amplicon table. Also relevant is how to apply filtering in [slickgrids](http://mleibman.github.io/SlickGrid/examples/example4-model.html)*
+**Because the analysis tables are linked, this will allow a user to subset their data based on knowledge of metadata (e.g. only analyze the samples with a certain genotype). See the original [cartogratree](https://dendrome.ucdavis.edu/cartogratree/) and how filtering works for the amplicon table. Also relevant is how to apply filtering in [slickgrids](http://mleibman.github.io/SlickGrid/examples/example4-model.html)**
 4. Allow phenotype search in the map display. 
-*This would go under the tree id search and allow users to only show markers with certain phenotypes. Ontology may be necessary here, along with cleaning up some data in the backend.*
+**This would go under the tree id search and allow users to only show markers with certain phenotypes. Ontology may be necessary here, along with cleaning up some data in the backend.**
 5. Integrate soil data.
-*Ameriflux is too sparse a resource to really be utilized. If we could somehow mirror what was done with the worldclim data using the same source as the soil survey ArcGIS layer this could be invaluable*
-6. TEST!!!! I'm sure there are countless bugs. Try using qunit.js and test.hml
+**Ameriflux is too sparse a resource to really be utilized. If we could somehow mirror what was done with the worldclim data using the same source as the soil survey ArcGIS layer this could be invaluable**
+6. TEST!!!! **I'm sure there are countless bugs. Try using qunit.js and test.hml**
 
