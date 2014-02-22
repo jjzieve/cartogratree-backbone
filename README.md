@@ -19,9 +19,9 @@ Here's the ones I relied on most:
 
 *Tips:*
 *If you are an experience web developer, just ignore me because you probably have better tools than me. But if you aren't, here are some tools that helped me along the way:*
-- *[RESTClient](https://addons.mozilla.org/en-US/firefox/addon/restclient/), Cool plugin Damian showed me for testing REST requests in your browser (like curl on command line)*
-- *[Firebug](https://addons.mozilla.org/en-US/firefox/addon/firebug/), best development tool (imho) for my favorite browser*
-- *[Empty Cache](https://addons.mozilla.org/en-US/firefox/addon/empty-cache-button/), useful for those times when "you don't know why your styles haven't been updated"* 
+- [RESTClient](https://addons.mozilla.org/en-US/firefox/addon/restclient/), Cool plugin Damian showed me for testing REST requests in your browser (like curl on command line)
+- [Firebug](https://addons.mozilla.org/en-US/firefox/addon/firebug/), best development tool (imho) for my favorite browser
+- [Empty Cache](https://addons.mozilla.org/en-US/firefox/addon/empty-cache-button/), useful for those times when "you don't know why your styles haven't been updated"
 
 
 I decided to write ctree in a framework to attempt to adhere to coding best practices (e.g. DRY), how well I did that, is debatable... haha
@@ -37,7 +37,7 @@ Fusion table layers:
 - [try_db](https://www.google.com/fusiontables/DataSource?docid=1XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw#rows:id=1)
 - [ameriflux](https://www.google.com/fusiontables/DataSource?docid=1huZ12FnVaWgeUZKaXozbLR0lZfLcxZ_y9RF2h-A#rows:id=1)
 
-For the more data-intensive queries such as viewing the genotypes, we query treegenes. See GetCommon*.php scripts
+For the more data-intensive queries such as viewing the genotypes, we query treegenes. See GetCommon.php scripts
 
 Some static postgres tables worth mentioning:
 - ctree_fusion_table_mv
@@ -45,8 +45,8 @@ Some static postgres tables worth mentioning:
 The "_mv" was my convention to denote materialized views. However, they ARE NOT real materialized views, if we have postgres 9.3+ installed on treegenes by the time this document is read, then they can be made into real materialized views. But for now, run the scripts in sql/ everytime there is an update to the tgdr_* tables to re-generate these tables.
 
 *Tips:*
-- *sts_is == inv_\* tables, look at the queries in the php scripts to clarify*
-- *sswap_agent is the db role calling all the queries to treegenes. So, if there is a wierd issue where you get a 200K and no data, check the permissions on this guy or check the apache logs*
+- sts_is == inv_* tables, look at the queries in the php scripts to clarify
+- sswap_agent is the db role calling all the queries to treegenes. So, if there is a wierd issue where you get a 200K and no data, check the permissions on this guy or check the apache logs
 
 #### Core frontend libraries
 - [jQuery](http://jquery.com/), basically the backbone of Backbone.js, used extensively in the DOM manipulation and event binding
