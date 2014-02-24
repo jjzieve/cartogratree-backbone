@@ -4,11 +4,12 @@ This is a user and technical guide intended for Cartogratree.
 ### Table of Contents (Technical)
 1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#overview)
 2. [Backend/Database](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#backenddatabase)
-2. [Core frontend libraries](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#core-frontend-libraries)
-3. [Models & Collections](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#models--collections)
-4. [Views](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#views)
-5. [Code & design caveats](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#code--design-caveats)
-6. [TODO](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#todo-in-order-of-importance)
+3. [Core frontend libraries](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#core-frontend-libraries)
+4. [Styling](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#styling)
+5. [Models & Collections](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#models--collections)
+6. [Views](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#views)
+7. [Code & design caveats](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#code--design-caveats)
+8. [TODO](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#todo-in-order-of-importance)
 
 #### Overview
 CTree is written in the [Backbone framework](http://backbonejs.org/) which is a frontend (Javascript) MVC. Do a tutorial or two to familiarize yourself before your dive into the code. 
@@ -18,7 +19,7 @@ Here's the ones I relied on most:
 - google and [stackoverflow!](http://stackoverflow.com/questions/tagged/backbone.js) (by far my best resources)
 
 *Tips:*
-*If you are an experience web developer, just ignore me because you probably have better tools than me. But if you aren't, here are some tools that helped me along the way:*
+*If you're an experienced web developer, just ignore me because you probably have better tools than me. But if you aren't, here are some tools that helped me along the way:*
 - [RESTClient](https://addons.mozilla.org/en-US/firefox/addon/restclient/), Cool plugin Damian showed me for testing REST requests in your browser (like curl on command line)
 - [Firebug](https://addons.mozilla.org/en-US/firefox/addon/firebug/), best development tool (imho) for my favorite browser
 - [Empty Cache](https://addons.mozilla.org/en-US/firefox/addon/empty-cache-button/), useful for those times when "you don't know why your styles haven't been updated"
@@ -57,7 +58,7 @@ The "_mv" was my convention to denote materialized views. However, they ARE NOT 
 [Slickgrid](https://github.com/mleibman/SlickGrid/wiki) for better or worse (mostly because of it's "out of the box" lazy loading capabilities)
 
 #### Styling
-I highly recommend re-doing all my terrible css with a pre-processor such as [LESS](http://lesscss.org/) or [SASS](http://sass-lang.com/). This was the most hacky part of the project, I'm truly sorry (I will hopefully never touch css again) and if I left any inline styling in index.php, or "! important" tags in the main stylesheet; please email me angry threats. Alas, /css/style.css is the main stylesheet but the libraries also have corresponding sylesheets (e.g. slickgrid -> slick.grid.css + example-bootstrap.css)
+I highly recommend re-doing all my terrible css with a pre-processor such as [LESS](http://lesscss.org/) or [SASS](http://sass-lang.com/). This was the most hacky part of the project, I'm truly sorry (I will hopefully never touch css again) and if I left any inline styling in index.php, or "! important" tags in the main stylesheet; please email me angry threats. Alas, /css/style.css is the main stylesheet, and the libraries also have corresponding sylesheets (e.g. slickgrid -> slick.grid.css + example-bootstrap.css)
 
 #### Models & Collections
 <!-- update with tree_node -->

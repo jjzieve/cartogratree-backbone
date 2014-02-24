@@ -1,4 +1,4 @@
-/*GLOBAL, should've used LESS or SASS*/
+/*GLOBAL*/
 a{
   color: #3C746B;
 }
@@ -14,7 +14,6 @@ a:hover{
 
 h4{
   color: #3C746B;
-  /*opacity: 0.6;*/
 }
 
 /*HEADER*/
@@ -27,10 +26,6 @@ h4{
   padding-top: 50px;
   font-size:  16px;
 }
-
-/*#credits .popover{
-  width: 100px;
-}*/
 
 /*SIDE-BAR*/
 #tree_id_search_container {
@@ -54,13 +49,6 @@ h4{
 	font-size: 10;
 	color: #999999;
 }
-/*#sidebar_selection {
-    background-color: #f2f2f2;
-    height: 477px;
-    overflow: auto;
-    padding-top: 15px;
-}*/
-
 .root {
     font-weight: bold;
 }
@@ -76,12 +64,6 @@ h4{
   overflow:auto;
   height: 150px;
 }
-
-/*#selection_tree td.selected {
-    background-color: #3C746B;
-    color:white;
-    border: 1px solid white;
-}*/
 
 #filter_header {
   position: absolute;
@@ -102,31 +84,31 @@ h4{
   width: 100%;
 }
 
+/*attempted to model after google's styles for the mouse etc., firebug it*/
 #toggle_heatmap{
--moz-border-bottom-colors: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    -moz-user-select: none;
-    background-clip: padding-box;
-    background-color: #FFFFFF;
-    border-bottom-right-radius: 2px;
-    border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) -moz-use-text-color;
-    border-image: none;
-    border-style: solid solid solid none;
-    border-top-right-radius: 2px;
-    border-width: 1px 1px 1px 0;
-    box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
-    color: #565656;
-    direction: ltr;
-    font-family: Roboto,Arial,sans-serif;
-    font-size: 11px;
-/*    overflow: hidden;*/
-    padding: 4px;
-    position: relative;
-    text-align: left;
-    margin-top: 5px; 
-    margin-left: -5px;
+  -moz-border-bottom-colors: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  -moz-user-select: none;
+  background-clip: padding-box;
+  background-color: #FFFFFF;
+  border-bottom-right-radius: 2px;
+  border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) -moz-use-text-color;
+  border-image: none;
+  border-style: solid solid solid none;
+  border-top-right-radius: 2px;
+  border-width: 1px 1px 1px 0;
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+  color: #565656;
+  direction: ltr;
+  font-family: Roboto,Arial,sans-serif;
+  font-size: 11px;
+  padding: 4px;
+  position: relative;
+  text-align: left;
+  margin-top: 5px; 
+  margin-left: -5px;
 }
 #toggle_heatmap img{
  height: 14px;
@@ -138,47 +120,42 @@ h4{
  opacity: 1;
 }
 
+/*attempted to model after google's styles for terrain, satellite, etc. button, firebug it*/
 #layers_button{
-    -moz-user-select: none;
-    background-clip: padding-box;
-    background-color: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 2px;
-    box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
-    color: #000000;
-    direction: ltr;
-    font-family: Roboto,Arial,sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    overflow: hidden;
-    padding: 1px 6px;
-    position: relative;
-    text-align: left;
-    margin-top: 5px;
+  -moz-user-select: none;
+  background-clip: padding-box;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+  color: #000000;
+  direction: ltr;
+  font-family: Roboto,Arial,sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  overflow: hidden;
+  padding: 1px 6px;
+  position: relative;
+  text-align: left;
+  margin-top: 5px;
 }
 
 #legend{
 	overflow: auto;
-  	font-size: 10px;
-  	font-weight: normal;
+  font-size: 10px;
+  font-weight: normal;
 	max-height:200px;
 	width:200px;
-        background-color:white;
-        border:3px solid gray;
-	padding: 1px 6px;
+  background-color:white;
+  border:3px solid gray;
+	padding: 4px 1px 1px 6px;
 	margin-bottom:40px;
 }
 	
-/*.infowindow img{
-  height:25%;
-  width:25%;
-}*/
-
 .infowindow td{
   font-size: 10px;
   font-weight: normal;
 }
-
 
 .context_menu{
         background-color:white;
@@ -199,17 +176,6 @@ h4{
 }
 
 /*BOTTOM-PANEL*/
-/*#analysis_pane {
-    padding-top: 20px;
-    background-color:white;
-}
-*/
-/*#data_table tr.selected {
-    background-color: #3C746B;
-    color:white;
-    border: 1px solid white;
-}*/
-
 
 #data_table_container{
   overflow:auto;
@@ -217,7 +183,6 @@ h4{
 }
 
 .button-wrapper{
-  /*top: 15px;*/
   padding-top: 10px;
 }
 
@@ -234,59 +199,12 @@ h4{
 	font-size: 18px;
 }
 
-
-
-
-/*.navbar li a {
-  padding-top: 50px;
-  font-size:  16px;
-}*/
-/*#data_table_container .loading{
-  background-image: url(../images/ajax-loader.gif);
-  background-repeat: no-repeat;
-  background-position: center;
-}*/
-
-/*#data_table{
-    border: 0;
-    background-color:#efefef;
-}
-
-
-.table-borderless td,
-.table-borderless th {
-    border: 0;
-}
-
-/*table.table thead .sorting_asc,
-table.table thead .sorting_desc,
-table.table thead .sorting_asc_disabled,
-table.table thead .sorting_desc_disabled {
-    cursor: pointer;
-    *cursor: hand;
-}
- 
-table.table thead .sorting { background: url('../images/sort_both.jpg') no-repeat center right; }
-table.table thead .sorting_asc { background: url('../images/sort_asc.jpg') no-repeat center right; }
-table.table thead .sorting_desc { background: url('../images/sort_desc.jpg') no-repeat center right; }
- 
-table.table thead .sorting_asc_disabled { background: url('images/sort_asc_disabled.png') no-repeat center right; }
-table.table thead .sorting_desc_disabled { background: url('images/sort_desc_disabled.png') no-repeat center right; }
-
-*/
-/*.dropdown-submenu{position:relative;}
-.dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
-.dropdown-submenu:hover>.dropdown-menu{display:block;}
-.dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#cccccc;margin-top:5px;margin-right:-10px;}
-.dropdown-submenu:hover>a:after{border-left-color:#ffffff;}
-.dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
-*/
-
 .grid *, .grid *:before, .grid *:after { 
   -webkit-box-sizing: content-box; 
   -moz-box-sizing: content-box; 
   box-sizing: content-box; 
 }
+
 /*FOOTER*/
 #version_num{
     font-family: "Courier New";
