@@ -8,6 +8,7 @@ This is a user and technical guide intended for Cartogratree.
 4. [Styling](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#styling)
 5. [Models & Collections](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#models--collections)
 6. [Views](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#views)
+7. [Router](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#router)
 7. [Code & design caveats](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#code--design-caveats)
 8. [TODO](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#todo-in-order-of-importance)
 
@@ -61,27 +62,41 @@ The "_mv" was my convention to denote materialized views. However, they ARE NOT 
 I highly recommend re-doing all my terrible css with a pre-processor such as [LESS](http://lesscss.org/) or [SASS](http://sass-lang.com/). This was the most hacky part of the project, I'm truly sorry (I will hopefully never touch css again) and if I left any inline styling in index.php, or "! important" tags in the main stylesheet; please email me angry threats. Alas, /css/style.css is the main stylesheet, and the libraries also have corresponding sylesheets (e.g. slickgrid -> slick.grid.css + example-bootstrap.css)
 
 #### Models & Collections
-<!-- update with tree_node -->
-![](images/ctree_code.png?raw=true)
+- js/models/tree_node.js, handles the data behind the selection tree on the left "Map display" panel. Admittedly, it was a way for me to practice template rendering with models
+- js/(models|collections)/(query|queries).js, the core data element for selection. 
+> Example: A user selects a "Pinus taeda" to be displayed on the map, a model with a unique id along with the column parameter (in this case, "species") and its value (in this case, "Pinus taeda")
+ is added to the queries collection, the queries collection constructs a '''_meta["sts_is_query"]''' variable for the sts_is fusion table (in this case, "species in ('Pinus taeda')"). If a user ctrl+clicks "Picea glauca" the same thing happens except the '''_meta["sts_is_query"]''' gets updated to "species in ('Pinus taeda','Picea glauca')". I highly recommend playing with the console and logging the queries collection as you click on different parts of the selection tree to see what I mean. After a user selects some trees with the rectangle select, the _meta queries and the rectangle coordinates are sent to google in the urls (QueryFusionTables.php) and are used to populate the analysis sample table.
+ - js/(models|collections)/tree_id(s).js, the main data shared within the grids in the analysis pane. It makes sense that its the tree ids because they basically act as the joining "key" across genotypes,phenotypes,etc. Its also used as a sub_collection for the sample_grid because that grid relies on the map's queries and the other grid's tree ids. <- This lead to a lot of race conditions, an unfortunate consequence of all the asynchronicity. 
 
 #### Views
-- js/views/amplicon_grid.js
-- js/views/bottom_tabs.js
-- js/views/genotype_grid.js
-- js/views/map.js
-- js/views/navbar.js
-- js/views/phenotype_grid.js
-- js/views/sample_grid.js
-- js/views/sidebar_filters.js
-- js/views/sidebar_selection_tree.js
-- js/views/sidebar_tree_id_search.js
-- js/views/worldclim_grid.js
+
+##### Top
+- js/views/navbar.js, displays the nav-pills at the top of the page
+
+##### Left
+- js/views/sidebar_tree_id_search.js, uses the select2 library so a user can search for specific tree_ids, also queries the fusion tables
+- js/views/sidebar_selection_tree.js, pulls from the tree_node model but handles most of the logic to the queries collection.
+- js/views/sidebar_filters.js, handles the rest of the logic to the queries collection. It also displays the numbers showing users how many samples for each filter category appear on the map (very buggy). The implementation is a bit convoluted because we couldn't decide whether we wanted a set addition or subtraction when selecting multiple filters. See online shopping websites for an example.
+
+##### Right
+- js/views/map.js, using the query collection, it queries google for the map rendering. It also handles the configuring of the map and the heatmap data, this is by far the largest file.
+
+##### Bottom
+- js/views/bottom_tabs.js, a controller *per se* for all the grids, when they should be destroyed,created,deleted from, inserted into, etc. based on the run_tools and view buttons
+- js/views/*_grid.js, slickgrids with corresponding data. They share the tree_nodes collection to be populated, and the tree_nodes_meta attributes to be deleted. Needs a lot of work!!
+
+Hopefully this drawing can visually explain whats going on. Essentially, the models (circles) share the data with the views (rectangles) that they overlap.
+![](images/ctree_code.png?raw=true)
+
+####Router
+A.k.a the "controller" in other MVC-like frameworks was under-utilized by myself in this single page app. The file (js/router.js) handles the models, collection, and view creation (order matters!). It also handles taking tree_ids from the url see [TODO](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#todo-in-order-of-importance). If it was utilized to its full potential we could save states or handle user uploads by REST. Also important is talking to the db more seamlessly, using a framework of some type (e.g [laravel](http://laravel.com/))
 
 #### Code & design caveats
 - What the hell is "var that = this;" anyway? I use it alot in my ajax calls, here's a good [reference](http://stackoverflow.com/questions/4886632/what-does-var-that-this-mean-in-javascript). 
 Related topics are [closures](http://stackoverflow.com/questions/111102/how-do-javascript-closures-work) and [callbacks](https://github.com/maxogden/art-of-node#callbacks)
 - I made a _meta variable for the queries collection to hold the dynamic query strings that would be sent off to google. In object-orientated-speak you can think of this like a static class variable shared across the "query" objects/models.
-- Often "snp", "genotype", "geno" and similarily for "pheno",etc. are used interchangeably in variable names, sorry about that...
+- Often "snp", "genotype", "geno" and similarily for "pheno",etc., are used interchangeably in variable names, sorry about that, the same goes for bottom_ and data_
+- I didn't atomize the model <-> view relationships as much as I should have in hindsight, but it seemed overkill for me to add a view for every element in the DOM. After all, it wasn't a [Java](http://steve-yegge.blogspot.com/2006/03/execution-in-kingdom-of-nouns.html) project haha 
 
 #### TODO (in order of importance)
 1. **Allow map display to reflect URI.** 
