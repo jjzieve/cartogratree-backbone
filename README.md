@@ -94,7 +94,11 @@ Hopefully this drawing can visually explain whats going on. Essentially, the mod
 A.k.a the "controller" in other MVC-like frameworks was under-utilized by myself in this single page app. The file (js/router.js) handles the models, collection, and view creation (order matters!). It also handles taking tree_ids from the url see [TODO](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#todo-in-order-of-importance). If it was utilized to its full potential we could save states or handle user uploads by REST. Though, talking to the db more seamlessly, using a framework of some type (e.g [laravel](http://laravel.com/)) should be required for this level of integration.
 
 #### Code & design caveats
-- What the hell is "var that = this;" anyway? I use it alot in my ajax calls, here's a good [reference](http://stackoverflow.com/questions/4886632/what-does-var-that-this-mean-in-javascript). 
+- What the hell is 
+```
+var that = this;
+```
+ anyway? I use it alot in my ajax calls, here's a good [reference](http://stackoverflow.com/questions/4886632/what-does-var-that-this-mean-in-javascript). 
 Related topics are [closures](http://stackoverflow.com/questions/111102/how-do-javascript-closures-work) and [callbacks](https://github.com/maxogden/art-of-node#callbacks)
 - I made a _meta variable for the queries collection to hold the dynamic query strings that would be sent off to google. In object-orientated-speak you can think of this like a static class variable shared across the "query" objects/models.
 - Often "snp", "genotype", "geno" and similarily for "pheno",etc., are used interchangeably in variable names, sorry about that, the same goes for bottom_ and data_
