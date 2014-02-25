@@ -64,9 +64,9 @@ I highly recommend re-doing all my terrible css with a pre-processor such as [LE
 #### Models & Collections
 - js/models/tree_node.js, handles the data behind the selection tree on the left "Map display" panel. Admittedly, it was a way for me to practice template rendering with models
 - js/(models|collections)/(query|queries).js, the core data element for selection. 
-> Example: A user selects a "Pinus taeda" to be displayed on the map, a model with a unique id along with the column parameter (in this case, "species") and its value (in this case, "Pinus taeda")
- is added to the queries collection, the queries collection constructs a '''_meta["sts_is_query"]''' variable for the sts_is fusion table (in this case, "species in ('Pinus taeda')"). If a user ctrl+clicks "Picea glauca" the same thing happens except the '''_meta["sts_is_query"]''' gets updated to "species in ('Pinus taeda','Picea glauca')". I highly recommend playing with the console and logging the queries collection as you click on different parts of the selection tree to see what I mean. After a user selects some trees with the rectangle select, the _meta queries and the rectangle coordinates are sent to google in the urls (QueryFusionTables.php) and are used to populate the analysis sample table.
- - js/(models|collections)/tree_id(s).js, the main data shared within the grids in the analysis pane. It makes sense that its the tree ids because they basically act as the joining "key" across genotypes,phenotypes,etc. Its also used as a sub_collection for the sample_grid because that grid relies on the map's queries and the other grid's tree ids. <- This lead to a lot of race conditions, an unfortunate consequence of all the asynchronicity. 
+	Example: A user selects a "Pinus taeda" to be displayed on the map, a model with a unique id along with the column parameter (in this case, "species") and its value (in this case, "Pinus taeda")
+ 	is added to the queries collection, the queries collection constructs a _meta["sts_is_query"] variable for the sts_is fusion table (in this case, "species in ('Pinus taeda')"). If a user ctrl+clicks "Picea glauca" the same thing happens except the _meta["sts_is_query"] gets updated to "species in ('Pinus taeda','Picea glauca')". I highly recommend playing with the console and logging the queries collection as you click on different parts of the selection tree to see what I mean. After a user selects some trees with the rectangle select, the _meta queries and the rectangle coordinates are sent to google in the urls (QueryFusionTables.php) and are used to populate the analysis sample table.
+- js/(models|collections)/tree_id(s).js, the main data shared within the grids in the analysis pane. It makes sense that its the tree ids because they basically act as the joining "key" across genotypes,phenotypes,etc. Its also used as a sub_collection for the sample_grid because that grid relies on the map's queries and the other grid's tree ids. <- This lead to a lot of race conditions, an unfortunate consequence of all the asynchronicity. 
 
 #### Views
 
@@ -85,7 +85,7 @@ I highly recommend re-doing all my terrible css with a pre-processor such as [LE
 - js/views/bottom_tabs.js, a controller *per se* for all the grids, when they should be destroyed,created,deleted from, inserted into, etc. based on the run_tools and view buttons
 - js/views/*_grid.js, slickgrids with corresponding data. They share the tree_nodes collection to be populated, and the tree_nodes_meta attributes to be deleted. Needs a lot of work!!
 
-Hopefully this drawing can visually explain whats going on. Essentially, the models (circles) share the data with the views (rectangles) that they overlap.
+Hopefully this drawing can visually explain whats going on. Essentially, the models (circles) share the data with the views (rectangles) that they overlap. The arrows indicate directionality of data (e.g. the selection_tree can update the map, but not vice versa)
 ![](images/ctree_code.png?raw=true)
 
 ####Router
