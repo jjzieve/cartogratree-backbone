@@ -92,7 +92,7 @@ Example, GetCommonSNP.php and GetGenoData.php, effectively run the same query; t
 Because the analysis tables are linked, this will allow a user to subset their data based on knowledge of metadata (e.g. only analyze the samples with a certain genotype). See the original [cartogratree](https://dendrome.ucdavis.edu/cartogratree/) and how filtering works for the amplicon table. Also relevant is how to apply filtering in [slickgrids](http://mleibman.github.io/SlickGrid/examples/example4-model.html)
 4. **Allow phenotype search in the map display.** 
 This would go under the tree id search and allow users to only show markers with certain phenotypes. Ontology may be necessary here, along with cleaning up some data in the backend.
-5. **Integrate soil data.
+5. **Integrate soil data.**
 Ameriflux is too sparse a resource to really be utilized. If we could somehow mirror what was done with the worldclim data using the same source as the soil survey ArcGIS layer this could be invaluable
 6. **TEST!!!!**
 I'm sure there are countless bugs. Try using qunit.js and test.hml
