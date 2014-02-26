@@ -30,9 +30,7 @@ foreach($idArr as $tid) {
     }
 }
 
-//need to throw in case if they are disparate datasets
-if (count($tgdrArr) > 0){
-	$q = "
+$q = "
 		SELECT  
 	        t.tgdr_accession || '-' || s.id as identifier,
 	        split_part(tgdr_genotypes.genotype_value, ':', 1) as allele1,
@@ -44,10 +42,7 @@ if (count($tgdrArr) > 0){
 	        LEFT JOIN tgdr_genotypes ON s.id = tgdr_genotypes.tgdr_samples_id            
 	       WHERE 
 	                t.tgdr_accession || '-' || s.id IN ('".implode("','",$tgdrArr)."' )
-	     ORDER BY identifier ASC, snp_accession ASC;";
-	}
-else if(count($dtreeArr)){
-	$q = "
+UNION
 		SELECT 
 			ins.sample_barcode AS identifier, 
 			igdgr.allele1, 
@@ -61,10 +56,7 @@ else if(count($dtreeArr)){
 			AND snp_accessions.snp_accession IS NOT NULL 
 			AND snp_accessions.snp_accession <> 'SNP_NULL' 
 		ORDER BY identifier ASC, snp_accession ASC;";
-}
-else{
-	$q = "";
-}
+
 
 // var_dump($q);
 $res = DBQuery($q);

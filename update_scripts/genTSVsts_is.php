@@ -1,10 +1,9 @@
-﻿-- Table: ctree_fusion_table_mv
+<?php
+require("utils.php");	
 
-DROP TABLE ctree_fusion_table_mv;
-
-CREATE TABLE ctree_fusion_table_mv AS 
+$q = "
 (
-        SELECT
+   SELECT
                 cast(st.sample_id as text),
                 st.tree_identifier AS identifier,
                 st.species_id,
@@ -12,11 +11,8 @@ CREATE TABLE ctree_fusion_table_mv AS
                 s.family as family,
                 s.genus as genus,
                 cast(sl.is_exact_gps_coordinate AS TEXT),
-                '' AS metric_description,
-                '' as accession,
-                cast('' AS TEXT) AS year,
-                '' AS authors,
-                cast('' AS TEXT) AS pub_title,
+		0 as num_phenotypes,
+		'' AS metric_description,
                 CASE
                         WHEN sl.latitude IS NULL OR sl.longitude IS NULL
                         THEN
@@ -44,7 +40,7 @@ CREATE TABLE ctree_fusion_table_mv AS
                         WHERE sd.sample_id = st.sample_id
                 ) AS total_read_pairs,
                 0 AS total_genotype_platings,
-                0 AS total_genotyped,                'sts' data_source
+                0 AS total_genotyped 
         FROM sample_treesamples st
         LEFT JOIN species s USING (species_id)
         LEFT JOIN sample_locations sl USING (location_id)
@@ -80,11 +76,8 @@ UNION ALL (
                 s2.family as family,
                 s2.genus as genus,
                 cast(iss.is_exact_gps_coordinate AS TEXT),
+		count(inv_sample_metrics.descriptive_name) as num_phenotypes,
                 string_agg(inv_sample_metrics.descriptive_name || ' [ ' || inv_samples_sample_metrics.measurement_value || ' ] ', '|') AS metric_description,
-		'' as accession,
-                '' AS year,
-                '' AS authors,
-                cast('' AS TEXT) AS pub_title,
                 CASE
                         WHEN iss.gps_latitude IS NOT NULL AND strpos(CAST(iss.gps_latitude AS text), '.') > 0 AND substr(rtrim(CAST(iss.gps_latitude AS text),'0'), length(rtrim(CAST(iss.gps_latitude AS text),'0')), 1) = '.'
                         THEN substr(CAST(iss.gps_latitude AS text), 1, strpos(CAST(iss.gps_latitude AS text), '.') - 1)
@@ -120,8 +113,7 @@ UNION ALL (
                         INNER JOIN inv_genotyping_plate_maps AS igpm1 ON isr1.id = igpm1.inv_samples_received_id
                         WHERE is1.sample_barcode = ins.sample_barcode
                 ) AS total_genotype_platings,
-                (SELECT count(*) FROM inv_genotyping_data_genotype_results AS igdgr WHERE igdgr.inv_samples_id = ins.id) AS total_genotyped,
-                'is' data_source
+                (SELECT count(*) FROM inv_genotyping_data_genotype_results AS igdgr WHERE igdgr.inv_samples_id = ins.id) AS total_genotyped
         FROM species AS s2
         LEFT JOIN inv_sample_sources AS iss ON s2.species_id = iss.species_id
         LEFT JOIN inv_samples ON iss.id = inv_samples.inv_sample_sources_id
@@ -129,74 +121,47 @@ UNION ALL (
         LEFT JOIN inv_sample_metrics ON inv_samples_sample_metrics.inv_sample_metrics_id = inv_sample_metrics.id
         LEFT JOIN inv_samples ins ON iss.id = ins.inv_sample_sources_id
         WHERE iss.gps_latitude IS NOT NULL AND iss.gps_longitude IS NOT NULL
-        GROUP BY ins.id, ins.sample_barcode, s2.species_id, s2.species, s2.family, s2.genus, iss.is_exact_gps_coordinate, year, pub_title, latitude, longitude, elevation, total_read_pairs, total_genotype_platings, total_genotyped, data_source
+        GROUP BY ins.id, ins.sample_barcode, s2.species_id, s2.species, s2.family, s2.genus, iss.is_exact_gps_coordinate, latitude, longitude, elevation, total_read_pairs, total_genotype_platings, total_genotyped 
 )
-UNION ALL (
-
-        SELECT  
-                cast(s.sample_name as TEXT) AS sample_id,
-                t.tgdr_accession || '-' || s.sample_name as identifier,
-                sp.species_id,
-                sp.species as species,  
-                sp.family as family, 
-                sp.genus as genus,
-                'true' AS is_exact_gps_coordinate,
-                '' AS metric_description, 
-                t.tgdr_accession as accession,
-                cast(t.year as TEXT) AS year,
-                string_agg(a.author_name, ',') as authors,
-                t.title AS pub_title,
-                cast(s.gps_latitude AS TEXT) as latitude,
-                cast(s.gps_longitude AS TEXT) as longitude,
-                '' AS elevation,
-                0 AS total_read_pairs,
-                0 AS total_genotype_platings, 
-                0 AS total_genotyped,
-                'tgdr' AS data_source
-        FROM 
-                tgdr_data_availability_mv t,
-                species sp,
-                tgdr_study_sites ss,
-                tgdr_samples s, 
-                lit_author_r_paper p, 
-                lit_author a
-        WHERE 
-		s.gps_latitude <> ''
-		and
-		s.gps_latitude <> '.'
-		and
-                t.tgdr_association_data_id = ss.tgdr_association_data_id
-                and 
-                t.species_id = sp.species_id
-                and
-                s.tgdr_study_sites_id = ss.id
-                and
-                t.paper_id = p.paper_id
-                and
-                a.author_id = p.author_id
-        GROUP BY
-                sample_id, 
-                identifier,
-                sp.species,
-                sp.species_id, 
-                accession,
-                family, 
-                genus,
-	        is_exact_gps_coordinate,
-                year,
-                pub_title,
-                latitude,
-                longitude,
-                elevation,
-                total_read_pairs,
-                total_genotype_platings,
-                total_genotyped,
-                data_source
-
-) 
 ORDER BY species ASC, identifier ASC;
-ALTER TABLE tgdr_data_availability_mv
-  OWNER TO jzieve;
-GRANT ALL ON TABLE tgdr_data_availability_mv TO jzieve;
-GRANT SELECT ON TABLE tgdr_data_availability_mv TO btearse;
-GRANT SELECT ON TABLE tgdr_data_availability_mv TO hansvg;
+";
+
+
+//Header Line
+echo "tree_id\tspecies\tgenus\tfamily\tlat\tlng\telev\tis_exact_gps_coordinate\ticon_name\tnum_genotypes\tnum_sequences\tnum_phenotypes\tphenotypes\n";
+$result = DbQuery($q);
+
+// Iterate through the rows, printing XML nodes for each
+while ($row = pg_fetch_assoc($result)){
+	// ADD TO XML DOCUMENT NODE
+    echo parseToXML($row['identifier']). "\t";
+    echo parseToXML($row['species']) . "\t";
+    echo parseToXML($row['genus']) . "\t";
+    echo parseToXML($row['family']) . "\t";
+
+    $lat = $row['latitude'];
+    $lng = $row['longitude'];
+    if (isDMS($lat)){
+            $lat = convertDMStoDeg($lat);
+    }
+    if (isDMS($lng)){
+            $lng = convertDMStoDeg($lng);
+    }
+	echo $lat."\t";
+	echo $lng."\t";
+	echo $row['elevation'] . "\t";
+	if($row['is_exact_gps_coordinate'] == 'true') {
+		echo "true\t";
+		echo "small_green\t";
+	} else {
+		echo "false\t";
+		echo "small_yellow\t";
+	}
+
+    	echo $row['total_genotyped'] . "\t";
+	echo $row['total_read_pairs'] . "\t";
+	echo $row['num_phenotypes'] . "\t";
+	echo $row['metric_description'] . "\n"; //phenotypes still being developed
+}
+
+?>

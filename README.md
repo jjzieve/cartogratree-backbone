@@ -1,8 +1,16 @@
 # Cartogratree 3
-This is a user and technical guide intended for Cartogratree. 
+This is a user and developer guide intended for Cartogratree. 
+For any questions, email
+me -> jjzieve AT gmail D0T CALM 
+or 
+treegenes -> tg-help AT gmail D0T CALM 
 
-### Table of Contents (Technical)
-1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#overview)
+### Table of Contents (Users)
+1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#overview-users)
+2. [Use case](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#use-case)
+
+### Table of Contents (Developers)
+1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#overview-developers)
 2. [Backend/Database](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#backenddatabase)
 3. [Core frontend libraries](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#core-frontend-libraries)
 4. [Styling](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#styling)
@@ -12,7 +20,13 @@ This is a user and technical guide intended for Cartogratree.
 7. [Code & design caveats](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#code--design-caveats)
 8. [TODO](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#todo-in-order-of-importance)
 
-#### Overview
+
+#### Overview (Users)
+
+#### Use case
+
+
+#### Overview (Developers)
 CTree is written in the [Backbone framework](http://backbonejs.org/) which is a frontend (Javascript) MVC. Do a tutorial or two to familiarize yourself before your dive into the code. 
 Here's the ones I relied on most:
 - [Code school: Anatomy of Backbone.js](https://www.codeschool.com/courses/anatomy-of-backbonejs) <- the basics
@@ -31,29 +45,43 @@ This project was a learning experience for me, so forgive me for my [callback he
 Have Fun!
 
 ####Backend/Database
-We essentially have two backends, Google's and our own (i.e. treegenes). We have 4 fusion tables that effectively mirror what we have in our db but provide the fast rendering on google maps.
+We essentially have two backends, Google's and our own (i.e. treegenes). We have 4 fusion tables (we only get max 5 for free!) that effectively mirror what we have in our db but provide the fast rendering on google maps.
 
-Fusion table layers:
-- [tgdr](https://www.google.com/fusiontables/DataSource?docid=118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M#rows:id=1)
+#####Treegenes
+Postgres tables worth mentioning:
+- inv_* -> source of genotypes, phenotypes, and the original data for the "is" part of the fusion table "sts_is"
+- sample_treesamples -> source of genotypes, phenotypes, and the original data for the "sts" part of the fusion table "sts_is"
+- tgdr_* -> source of genotypes, phenotyes, and the original data for the "tgdr" fusion table
+- ctree_fusion_table_mv -> source of the "Taxa" part of the sidebar selection tree, essentially a query of the above tables
+- tgdr_data_availability_mv -> source of the "Published studies" part of the sidebar selection tree and the [tgdr page](https://dendrome.ucdavis.edu/tgdr/), also a query of the above tables
+
+> The "mv" was my convention to denote materialized views. However, these are "snapshot" materialized views, if we have postgres 9.3+ installed, then they can be made more dynamic, or you can write some trigger functions, up to you. But for now, run update_scripts/create_ctree_fusion_table_mv.php and update_scripts/create_tgdr_data_availability_mv.php everytime there is an update to the tgdr_* tables. 
+
+#####Fusion tables
+Existing:
+- [tgdr](https://www.google.com/fusiontables/DataSource?docid=1yGLoUUyGDoIxWF3I4iuKq3Y3-ru_7C4knPF4H2Y#rows:id=1)
 - [sts_is](https://www.google.com/fusiontables/DataSource?docid=1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI#rows:id=1)
 - [try_db](https://www.google.com/fusiontables/DataSource?docid=1XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw#rows:id=1)
 - [ameriflux](https://www.google.com/fusiontables/DataSource?docid=1huZ12FnVaWgeUZKaXozbLR0lZfLcxZ_y9RF2h-A#rows:id=1)
 
-For the more data-intensive queries such as viewing the genotypes, we query treegenes. See GetCommon.php scripts
+> To update a fusion table, for example, tgdr:
+1.  run update_scripts/genTSVtgdr.php > tgdr.tsv
+2.	Login to the google account "treegenesdb" and go to drive (email me for the password).
+3.	Upload tgdr.tsv as a fusion table
+4.	Change icon style to reflect the "icon_name" column
+5.	Make sure anyone with the link has access to the table (i.e. Cartogratree!)
 
-Some static postgres tables worth mentioning:
-- ctree_fusion_table_mv
-- tgdr_data_availability_mv
+For the more data-intensive queries such as viewing the genotypes, we query treegenes. See GetCommon*.php scripts
 
-> The "mv" was my convention to denote materialized views. However, they ARE NOT real materialized views, if we have postgres 9.3+ installed on treegenes by the time this document is read, then they can be made into real materialized views. But for now, run the scripts in sql/ everytime there is an update to the tgdr_* tables to re-generate these tables.
+
 
 *Tips:*
-- sts_is == inv_* tables, look at the queries in the php scripts to clarify
+- sts_is fusion table == inv_* + samples_treesamples tables, look at the queries in the php scripts to clarify
 - sswap_agent is the db role calling all the queries to treegenes. So, if there is a wierd issue where you get a 200K and no data, check the permissions on this guy or check the apache logs
 
 #### Core frontend libraries
 - [jQuery](http://jquery.com/), basically the backbone of Backbone.js, used extensively in the DOM manipulation and event binding
-- [Bootstrap](http://getbootstrap.com/), 90% of the widgets and styles are directly from pulled from these libraries, to give everything a "Web 2.0"ish vibe
+- [Bootstrap v3.1.1](http://getbootstrap.com/), 90% of the widgets and styles are directly from pulled from these libraries, to give everything a "Web 2.0"ish vibe, and save significant time
 - [jquery-treetable](http://ludo.cubicphuse.nl/jquery-treetable/), for the map display selection tree
 - [select2](http://ivaynberg.github.io/select2/), for the map display tree id search
 - After much debate on what js table API to use ([dataTables](https://datatables.net/),[tablecloth.js](http://tableclothjs.com/), etc.) we chose
@@ -87,7 +115,7 @@ I highly recommend re-doing all my terrible css with a pre-processor such as [LE
 - js/views/bottom_tabs.js, a controller *per se* for all the grids, when they should be destroyed,created,deleted from, inserted into, etc. based on the run_tools and view buttons
 - js/views/*grid.js, slickgrids with corresponding data. My solution for how to handle destruction and creation for these through the tree_nodes_meta attributes is very hacky. Needs a lot of work!!
 
-Hopefully this drawing can visually explain whats going on. Essentially, the models (circles) share the data with the views (rectangles) that they overlap. The arrows indicate directionality of data (e.g. the selection_tree can update the map, but not vice versa)
+Hopefully this drawing can visually explain whats going on. Essentially, the models (circles) share the data with the views (rectangles) that they overlap. The arrows indicate directionality of data (e.g. the selection_tree can update the map, but not vice versa) and everything is roughly laid out how it is on the actual page.
 ![](images/ctree_code.png?raw=true)
 
 ####Router
@@ -114,7 +142,9 @@ Because the analysis tables are linked, this will allow a user to subset their d
 4. **Allow phenotype search in the map display.** 
 This would go under the tree id search and allow users to only show markers with certain phenotypes. Ontology may be necessary here, along with cleaning up some data in the backend.
 5. **Integrate soil data.**
-Ameriflux is too sparse a resource to really be utilized. If we could somehow mirror what was done with the worldclim data using the same source as the soil survey ArcGIS layer this could be invaluable
-6. **TEST!!!!**
+Ameriflux is too sparse a resource to really be utilized. If we could somehow mirror what was done with the worldclim data using the same source as the soil survey ArcGIS layer this could be invaluable. I also never fully integrated ameriflux with the analysis tables, this would be a start.
+6. **Include genotype marker types**
+For instance, right now our genotype grid sort of assumes the data is SNPs but the majority of our data is actually SSRs.
+7. **TEST!!!!**
 I'm sure there are countless bugs. Try using qunit.js and test.hml
 

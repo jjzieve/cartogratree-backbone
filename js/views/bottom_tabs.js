@@ -199,7 +199,6 @@ define([
    closeTab: function(e){
       //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
       var tabContentId = $(e.target).parent().attr("href");
-      console.log($(e.target).parent().parent().attr("id"));
       switch(tabContentId){// send flag to the shared tree id collection that the tab is closed and to create instead of update
         case '#genotype_tab_content':
           this.collection.meta("genotype_tab_open",false);
@@ -223,7 +222,7 @@ define([
       }
       this.collection.trigger("done");// let this event bubble to the views after closing
       $(e.target).parent().parent().remove(); //remove li of tab
-      this.$("ul.nav-tabs li a:last").tab('show'); // Select first tab
+      this.$("ul.nav-tabs li a:first").tab('show'); // Select first tab
     //  $(tabContentId).remove(); //remove respective tab content
    },
 	

@@ -1,6 +1,7 @@
-﻿-- Table: tgdr_data_availability_mv
+﻿<?php
 
-DROP TABLE tgdr_data_availability_mv;
+require('utils.php');
+$q = "DROP TABLE tgdr_data_availability_mv;
 
 CREATE TABLE tgdr_data_availability_mv AS 
  SELECT tgdr_association_data.id AS tgdr_association_data_id, tgdr_association_data.creation_date, tgdr_association_data.tgdr_accession, tgdr_association_data.paper_id, lit_paper.title, lit_paper.year, lit_paper.month, 
@@ -91,6 +92,8 @@ ALTER TABLE tgdr_data_availability_mv
 GRANT ALL ON TABLE tgdr_data_availability_mv TO jzieve;
 GRANT SELECT ON TABLE tgdr_data_availability_mv TO btearse;
 GRANT SELECT ON TABLE tgdr_data_availability_mv TO hansvg;
-GRANT SELECT ON TABLE tgdr_data_availability_mv TO sswap_agent;
+GRANT SELECT ON TABLE tgdr_data_availability_mv TO sswap_agent;";
 
+DbQuery($q);
 
+?>

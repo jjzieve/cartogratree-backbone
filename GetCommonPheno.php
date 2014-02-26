@@ -30,15 +30,13 @@ foreach($idArr as $tid) {
     }
 }
 
-//need to throw in case if they are disparate datasets
-if (count($tgdrArr) > 0){
-	$q = "
+//need to throw in case if they are disparate datasets, but for now unioning tgdr and inv_*
+
+$q = "
 	SELECT  
-        s.id as sample_id,
         t.tgdr_accession || '-' || s.id as tree_identifier,
         tgdr_phenotypes_per_individual.phenotype_name AS metric_description,
-        tgdr_phenotypes_per_individual.value AS metric_value,
-        'tgdr' AS data_source    
+        tgdr_phenotypes_per_individual.value AS metric_value
         FROM 
                 tgdr_data_availability_mv t,
                 tgdr_samples s
@@ -46,28 +44,20 @@ if (count($tgdrArr) > 0){
         WHERE 
                 t.tgdr_accession || '-' || s.id IN ('".implode("','",$idArr)."')
         GROUP BY
-                sample_id, 
                 tree_identifier,
                 tgdr_phenotypes_per_individual.phenotype_name,
                 metric_value
-	ORDER BY tree_identifier ASC, metric_description ASC;";
-}
-else if(count($dtreeArr)){
-	$q = "
+UNION
 	SELECT
 		inv_samples.sample_barcode AS tree_identifier,
-		inv_sample_metrics.metric_description,
-		inv_samples_sample_metrics.metric_measurement as metric_value
-	FROM inv_samples
-	INNER JOIN inv_sample_sources ON inv_samples.inv_sample_sources_id = inv_sample_sources.id
-	INNER JOIN inv_samples_sample_metrics ON inv_samples.id = inv_samples_sample_metrics.inv_samples_id
-	INNER JOIN inv_sample_metrics ON inv_samples_sample_metrics.inv_sample_metrics_id = inv_sample_metrics.id
-	WHERE inv_sample_metrics.metric_type = 'Phenotype' AND sample_barcode IN ( '".implode("','",$idArr)."' ) 
-	ORDER BY tree_identifier ASC, metric_description ASC;";
-}
-else{
-	$q = "";
-}
+		inv_sample_metrics.descriptive_name as metric_description,
+		inv_samples_sample_metrics.measurement_value as metric_value
+		FROM inv_samples
+		INNER JOIN inv_sample_sources ON inv_samples.inv_sample_sources_id = inv_sample_sources.id
+		INNER JOIN inv_samples_sample_metrics ON inv_samples.id = inv_samples_sample_metrics.inv_samples_id
+		INNER JOIN inv_sample_metrics ON inv_samples_sample_metrics.inv_sample_metrics_id = inv_sample_metrics.id
+		WHERE inv_sample_metrics.metric_type = 'Phenotype' AND sample_barcode IN ( '".implode("','",$idArr)."' ) 
+		ORDER BY tree_identifier ASC, metric_description ASC;";
 
 $res = DBQuery($q);
 $numrows = pg_num_rows($res);
@@ -136,14 +126,12 @@ else {// echo to populate slickgrid
 
 		$tree_id_prev = '';
 		while($row = pg_fetch_assoc($res)){
-			if($tree_id_prev === $row["tree_identifier"]){
-				array_push($phenos["phenotypes"],$row["metric_description"]);
-				array_push($phenos["tree_ids"][$tree_id_prev],array("phenotype" => $row["metric_description"], "value" => $row["metric_value"]));
+			if($tree_id_prev !== $row["tree_identifier"]){ 
+				$tree_id_prev = $row["tree_identifier"]; //make new array for each new tree_id
+				$phenos["tree_ids"][$tree_id_prev] = array(); 
 			}
-			else{
-				$tree_id_prev = $row["tree_identifier"];
-				$phenos["tree_ids"][$tree_id_prev] = array();
-			}
+			array_push($phenos["phenotypes"],$row["metric_description"]); //populate column array
+			array_push($phenos["tree_ids"][$tree_id_prev],array("phenotype" => $row["metric_description"], "value" => $row["metric_value"])); //populate tree id array
 		}
 		echo json_encode($phenos);
 	}
