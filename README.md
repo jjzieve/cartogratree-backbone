@@ -1,9 +1,9 @@
 # Cartogratree 3
 This is a user and developer guide intended for Cartogratree. 
 For any questions, email
-me -> jjzieve AT gmail D0T CALM 
+me (jjzieve AT ucdavis DOT edu)
 or 
-treegenes -> tg-help AT gmail D0T CALM 
+treegenes (tg-help AT ucdavis DOT edu)
 
 ### Table of Contents (Users)
 1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#overview-users)

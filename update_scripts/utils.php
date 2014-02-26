@@ -1,7 +1,7 @@
 <?php
 
 function DbQuery($sql, $Debug=false) {
-	$conn = pg_connect('host=treegenes.ucdavis.edu dbname=treegenes_development user=sswap_agent password=9ii**u3uHHbjjN&564') OR die("SERVER ERROR: Could not connect to database!");
+	// get the connection string from someone from treegenes
 	$rs = pg_query($conn, $sql);
 	pg_close($conn);
 	
