@@ -55,7 +55,7 @@ Postgres tables worth mentioning:
 - ctree_fusion_table_mv -> source of the "Taxa" part of the sidebar selection tree, essentially a query of the above tables
 - tgdr_data_availability_mv -> source of the "Published studies" part of the sidebar selection tree and the [tgdr page](https://dendrome.ucdavis.edu/tgdr/), also a query of the above tables
 
-> The "mv" was my convention to denote materialized views. However, these are "snapshot" materialized views, if we have postgres 9.3+ installed, then they can be made more dynamic, or you can write some trigger functions, up to you. But for now, run update_scripts/create_ctree_fusion_table_mv.php and update_scripts/create_tgdr_data_availability_mv.php everytime there is an update to the tgdr_* tables. 
+> The "mv" was my convention to denote materialized views. However, these are "snapshot" materialized views, if we have postgres 9.3+ installed, then they can be made more dynamic, or you can write some trigger functions, up to you. But for now, run update_scripts/create_ctree_fusion_table_mv.php and update_scripts/create_tgdr_data_availability_mv.php everytime there is an update to the tgdr_* tables. You will need the "utils.php" script to run them, it has sensitive info so email me for this. 
 
 #####Fusion tables
 Existing:

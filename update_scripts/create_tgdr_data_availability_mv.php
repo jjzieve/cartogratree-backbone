@@ -88,10 +88,11 @@ CREATE TABLE tgdr_data_availability_mv AS
   ORDER BY tgdr_association_data.tgdr_accession;
 
 ALTER TABLE tgdr_data_availability_mv
-  OWNER TO jzieve;
+  OWNER TO sswap_agent;
 GRANT ALL ON TABLE tgdr_data_availability_mv TO jzieve;
 GRANT SELECT ON TABLE tgdr_data_availability_mv TO btearse;
 GRANT SELECT ON TABLE tgdr_data_availability_mv TO hansvg;
+GRANT SELECT ON TABLE tgdr_data_availability_mv TO jzzheng;
 GRANT SELECT ON TABLE tgdr_data_availability_mv TO sswap_agent;";
 
 DbQuery($q);
