@@ -36,12 +36,9 @@ define([
     el: "#tabs_container",
     model: Tree_IDModel,
     //static html
-    sampleToolHTML: '<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Select tool</a></li>'+
-                    '<li role="presentation"><a id="amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Amplicons</a></li>'+
-                    '<li role="presentation"><a id="phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Traits</a></li>'+
-                    '<li role="presentation"><a id="genotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Genotypes</a></li>'+
-                    '<li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Environmental Data</a></li>'+
-                    '<li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>'+
+    sampleToolHTML: '<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Tools</a></li>'+
+                    '<li role="presentation"><a id="amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Find common amplicons</a></li>'+
+                    '<li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download tree ids</a></li>'+
                     '<li role="presentation" class="divider"></li>'+
                     '<li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>'+
                     '<li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>',
@@ -64,6 +61,9 @@ define([
       "click #tools ul li a" : "changeTitle",
       "click .close" : "closeTab",
       "click .run_tool" : "runTool",
+      "click #genotype_tool" : "openTab",
+      "click #phenotype_tool" : "openTab",
+      "click #worldclim_tool" : "openTab",
       "show.bs.tab a[data-toggle='tab']" : "changeTools"    
     },
 
@@ -76,6 +76,7 @@ define([
     runTool: function(e){
       var tool = $("#tools ul li").find("a.selected").attr("id");
       console.log(tool);
+      var ids = this.collection.pluck('id');
       switch(tool){
         // case 'common_amplicon_tool':
 	       //  this.openTab("amplicon");
@@ -85,37 +86,27 @@ define([
         //   var checked = _.pluck(checked,"value").join();
         //   window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked+'&csv';
            // break;
-        case 'phenotype_tool':
-	        this.openTab("phenotype","Traits");
-          break;
         case 'phenotypes_tab_csv':
           window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
           break;
-        case 'worldclim_tool':
-	        this.openTab("worldclim","Environmental data");
-          break;
         case 'worldclims_tab_csv':
           window.location.href = 'GetWorldClimData.php?tid='+ids+'&csv';
-          break;
-        case 'genotype_tool':
-	        this.openTab("genotype","Genotypes");
           break;
         case 'snps_tab_csv':
           window.location.href = 'GetCommonSNP.php?tid='+ids+'&csv';
           break;
         case 'diversitree_tool':
-          this.openDiversitree(ids);
+      	  window.location.href = 'DiversitreeDownload.php?tid='+ids+'&csv';
           break;
         case 'tassel_tool':
           this.openSSWAPTassel(ids);
           break;
       }
-	       console.log(this.collection._meta);
     },
 
     setLoaderIcon: function(el){
     	$("#data_table_container").css({
-        	"background-image": "url(images/ajax-loader.gif)",
+          "background-image": "url(images/ajax-loader.gif)",
           "background-repeat" : "no-repeat",
           "background-position" : "center"
     	}).addClass("loading");
@@ -148,8 +139,11 @@ define([
     //   });
     // },
 
-    openTab: function(name,label){ // use a template
+    openTab: function(e){ // use a template
        // only allow one tab for one type at a time
+      var id = e.target.id;
+      var name = id.substring(0,id.indexOf("_"));//remove the _tool
+      var label = $("#"+id).html();
       $("#"+name+"_tab").remove();
       $("#common_"+name).remove();
       $("#data_tabs").append(this.tabTemplate({"name":name,"label":label}));
@@ -159,9 +153,6 @@ define([
       this.collection.trigger("done");
     },
    
-    openDiversitree: function(ids){
-      window.location.href = 'DiversitreeDownload.php?tid='+ids+'&csv';
-    },
     openSSWAPTassel: function(ids){
     	var that = this;
     	$.getJSON('AssociationRRG.php?tid='+ids).success(function(jsonRRG){
