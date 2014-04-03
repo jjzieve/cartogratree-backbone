@@ -63,7 +63,7 @@ define([
     events:{
       "click #tools ul li a" : "changeTitle",
       "click .close" : "closeTab",
-      "click #run_tool" : "runTool",
+      "click .run_tool" : "runTool",
       "show.bs.tab a[data-toggle='tab']" : "changeTools"    
     },
 
@@ -165,17 +165,17 @@ define([
     openSSWAPTassel: function(ids){
     	var that = this;
     	$.getJSON('AssociationRRG.php?tid='+ids).success(function(jsonRRG){
-          	    SSWAP.discover(jsonRRG, "#pipelineButton");
+          SSWAP.discover(jsonRRG, "#pipelineButton");
     	    $("#sswap_form").submit();
     	});
     },
     
     toggleRunDisabled: function(){
     	if(this.collection.length > 0){
-    		$("#run_tool").removeClass("disabled");
+    		$(".run_tool").removeClass("disabled");
     	}
     	else{
-    		$("#run_tool").addClass("disabled");
+    		$(".run_tool").addClass("disabled");
     	}
    },
 
@@ -187,9 +187,6 @@ define([
     if(id === "samples_tab"){
       $("#tools_dropdown").append(this.sampleToolHTML);
     }
-    else if(id === "amplicon_tab"){
-      $("#tools_dropdown").append(this.defaultToolTemplate({"tool":id})+this.sswapHTML);
-    }
     else{
       $("#tools_dropdown").append(this.defaultToolTemplate({"tool":id}));
     }
@@ -199,6 +196,7 @@ define([
    closeTab: function(e){
       //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
       var tabContentId = $(e.target).parent().attr("href");
+      console.log($(e.target).parent().parent().attr("id"));
       switch(tabContentId){// send flag to the shared tree id collection that the tab is closed and to create instead of update
         case '#genotype_tab_content':
           this.collection.meta("genotype_tab_open",false);
@@ -222,7 +220,7 @@ define([
       }
       this.collection.trigger("done");// let this event bubble to the views after closing
       $(e.target).parent().parent().remove(); //remove li of tab
-      this.$("ul.nav-tabs li a:first").tab('show'); // Select first tab
+      this.$("ul.nav-tabs li a:last").tab('show'); // Select first tab
     //  $(tabContentId).remove(); //remove respective tab content
    },
 	
@@ -234,15 +232,11 @@ define([
       this.toggleRunDisabled();    
 
       //nested tabs
-      // $("ul.nav-pills a").click(function (e) {
-      //   e.preventDefault();  
-      //   $(this).tab('show');
-      // });
-
-      // $("ul.nav-tabs a").click(function (e) {
-      //   e.preventDefault();  
-      //   $(this).tab('show');
-      // });     
+      $("ul.analysis_pills li a").click(function (e) {
+        e.preventDefault();  
+        $(this).tab('show');
+      });
+  
     },
 
     render: function(){
