@@ -22,7 +22,7 @@ define([
 	'views/bottom_tabs',
 	], function($, _, Backbone, QueryModel, TreeNodeModel, TreeIDModel,
 		QueriesCollection, TreeIDCollection,
-		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, SamplesView, GenotypeView, PhenotypeView, WorldClimView, AmpliconsView, BottomTabsView) {
+		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, SamplesView, GenotypeView, PhenotypeView, WorldClimView, AmpliconView, BottomTabsView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'(/)(?tid=:tree_ids)':'index',
@@ -69,7 +69,7 @@ define([
 				var geno_table = new GenotypeView({collection: selected_tree_ids,model:selected_tree_id});
 				var pheno_table = new PhenotypeView({collection: selected_tree_ids,model:selected_tree_id});
 				var worldclim_table = new WorldClimView({collection: selected_tree_ids,model:selected_tree_id});
-				// var amplicon_table = new AmpliconsView({collection: selected_tree_ids,model:selected_tree_id});
+				var amplicon_table = new AmpliconView({collection: selected_tree_ids,model:selected_tree_id});
 
 
 			});

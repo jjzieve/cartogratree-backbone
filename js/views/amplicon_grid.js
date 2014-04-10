@@ -22,7 +22,7 @@ define([
 ], function($, _, Backbone, Tree_IDModel, Tree_IDCollection){
     // Above we have passed in jQuery, Underscore and Backbone
     // They will not be accessible in the global scope
-    var SNPView = Backbone.View.extend({ 
+    var AmpliconView = Backbone.View.extend({ 
       el: '#data_table_container',
       model: Tree_IDModel,
       collection: Tree_IDCollection,
@@ -36,30 +36,25 @@ define([
       data: [],
       queryCache: [], //cache of ids to stored so redundant queries aren't made
 
-      initColumns: function(snp_accessions,over_limit){
-        if (over_limit){
-          alert("Too many SNPs to load in view, only the first 25 columns shown. Please download the CSV to view every genotype.");
-        }
-
+      initColumns: function(){
         var that = this;
         this.columns = [
-          {id:"id",name:"ID",field:"id",width:75,sortable:true}
-        ]; //set the first columns
-        _.each(snp_accessions,function(a,index){
-          if (index > 25){
-            return
-          }
-          that.columns.push({id:index,name:a,field:a,width:150,sortable:true});
-        })
+          {id: "amplicon_id", name: "Amplicon ID", field: "amplicon_id",width: 75, sortable:true},
+          {id: "top_blast", name: "Top Blast Description (BLAST nr)", field: "top_blast",width: 150, sortable:true},
+          {id: "species_blast", name: "Species-Specific BLASTs", field: "species_blast",width: 100, sortable:true},
+          {id: "go", name: "GO Annotations", field: "go",width: 100, sortable:true},
+          {id: "interpro", name: "Interpro Annotations", field: "interpro",width: 130, sortable:true},
+          {id: "pfam", name: "PFAM Annotations", field: "pfam",width: 130, sortable:true},
+          {id: "expasy", name: "ExPASY EC Annotations", field: "expasy",width: 135, sortable:true},
+          {id: "thmm_signalp", name: "thmm / SignalP", field: "thmm_signalp",width: 150, sortable:true},
+        ]; 
         this.checkboxSelector = new Slick.CheckboxSelectColumn({});
         this.columns.unshift(this.checkboxSelector.getColumnDefinition());
-        this.snp_accessions = snp_accessions; //save state of columns if not new request
-        
-      },
+       },
 
       initGrid: function(){
         this.dataView = new Slick.Data.DataView();
-        this.grid = new Slick.Grid("#snp_grid", this.dataView, this.columns, this.options);
+        this.grid = new Slick.Grid("#amplicon_grid", this.dataView, this.columns, this.options);
         this.grid.setSelectionModel(new Slick.RowSelectionModel());
         this.grid.registerPlugin(this.checkboxSelector);
       },
@@ -73,67 +68,63 @@ define([
           //ameriflux? 
           this.setLoaderIcon();
           $.ajax({
-            url : 'GetCommonSNP.php',
+            url : 'GetCommonAmplicon.php',
             dataType: "json",
             data: {"tid":checkedSamples.join()//GET url as string tid1,tid2,...
           },
 
             success: function (response) {
-              var prev_accessions = that.snp_accessions;
-              var new_accessions = response["snp_accessions"];
-              if (!($(prev_accessions).not(new_accessions).length == 0 && $(new_accessions).not(prev_accessions).length == 0)) { //array comparator
-                that.initColumns(response["snp_accessions"],response["over_limit"]);
-              }
+              console.log(response);
+              // var i = 0;
+              // _.each(response["tree_ids"],function(value,key){
+              //   var row = {};
+              //   row["id"] = key;
+              //   _.each(value,function(value){
+              //     row[value["snp_accession"]] = value["allele"];
+              //   });
+              //   that.data.push(row);
+              //   i++;
+              // });
+
+            //   if (typeof(that.grid) === "undefined"){
+            //     that.initColumns();
+            //     that.initGrid();
+            //   }
               
-              var i = 0;
-              _.each(response["tree_ids"],function(value,key){
-                var row = {};
-                row["id"] = key;
-                _.each(value,function(value){
-                  row[value["snp_accession"]] = value["allele"];
-                });
-                that.data.push(row);
-                i++;
-              });
-
-              if (typeof(that.grid) === "undefined"){
-                that.initGrid();
-              }
-              
-              that.unsetLoaderIcon();
+            //   that.unsetLoaderIcon();
 
 
-              var sortCol = undefined;
-              var sortDir = true;
-              function comparer(a, b) {
-                var x = a[sortCol], y = b[sortCol];
-                return (x == y ? 0 : (x > y ? 1 : -1));
-              }
-              that.grid.onSort.subscribe(function (e, args) {
-                  sortDir = args.sortAsc;
-                  sortCol = args.sortCol.field;
-                  that.dataView.sort(comparer, sortDir);
-                  that.grid.invalidateAllRows();
-                  that.grid.render();
-              });
+            //   var sortCol = undefined;
+            //   var sortDir = true;
+            //   function comparer(a, b) {
+            //     var x = a[sortCol], y = b[sortCol];
+            //     return (x == y ? 0 : (x > y ? 1 : -1));
+            //   }
+            //   that.grid.onSort.subscribe(function (e, args) {
+            //       sortDir = args.sortAsc;
+            //       sortCol = args.sortCol.field;
+            //       that.dataView.sort(comparer, sortDir);
+            //       that.grid.invalidateAllRows();
+            //       that.grid.render();
+            //   });
         
-              // set the initial sorting to be shown in the header
-              if (sortCol) {
-                that.grid.setSortColumn(sortCol, sortDir);
-              }
+            //   // set the initial sorting to be shown in the header
+            //   if (sortCol) {
+            //     that.grid.setSortColumn(sortCol, sortDir);
+            //   }
 
-              that.dataView.beginUpdate();
-              that.dataView.setItems(that.data);
-              that.grid.setSelectedRows(that.collection.pluck("index"));
-              that.dataView.endUpdate();
+            //   that.dataView.beginUpdate();
+            //   that.dataView.setItems(that.data);
+            //   that.grid.setSelectedRows(that.collection.pluck("index"));
+            //   that.dataView.endUpdate();
 
-              that.grid.updateRowCount();
-              that.grid.render();
+            //   that.grid.updateRowCount();
+            //   that.grid.render();
 
-              that.dataView.syncGridSelection(that.grid, true);
+            //   that.dataView.syncGridSelection(that.grid, true);
 
-              $("#snp_sample_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
-              that.listenToSelectedRows();
+            //   $("#amplicon_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
+            //   that.listenToSelectedRows();
             }
           });
       },
@@ -150,8 +141,8 @@ define([
       this.$el.css({"background-image":"none"}).removeClass("loading");
     },
     
-    pollForOpenTab: function(){
-      if(this.collection.meta("snp_tab_open")){
+    pollForOpenPill: function(){
+      if(this.collection.meta("amplicon_pill_open")){
         this.updateSlickGrid();
       }
     },
@@ -160,7 +151,7 @@ define([
       if(this.grid){
         var that = this;
         this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-        $("#snp_sample_count").html(that.grid.getSelectedRows().length);
+        $("#amplicon_count").html(that.grid.getSelectedRows().length);
           // that.collection.reset();//remove all previous ids
           // $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
           //   var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
@@ -181,7 +172,7 @@ define([
 
     initialize: function(options){
       var that = this;
-      this.listenTo(this.collection,"done",this.pollForOpenTab);
+      this.listenTo(this.collection,"done",this.pollForOpenPill);
 
     },
 
@@ -211,19 +202,19 @@ define([
       this.grid.render();
       this.dataView.syncGridSelection(this.grid, true);
       $(".slick-column-name input[type=checkbox]").attr('checked',false);
-      $("#snp_sample_count").html(0); //reset selected count
+      $("#amplicon_count").html(0); //reset selected count
       this.collection.reset(); // reset checked rows
     },
 
               
     events:{
-      "click #remove_snps": "removeSelected",
+      "click #remove_amplicons": "removeSelected",
     }
 
       
   });
 
-  return SNPView; 
+  return AmpliconView; 
   // What we return here will be used by other modules
 });
 

@@ -78,14 +78,14 @@ define([
       console.log(tool);
       var ids = this.collection.pluck('id');
       switch(tool){
-        // case 'common_amplicon_tool':
-	       //  this.openTab("amplicon");
-        //   break;
-        // case 'amplicons_tab_csv': //this may change
-        //   var checked = $('#common_amplicon_table').find('input[type="checkbox"]:checked');
-        //   var checked = _.pluck(checked,"value").join();
-        //   window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked+'&csv';
-           // break;
+        case 'amplicon_tool':
+		      this.openAmpliconPill(ids);
+        	break;
+       /* case 'amplicons_tab_csv': //this may change
+           var checked = $('#common_amplicon_table').find('input[type="checkbox"]:checked');
+           var checked = _.pluck(checked,"value").join();
+           window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked+'&csv';
+           break;*/
         case 'phenotypes_tab_csv':
           window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
           break;
@@ -103,6 +103,45 @@ define([
           break;
       }
     },
+	
+	openAmpliconPill: function(ids){
+    $("#amplicon_pill").remove();
+    $("#amplicon_pill_content").remove();
+		$(".analysis_pills").append("<li id='amplicon_pill'><a data-toggle='pill' href='#amplicon_pill_content'>Amplicons</a></li>");
+		$("#analysis_pills_content").append('<div class="tab-pane fade active in" id="amplicon_pill_content">'+
+                                        '<div id="amplicon_tools" class="btn-group pull-right">'+
+                                        '<button class="btn btn-default" type="button" data-toggle="dropdown">Select tool <span class="caret"></span></button>'+
+                                        '<ul id="tools_dropdown_amplicon" class="dropdown-menu">'+
+                                        '<li role="presentation"><a id="amplicon_tool_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>'+
+                                        '<li role="presentation" class="divider"></li>'+
+                                        '<li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>'+
+                                        '<li role="presentation"><a id="sswap_amplicon" role="menuitem" tabindex="-1" href="javascript:void(0);">Discover pipelines at SSWAP</a></li>'+
+                                        '</ul>'+
+                                        '<div class="btn-group">'+
+                                        '<button type="button" class="btn btn-default run_tool">Run tool on selected</button></div>'+
+                                        '</div>'+
+                                        '<div id="amplicon_table_container">'+
+                                        '<div class="btn-group">'+
+                                        '<button class="btn btn-default" type="button" id="remove_amplicons">Remove selected amplicons</button>'+ 
+                                        '<br><br>'+
+                                        '<span id="amplicon_badge" class="badge">Run the amplicon tool from "Map selection" to view</span>'+
+                                         '</div>'+
+                                         '<table id="amplicon_table">'+
+                                         '<td valign="top" class="grid-col">'+
+                                         '<div id="amplicon_grid" class="grid"></div>'+
+                                         '</td>'+
+                                         '</table>'+
+                                         'Total samples selected: <span id="amplicon_count">0</span>'+
+                                         '</div>'+
+                                         '</div>');
+		this.$("ul.nav-pills li a:last").tab('show');
+    this.collection.meta("amplicon_pill_open",true);
+    this.collection.trigger("done");
+    console.log(this.collection._meta);
+	},
+		
+
+	
 
     setLoaderIcon: function(el){
     	$("#data_table_container").css({
@@ -115,29 +154,6 @@ define([
     unsetLoaderIcon: function(el){
     	$("#data_table_container").css({"background-image":"none"}).removeClass("loading");
     },  
-
-    // openCommonAmplicon: function(ids){
-    //   var that = this;
-    //   // only allow one tab for one type at a time
-
-    //   $("#amplicon_tab").remove();
-    //   $("#amplicon_phenotypes").remove();
-    //   $("#data_tabs").append("<li id='amplicon_tab'><a href='#common_amplicons' data-toggle='tab'><button class='close' type='button'>x</button>Amplicons</a></li>");
-    //   $("#data_table_container").append("<div id='common_amplicons' class='tab-pane active'>");
-    //   this.setLoaderIcon("#data_table_container");
-    //   this.$("ul.nav-tabs li a:last").tab('show');
-    //   $.get('GetCommonAmplicon.php?tid='+ids, function(html){
-    //     that.unsetLoaderIcon("#data_table_container");
-    //     $("#common_amplicons").append(html);    
-    //     $("#common_amplicon_table").tablecloth({
-    //       theme: "default",
-    //       condensed: true,
-    //       striped: true,
-    //       sortable: true,
-    //     });
-      
-    //   });
-    // },
 
     openTab: function(e){ // use a template
        // only allow one tab for one type at a time

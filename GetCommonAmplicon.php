@@ -258,166 +258,150 @@ $tidarray = GETlist("tid");
 $checkedAmplicons = GETList("checkedAmplicons");
 
 if (isset($_GET['csv'])) {
-	header('Content-Type: text/plain');
-	// Prepare for download.
-	header("Cache-control: private");
-	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-	header("Content-Description: File Transfer");
-	//header("Content-Type: application/octet-stream");
-	header("Content-Type: text/csv; charset=ansi");
-	header("Content-disposition: attachment; filename=\"amplicon_spreadsheet.csv\"");
-	header("Expires: 0");
+		header('Content-Type: text/plain');
+		// Prepare for download.
+		header("Cache-control: private");
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+		header("Content-Description: File Transfer");
+		//header("Content-Type: application/octet-stream");
+		header("Content-Type: text/csv; charset=ansi");
+		header("Content-disposition: attachment; filename=\"amplicon_spreadsheet.csv\"");
+		header("Expires: 0");
 
-	$ampliconINString = "";
-	foreach($checkedAmplicons as $ampliconId) {
-		$ampliconINString = $ampliconINString . "'" . $ampliconId . "',";
-	}
-	$ampliconINString = substr($ampliconINString, 0, -1);
-	$query = genQuery($ampliconINString);
-	$res2 = DBQuery($query);
-	$countRes2 = pg_num_rows($res2);
+		$ampliconINString = "";
+		foreach($checkedAmplicons as $ampliconId) {
+			$ampliconINString = $ampliconINString . "'" . $ampliconId . "',";
+		}
+		$ampliconINString = substr($ampliconINString, 0, -1);
+		$query = genQuery($ampliconINString);
+		$res2 = DBQuery($query);
+		$countRes2 = pg_num_rows($res2);
 
-	if($countRes2 > 0) {
-		$prevAmplicon = "";
-		$ampliconId = "";
-		$output = "";
-		$seq_description = "";
-		$thmmTerm = "";
-		$species_description = array();
-		$goTerm = array();
-		$goAcc = array();
-		$interproTerm = array();
-		$interproId = array();
-		$pfamTerm = array();
-		$pfamId = array();
-		$ecTerm = array();
-		$ecId = array();
-		$iterator = 0;
-		$count = 0;
-		$actualCount = $countRes2 -1;
-		$finalOutput = "";
-		while($goRes = pg_fetch_assoc($res2)) {
-			$ampliconId = $goRes['amplicon_name'];
-			$annot_type = $goRes['annot_type'];
-			
-			#check to see if prev = to current
-			if($prevAmplicon == $ampliconId) {
-				if($annot_type == 'blast-nr') {
-					$seq_description = $goRes['annot_term'];
-				} elseif ($annot_type == 'blast-species') {
-					$species_description[] = $goRes['annot_term'];
-					//echo "amplicon $ampliconId ".$goRes['annot_term']."<br>";
-				} elseif ($annot_type == 'go') {
-					$goTerm[] = $goRes['annot_term'];
-					$goAcc[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'interpro') {
-					$interproTerm[] = $goRes['annot_term'];
-					$interproId[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'pfam') {
-					$pfamTerm[] = $goRes['annot_term'];
-					$pfamId[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'ec') {
-					$ecTerm[] = $goRes['annot_term'];
-					$ecId[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'tmhmmsignalp') {
-					$thmmTerm = $goRes['annot_term'];
-					//echo "Amplicon $ampliconId $thmmTerm<br>\n";
-				}
+		if($countRes2 > 0) {
+			$prevAmplicon = "";
+			$ampliconId = "";
+			$output = "";
+			$seq_description = "";
+			$thmmTerm = "";
+			$species_description = array();
+			$goTerm = array();
+			$goAcc = array();
+			$interproTerm = array();
+			$interproId = array();
+			$pfamTerm = array();
+			$pfamId = array();
+			$ecTerm = array();
+			$ecId = array();
+			$iterator = 0;
+			$count = 0;
+			$actualCount = $countRes2 -1;
+			$finalOutput = "";
+			while($goRes = pg_fetch_assoc($res2)) {
+				$ampliconId = $goRes['amplicon_name'];
+				$annot_type = $goRes['annot_type'];
+				
+				#check to see if prev = to current
+				if($prevAmplicon == $ampliconId) {
+					if($annot_type == 'blast-nr') {
+						$seq_description = $goRes['annot_term'];
+					} elseif ($annot_type == 'blast-species') {
+						$species_description[] = $goRes['annot_term'];
+						//echo "amplicon $ampliconId ".$goRes['annot_term']."<br>";
+					} elseif ($annot_type == 'go') {
+						$goTerm[] = $goRes['annot_term'];
+						$goAcc[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'interpro') {
+						$interproTerm[] = $goRes['annot_term'];
+						$interproId[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'pfam') {
+						$pfamTerm[] = $goRes['annot_term'];
+						$pfamId[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'ec') {
+						$ecTerm[] = $goRes['annot_term'];
+						$ecId[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'tmhmmsignalp') {
+						$thmmTerm = $goRes['annot_term'];
+						//echo "Amplicon $ampliconId $thmmTerm<br>\n";
+					}
 
-			} else {
-				## != check fixes table formatting
-				if($iterator != 0) {
-					#starts building the output line
-					$output = "\"". $prevAmplicon . "\",\"" . $seq_description. "\",\"";
+				} else {
+					## != check fixes table formatting
+					if($iterator != 0) {
+						#starts building the output line
+						$output = "\"". $prevAmplicon . "\",\"" . $seq_description. "\",\"";
 
-					## For Species Specific blast Results
-					$i = 0;
-					foreach($species_description as $value) {
-						if($i == 0) {
-							$output = $output . "$value";
-						} else {
-							$output = $output . " | $value";
+						## For Species Specific blast Results
+						$i = 0;
+						foreach($species_description as $value) {
+							if($i == 0) {
+								$output = $output . "$value";
+							} else {
+								$output = $output . " | $value";
+							}
+							$i++;
 						}
-						$i++;
-					}
-					$output = $output . "\",\"";
-						
-					## For GO 
-					$i = 0;
-					foreach($goTerm as $value) {
-						if($i == 0) {
-							$output = $output . "$goAcc[$i] $value";
-						} else {
-							$output = $output . " | $goAcc[$i] $value";
+						$output = $output . "\",\"";
+							
+						## For GO 
+						$i = 0;
+						foreach($goTerm as $value) {
+							if($i == 0) {
+								$output = $output . "$goAcc[$i] $value";
+							} else {
+								$output = $output . " | $goAcc[$i] $value";
+							}
+							$i++;
 						}
-						$i++;
-					}
-					$output = $output . "\",\"";
+						$output = $output . "\",\"";
 
-					## For Interpro 
-					$i = 0;
-					foreach($interproTerm as $value) {
-						if($i == 0) {
-							$output = $output . "$interproId[$i] $value";
-						} else {
-							$output = $output . " | $interproId[$i] $value";
+						## For Interpro 
+						$i = 0;
+						foreach($interproTerm as $value) {
+							if($i == 0) {
+								$output = $output . "$interproId[$i] $value";
+							} else {
+								$output = $output . " | $interproId[$i] $value";
+							}
+							$i++;
 						}
-						$i++;
-					}
-					$output = $output . "\",\"";
+						$output = $output . "\",\"";
 
-					## For pfam 
-					$i = 0;
-					foreach($pfamTerm as $value) {
-						if($i == 0) {
-							$output = $output . "$pfamId[$i] $value";
-						} else {
-							$output = $output . " | $pfamId[$i] $value";
+						## For pfam 
+						$i = 0;
+						foreach($pfamTerm as $value) {
+							if($i == 0) {
+								$output = $output . "$pfamId[$i] $value";
+							} else {
+								$output = $output . " | $pfamId[$i] $value";
+							}
+							$i++;
 						}
-						$i++;
-					}
-					$output = $output . "\",\"";
+						$output = $output . "\",\"";
 
-					## For ec
-					$i = 0;
-					foreach($ecTerm as $value) {
-						if($i == 0) {
-							$output = $output . "$ecId[$i] $value";
-						} else {
-							$output = $output . " | $ecId[$i] $value";
+						## For ec
+						$i = 0;
+						foreach($ecTerm as $value) {
+							if($i == 0) {
+								$output = $output . "$ecId[$i] $value";
+							} else {
+								$output = $output . " | $ecId[$i] $value";
+							}
+							$i++;
 						}
-						$i++;
-					}
-					$output = $output . "\",";
+						$output = $output . "\",";
 
-					## For THMM & SIGNALP
-					if($thmmTerm != "") {
-						$newthmmTerm = str_replace("&nbsp;", "", $thmmTerm);
-						$output = $output . "\"$newthmmTerm\"";
-					} else {
-						$output = $output . "\"\"";
+						## For THMM & SIGNALP
+						if($thmmTerm != "") {
+							$newthmmTerm = str_replace("&nbsp;", "", $thmmTerm);
+							$output = $output . "\"$newthmmTerm\"";
+						} else {
+							$output = $output . "\"\"";
+						}
 					}
-				}
-				# prints output and clears memory on variables
-				$finalOutput = $finalOutput . $output."\n";
+					# prints output and clears memory on variables
+					$finalOutput = $finalOutput . $output."\n";
 
-				$iterator++;
-				$species_description = array();
-				$goTerm = array();
-				$goAcc = array();
-				$interproId = array();
-				$interproTerm = array();
-				$pfamId = array();
-				$pfamTerm = array();
-				$ecId = array();
-				$ecTerm = array();
-				$thmmTerm = "";
-				$seq_description = "";
-			}
-			
-			## EdgeCase - Fills in data for last row
-			if($actualCount == $count) {
-				if($prevAmplicon != $ampliconId) {
+					$iterator++;
 					$species_description = array();
 					$goTerm = array();
 					$goAcc = array();
@@ -430,149 +414,160 @@ if (isset($_GET['csv'])) {
 					$thmmTerm = "";
 					$seq_description = "";
 				}
-				#$ampliconId = "";
-				if($annot_type == 'blast-nr') {
-					$seq_description = $goRes['annot_term'];
-				} elseif ($annot_type == 'blast-species') {
-					$species_description[] = $goRes['annot_term'];
-					//echo "amplicon $ampliconId ".$goRes['annot_term']."<br>";
-				} elseif ($annot_type == 'go') {
-					$goTerm[] = $goRes['annot_term'];
-					$goAcc[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'interpro') {
-					$interproTerm[] = $goRes['annot_term'];
-					$interproId[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'pfam') {
-					$pfamTerm[] = $goRes['annot_term'];
-					$pfamId[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'ec') {
-					$ecTerm[] = $goRes['annot_term'];
-					$ecId[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'tmhmmsignalp') {
-					$thmmTerm = $goRes['annot_term'];
-					//echo "Amplicon $ampliconId $thmmTerm<br>\n";
-				}
-
-
-				if($iterator != 0) {
-					#starts building the output line
-					$output = "\"". $ampliconId . "\",\"" . $seq_description. "\",\"";
-
-					## For Species Specific blast Results
-					$i = 0;
-					foreach($species_description as $value) {
-						if($i == 0) {
-							$output = $output . "$value";
-						} else {
-							$output = $output . " | $value";
-						}
-						$i++;
-					}
-					$output = $output . "\",\"";
-						
-					## For GO 
-					$i = 0;
-					foreach($goTerm as $value) {
-						if($i == 0) {
-							$output = $output . "$goAcc[$i] $value";
-						} else {
-							$output = $output . " | $goAcc[$i] $value";
-						}
-						$i++;
-					}
-					$output = $output . "\",\"";
-
-					## For Interpro 
-					$i = 0;
-					foreach($interproTerm as $value) {
-						if($i == 0) {
-							$output = $output . "$interproId[$i] $value";
-						} else {
-							$output = $output . " | $interproId[$i] $value";
-						}
-						$i++;
-					}
-					$output = $output . "\",\"";
-
-					## For pfam 
-					$i = 0;
-					foreach($pfamTerm as $value) {
-						if($i == 0) {
-							$output = $output . "$pfamId[$i] $value";
-						} else {
-							$output = $output . " | $pfamId[$i] $value";
-						}
-						$i++;
-					}
-					$output = $output . "\",\"";
-
-					## For ec
-					$i = 0;
-					foreach($ecTerm as $value) {
-						if($i == 0) {
-							$output = $output . "$ecId[$i] $value";
-						} else {
-							$output = $output . " | $ecId[$i] $value";
-						}
-						$i++;
-					}
-					$output = $output . "\",";
-
-					## For THMM & SIGNALP
-					if($thmmTerm != "") {
-						$newthmmTerm = str_replace("&nbsp;", "", $thmmTerm);
-						$output = $output . "\"$newthmmTerm\"";
-					} else {
-						$output = $output . "\"\"";
-					}
-				}
-				# prints output and clears memory on variables
-				$finalOutput = $finalOutput . $output."\n";
-			}
-
-			if($prevAmplicon != $ampliconId) {
 				
-				if($annot_type == 'blast-nr') {
-					$seq_description = $goRes['annot_term'];
-				} elseif ($annot_type == 'blast-species') {
-					$species_description[] = $goRes['annot_term'];
-					//echo "amplicon $ampliconId ".$goRes['annot_term']."<br>";
-				} elseif ($annot_type == 'go') {
-					$goTerm[] = $goRes['annot_term'];
-					$goAcc[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'interpro') {
-					$interproTerm[] = $goRes['annot_term'];
-					$interproId[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'pfam') {
-					$pfamTerm[] = $goRes['annot_term'];
-					$pfamId[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'ec') {
-					$ecTerm[] = $goRes['annot_term'];
-					$ecId[] = $goRes['annot_id'];
-				} elseif ($annot_type == 'tmhmmsignalp') {
-					$thmmTerm = $goRes['annot_term'];
-					//echo "Amplicon $ampliconId $thmmTerm<br>\n";
-				}
-			}
-			$prevAmplicon = $ampliconId;
-			$count++;
-		}
-		$iterator = $iterator - 1;
-		$finalOutput = "\"Amplicon Id\",\"Top Blast Description (BLAST nr)\",\"Species-Specific BLASTs\",\"GO Annotations\",\"Interpro Annotations\",\"PFAM Annotations\",\"ExPASY EC Annotations\",\"thmm / SignalP\"".$finalOutput;
-		echo $finalOutput;
-	
-	exit;
-}
-?>
+				## EdgeCase - Fills in data for last row
+				if($actualCount == $count) {
+					if($prevAmplicon != $ampliconId) {
+						$species_description = array();
+						$goTerm = array();
+						$goAcc = array();
+						$interproId = array();
+						$interproTerm = array();
+						$pfamId = array();
+						$pfamTerm = array();
+						$ecId = array();
+						$ecTerm = array();
+						$thmmTerm = "";
+						$seq_description = "";
+					}
+					#$ampliconId = "";
+					if($annot_type == 'blast-nr') {
+						$seq_description = $goRes['annot_term'];
+					} elseif ($annot_type == 'blast-species') {
+						$species_description[] = $goRes['annot_term'];
+						//echo "amplicon $ampliconId ".$goRes['annot_term']."<br>";
+					} elseif ($annot_type == 'go') {
+						$goTerm[] = $goRes['annot_term'];
+						$goAcc[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'interpro') {
+						$interproTerm[] = $goRes['annot_term'];
+						$interproId[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'pfam') {
+						$pfamTerm[] = $goRes['annot_term'];
+						$pfamId[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'ec') {
+						$ecTerm[] = $goRes['annot_term'];
+						$ecId[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'tmhmmsignalp') {
+						$thmmTerm = $goRes['annot_term'];
+						//echo "Amplicon $ampliconId $thmmTerm<br>\n";
+					}
 
-<?php
-} else if(count($tidarray) > 1) {
+
+					if($iterator != 0) {
+						#starts building the output line
+						$output = "\"". $ampliconId . "\",\"" . $seq_description. "\",\"";
+
+						## For Species Specific blast Results
+						$i = 0;
+						foreach($species_description as $value) {
+							if($i == 0) {
+								$output = $output . "$value";
+							} else {
+								$output = $output . " | $value";
+							}
+							$i++;
+						}
+						$output = $output . "\",\"";
+							
+						## For GO 
+						$i = 0;
+						foreach($goTerm as $value) {
+							if($i == 0) {
+								$output = $output . "$goAcc[$i] $value";
+							} else {
+								$output = $output . " | $goAcc[$i] $value";
+							}
+							$i++;
+						}
+						$output = $output . "\",\"";
+
+						## For Interpro 
+						$i = 0;
+						foreach($interproTerm as $value) {
+							if($i == 0) {
+								$output = $output . "$interproId[$i] $value";
+							} else {
+								$output = $output . " | $interproId[$i] $value";
+							}
+							$i++;
+						}
+						$output = $output . "\",\"";
+
+						## For pfam 
+						$i = 0;
+						foreach($pfamTerm as $value) {
+							if($i == 0) {
+								$output = $output . "$pfamId[$i] $value";
+							} else {
+								$output = $output . " | $pfamId[$i] $value";
+							}
+							$i++;
+						}
+						$output = $output . "\",\"";
+
+						## For ec
+						$i = 0;
+						foreach($ecTerm as $value) {
+							if($i == 0) {
+								$output = $output . "$ecId[$i] $value";
+							} else {
+								$output = $output . " | $ecId[$i] $value";
+							}
+							$i++;
+						}
+						$output = $output . "\",";
+
+						## For THMM & SIGNALP
+						if($thmmTerm != "") {
+							$newthmmTerm = str_replace("&nbsp;", "", $thmmTerm);
+							$output = $output . "\"$newthmmTerm\"";
+						} else {
+							$output = $output . "\"\"";
+						}
+					}
+					# prints output and clears memory on variables
+					$finalOutput = $finalOutput . $output."\n";
+				}
+
+				if($prevAmplicon != $ampliconId) {
+					
+					if($annot_type == 'blast-nr') {
+						$seq_description = $goRes['annot_term'];
+					} elseif ($annot_type == 'blast-species') {
+						$species_description[] = $goRes['annot_term'];
+						//echo "amplicon $ampliconId ".$goRes['annot_term']."<br>";
+					} elseif ($annot_type == 'go') {
+						$goTerm[] = $goRes['annot_term'];
+						$goAcc[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'interpro') {
+						$interproTerm[] = $goRes['annot_term'];
+						$interproId[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'pfam') {
+						$pfamTerm[] = $goRes['annot_term'];
+						$pfamId[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'ec') {
+						$ecTerm[] = $goRes['annot_term'];
+						$ecId[] = $goRes['annot_id'];
+					} elseif ($annot_type == 'tmhmmsignalp') {
+						$thmmTerm = $goRes['annot_term'];
+						//echo "Amplicon $ampliconId $thmmTerm<br>\n";
+					}
+				}
+				$prevAmplicon = $ampliconId;
+				$count++;
+			}
+			$iterator = $iterator - 1;
+			$finalOutput = "\"Amplicon Id\",\"Top Blast Description (BLAST nr)\",\"Species-Specific BLASTs\",\"GO Annotations\",\"Interpro Annotations\",\"PFAM Annotations\",\"ExPASY EC Annotations\",\"thmm / SignalP\"".$finalOutput;
+			echo $finalOutput;
+		exit;
+	}
+}
+else if(count($tidarray) > 1) {
 	$qCommonAmp = "SELECT * FROM sswap_get_common_amplicons_per_sample(ARRAY['".implode("','",$tidarray)."'])";
 	$resCommonAmp = DBQuery($qCommonAmp);
-
 	$countCommonAmp = pg_num_rows($resCommonAmp);
 	$ampliconINString = "";
-	
 	if($countCommonAmp != 0) {
 		while($idRes = pg_fetch_assoc($resCommonAmp)) {
 			$ampliconINString .= "'" . $idRes['amplicon_name'] . "',";
@@ -584,24 +579,15 @@ if (isset($_GET['csv'])) {
 		$countCommonAnnot = pg_num_rows($resCommonAnnot);
 
 		if($countCommonAnnot > 0) {
-		?>
-					<table id='common_amplicon_table' style='font-size:14px'>
-						<thead>
-							<tr>
-								<th><b>Number</b></th>
-								<th><b>Amplicon Id</b></th>
-								<th><b>Top Blast Description <br>(BLAST nr)</b></th>
-								<th><b>Species-Specific BLASTs</b></th>
-								<th><b>GO Annotations</b></th>
-								<th><b>Interpro Annotations</b></th>
-								<th><b>PFAM Annotations</b></th>
-								<th><b>ExPASY EC Annotations</b></th>
-								<th><b>thmm / SignalP</b></th>
-							</tr>
-						</thead>
-						<tbody>
-						<?php
-						$allAmpId = array();
+			$amplicons = array();
+			while($annotation = pg_fetch_assoc($resCommonAnnot)){
+				$amplicons[] = $annotation;
+			}
+			echo json_encode($amplicons);
+		}
+	}
+}
+	/*					$allAmpId = array();
 						$output = array();
 						while($annotRes = pg_fetch_assoc($resCommonAnnot)) {
 							$ampliconId = $annotRes['amplicon_name'];
@@ -649,24 +635,7 @@ if (isset($_GET['csv'])) {
 						}
 						unset($output);	
 						session_destroy();
-						?>
-						</tbody>
-					</table>
-		
-		<?php
-		} else {
-			print "<br><br> No functional annotations were found for the common ammplicons. Please select another set.";
-			echo "<script language=javascript>$('#stats > tbody').append('<tr><td align=right></td><td>No functional annotations were found for the common ammplicons. Please select another set.</td></tr>');</script>";
-
-		}
-
-	} else {
-		echo "<p style=\"margin-left:50px\">Please remove a Tree Sample from the Selected Markers tab and rerun the Common Amplicon tool until you have a set of common amplicons</p>";
-	}
-} 
-else{
-	echo "<p style=\"margin-left:50px\">Please select at least two tree markers to run the Common Amplicon tool</p>";	
-}
+*/
 
 function generateJsonAmpliconById($array) {
 

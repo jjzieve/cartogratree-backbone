@@ -203,13 +203,11 @@ Updated:
 					<h4>Analyze the data</h4>
 					<div class="analysis_pills_container">
 					    <ul class="nav nav-pills analysis_pills">
-					        <li class="active"><a href="#map_selection_pill">Map selection</a>
+					        <li class="active" ><a data-toggle="pill" href="#map_selection_pill">Map selection</a>
 					        </li>
-					       <!--  <li><a href="#amplicon_pill">Amplicons</a>
-					        </li> -->
 					    </ul>
 					</div>
-					<div class="tab-content">
+					<div id="analysis_pills_content" class="tab-content">
 						<div class="tab-pane fade active in" id="map_selection_pill">
 							<div id="tools" class="btn-group pull-right">
 								<button class="btn btn-default" type="button" data-toggle="dropdown"><span id="tools_title">Tools</span> <span class="caret"></span></button>
@@ -256,33 +254,6 @@ Updated:
 								</div>
 							</div>
 						</div>
-<!-- 						<div class="tab-pane fade active in" id="amplicon_pill">
-							<div id="amplicon_tools" class="btn-group pull-right">
-								<button class="btn btn-default" type="button" data-toggle="dropdown">Select tool <span class="caret"></span></button>
-								<ul id="tools_dropdown_amplicon" class="dropdown-menu">
-									<li role="presentation"><a id="amplicon_tool_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>
-									<li role="presentation" class="divider"></li>
-		               				<li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>
-		               				<li role="presentation"><a id="sswap_amplicon" role="menuitem" tabindex="-1" href="javascript:void(0);">Discover pipelines at SSWAP</a></li>
-		               			</ul>
-								<div class="btn-group">
-						 			<button type="button" class="btn btn-default run_tool">Run tool on selected</button>		
-						 		</div>
-						 	</div>
-						 	<div id="amplicon_table_container">
-									<div class="btn-group">
-										<button class="btn btn-default" type="button" id="remove_samples">Remove selected samples</button> 
-										<br><br>
-										<span id="amplicon_badge" class='badge'>Run the amplicon tool from "Map selection" to view</span>
-									</div>
-								<table id="amplicon_table"> 
-							    	<td valign="top" class="grid-col">
-										<div id="amplicon_grid" class="grid"></div>
-									</td>
-								</table>
-								Total samples selected: <span id="amplicon_count">0</span>
-							</div>
-						</div> -->
 					</div>
 				</div>
 			</div>
