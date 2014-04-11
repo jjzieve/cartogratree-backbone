@@ -12,7 +12,8 @@
 // DEBUG MODE.
 ini_set('display_errors', 1);
 
-include_once("../includes/db_access/db_connect_sswap.php");
+#include_once("../includes/db_access/db_connect_sswap.php");
+include_once("../../dev/includes/db_access/db_connect_sswap.php");//for dev box
 //include_once("includes/incPGSQL.php");
 session_start();
 
@@ -565,6 +566,7 @@ if (isset($_GET['csv'])) {
 }
 else if(count($tidarray) > 1) {
 	$qCommonAmp = "SELECT * FROM sswap_get_common_amplicons_per_sample(ARRAY['".implode("','",$tidarray)."'])";
+	exit(var_dump($qCommonAmp));
 	$resCommonAmp = DBQuery($qCommonAmp);
 	$countCommonAmp = pg_num_rows($resCommonAmp);
 	$ampliconINString = "";

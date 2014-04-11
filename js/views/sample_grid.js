@@ -22,6 +22,24 @@ define([
   'slick_selection',
   'bootstrap'
  ], function($, _, Backbone, QueryModel, QueriesCollection, TreeIDCollection){
+Array.prototype.uniqueObjects = function(){
+    function compare(a, b){
+        for(var prop in a){
+            if(a[prop] !== b[prop]){
+                return false;
+            }
+        }
+        return true;
+    }
+    return this.filter(function(item, index, list){
+        for(var i=0; i<index;i++){
+            if(compare(item,list[i])){
+                return false;
+            }
+        }
+        return true;
+    });
+}
 	var SamplesView = Backbone.View.extend({
 		el: '#data_table_container',
     model: QueryModel,
@@ -105,13 +123,6 @@ define([
       this.sub_collection.reset(); //reset collection
     },
 
-    getCleanedIDs: function(){
-      var cleaned = _.map(_.pluck(this.data,"id"),function(id){
-        return id.substr(0,id.indexOf('.'))
-      });
-      return cleaned;
-    },
-
     updateSlickGrid: function(rectangleQuery){
       var that = this;
 
@@ -130,12 +141,13 @@ define([
 
         success: function (response) {
           that.unsetLoaderIcon();
-          var prev_ids = that.getCleanedIDs();
           var filtered = _.filter(response,function(row){// checks for overlapping markers
-            return prev_ids.indexOf(row[1]) === -1
+            return _.pluck(that.data,"id").indexOf(row[1]) === -1
           });
           that.data = that.data.concat($.map(filtered,function(a,i){return that.toObj(a,i)}));
-
+	  that.data = that.data.uniqueObjects(["id"]);
+	// var uniq_ids = _.uniq(_.pluck(that.data,"id")).length;
+	// var data_ids = _.pluck(that.data,"id").length); 
           var sortCol = undefined;
           var sortDir = true;
           function comparer(a, b) {
