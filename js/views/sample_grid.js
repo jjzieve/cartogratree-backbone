@@ -146,8 +146,9 @@ Array.prototype.uniqueObjects = function(){
           });
           that.data = that.data.concat($.map(filtered,function(a,i){return that.toObj(a,i)}));
 	  that.data = that.data.uniqueObjects(["id"]);
-	// var uniq_ids = _.uniq(_.pluck(that.data,"id")).length;
-	// var data_ids = _.pluck(that.data,"id").length); 
+	 var uniq_ids = _.uniq(_.pluck(that.data,"id")).length;
+	 var data_ids = _.pluck(that.data,"id").length; 
+	console.log(uniq_ids,data_ids);
           var sortCol = undefined;
           var sortDir = true;
           function comparer(a, b) {

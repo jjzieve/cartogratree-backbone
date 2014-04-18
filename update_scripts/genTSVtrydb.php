@@ -28,13 +28,13 @@ $q =
         END AS lon,
         species.species, 
         species.species_id, 
-        ecp_trydb_gps_groups.identifier,
+        ecp_trydb_gps_groups.id,
         string_agg(DISTINCT trait, '|') AS traits,        
 	count(distinct trait) as num_phenotypes
 FROM ecp_trydb
 INNER JOIN species ON species.species_code_4 = ecp_trydb.species_code_4
 INNER JOIN ecp_trydb_gps_groups ON ecp_trydb.ecp_trydb_gps_groups_id = ecp_trydb_gps_groups.id
-GROUP BY ecp_trydb.lat, ecp_trydb.lon, ecp_trydb.species_code_4, ecp_trydb.institution, ecp_trydb.dataset, ecp_trydb.firstname, ecp_trydb.lastname, ecp_trydb.class_type, species.species, species.species_id, ecp_trydb_gps_groups.identifier
+GROUP BY ecp_trydb.lat, ecp_trydb.lon, ecp_trydb.species_code_4, ecp_trydb.institution, ecp_trydb.dataset, ecp_trydb.firstname, ecp_trydb.lastname, ecp_trydb.class_type, species.species, species.species_id, ecp_trydb_gps_groups.id
 ORDER BY species.species, ecp_trydb.lat, ecp_trydb.lon;";
 
 $result = DbQuery($q);
@@ -48,19 +48,19 @@ while ($row = pg_fetch_assoc($result)){
 		$class = 'gymnosperm';
 	}
 	
-	echo    parseToCSV($row['identifier']) . "\t" . 
-		parseToCSV($row['institution']) . "\t" . 
-		parseToCSV($row['species_id']) . "\t" . 
-		parseToCSV($row['species']) . "\t" . 
-		parseToCSV($row['lat']) . "\t" . 
-		parseToCSV($row['lon']) . "\t" . 
-		parseToCSV($row['dataset']) . "\t" . 
-		parseToCSV($row['firstname']) . "\t" . 
-		parseToCSV($row['lastname']) . "\t" . 
-		parseToCSV($row['traits']) . "\t" . 
-		parseToCSV($class) . "\t" .
+	echo    parseToXML($row['id']) . "\t" . 
+		parseToXML($row['institution']) . "\t" . 
+		parseToXML($row['species_id']) . "\t" . 
+		parseToXML($row['species']) . "\t" . 
+		parseToXML($row['lat']) . "\t" . 
+		parseToXML($row['lon']) . "\t" . 
+		parseToXML($row['dataset']) . "\t" . 
+		parseToXML($row['firstname']) . "\t" . 
+		parseToXML($row['lastname']) . "\t" . 
+		parseToXML($row['traits']) . "\t" . 
+		parseToXML($class) . "\t" .
 		"measle_brown\ttrue\t0\t" .
-		parseToCSV($row['num_phenotypes']) . "\t0\n";
+		parseToXML($row['num_phenotypes']) . "\t0\n";
 
 }
 ?>
