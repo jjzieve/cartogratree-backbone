@@ -39,14 +39,15 @@ define([
       initColumns: function(){
         var that = this;
         this.columns = [
-          {id: "amplicon_id", name: "Amplicon ID", field: "amplicon_id",width: 75, sortable:true},
-          {id: "top_blast", name: "Top Blast Description (BLAST nr)", field: "top_blast",width: 150, sortable:true},
-          {id: "species_blast", name: "Species-Specific BLASTs", field: "species_blast",width: 100, sortable:true},
-          {id: "go", name: "GO Annotations", field: "go",width: 100, sortable:true},
-          {id: "interpro", name: "Interpro Annotations", field: "interpro",width: 130, sortable:true},
-          {id: "pfam", name: "PFAM Annotations", field: "pfam",width: 130, sortable:true},
-          {id: "expasy", name: "ExPASY EC Annotations", field: "expasy",width: 135, sortable:true},
-          {id: "thmm_signalp", name: "thmm / SignalP", field: "thmm_signalp",width: 150, sortable:true},
+          {id: "id", name: "ID", field: "id",width: 35, sortable:true},
+          {id: "amplicon_id", name: "Amplicon ID", field: "amplicon_id",width: 105, sortable:true},
+          {id: "blast-nr", name: "Top Blast Description (BLAST nr)", field: "blast-nr",width: 250, sortable:true},
+          {id: "blast-species", name: "Species-Specific BLASTs", field: "blast-species",width: 195, sortable:true},
+          {id: "go", name: "GO Annotations", field: "go",width: 130, sortable:true},
+          {id: "interpro", name: "Interpro Annotations", field: "interpro",width: 165, sortable:true},
+          {id: "pfam", name: "PFAM Annotations", field: "pfam",width: 150, sortable:true},
+          {id: "ec", name: "ExPASY EC Annotations", field: "ec",width: 185, sortable:true},
+          {id: "tmhmmsignalp", name: "thmm / SignalP", field: "tmhmmsignalp",width: 120, sortable:true},
         ]; 
         this.checkboxSelector = new Slick.CheckboxSelectColumn({});
         this.columns.unshift(this.checkboxSelector.getColumnDefinition());
@@ -74,58 +75,55 @@ define([
           },
 
             success: function (response) {
-              console.log(response);
-              // var i = 0;
-              // _.each(response["tree_ids"],function(value,key){
-              //   var row = {};
-              //   row["id"] = key;
-              //   _.each(value,function(value){
-              //     row[value["snp_accession"]] = value["allele"];
-              //   });
-              //   that.data.push(row);
-              //   i++;
-              // });
+              that.data = response;
+              if(that.data === null){
+                $("#amplicon_table").prepend('<br><span id="amplicon_badge" class="badge">No common amplicons found.</span>');
+              	that.unsetLoaderIcon();
+		return false;
+              }
+              that.initColumns();
+              that.initGrid();
 
-            //   if (typeof(that.grid) === "undefined"){
-            //     that.initColumns();
-            //     that.initGrid();
-            //   }
               
-            //   that.unsetLoaderIcon();
+              that.unsetLoaderIcon();
 
 
-            //   var sortCol = undefined;
-            //   var sortDir = true;
-            //   function comparer(a, b) {
-            //     var x = a[sortCol], y = b[sortCol];
-            //     return (x == y ? 0 : (x > y ? 1 : -1));
-            //   }
-            //   that.grid.onSort.subscribe(function (e, args) {
-            //       sortDir = args.sortAsc;
-            //       sortCol = args.sortCol.field;
-            //       that.dataView.sort(comparer, sortDir);
-            //       that.grid.invalidateAllRows();
-            //       that.grid.render();
-            //   });
+              var sortCol = undefined;
+              var sortDir = true;
+              function comparer(a, b) {
+                var x = a[sortCol], y = b[sortCol];
+                return (x == y ? 0 : (x > y ? 1 : -1));
+              }
+              that.grid.onSort.subscribe(function (e, args) {
+                  sortDir = args.sortAsc;
+                  sortCol = args.sortCol.field;
+                  that.dataView.sort(comparer, sortDir);
+                  that.grid.invalidateAllRows();
+                  that.grid.render();
+              });
         
-            //   // set the initial sorting to be shown in the header
-            //   if (sortCol) {
-            //     that.grid.setSortColumn(sortCol, sortDir);
-            //   }
+              // set the initial sorting to be shown in the header
+              if (sortCol) {
+                that.grid.setSortColumn(sortCol, sortDir);
+              }
 
-            //   that.dataView.beginUpdate();
-            //   that.dataView.setItems(that.data);
-            //   that.grid.setSelectedRows(that.collection.pluck("index"));
-            //   that.dataView.endUpdate();
+              that.dataView.beginUpdate();
+              that.dataView.setItems(that.data);
+              that.grid.setSelectedRows(that.collection.pluck("index"));
+              that.dataView.endUpdate();
 
-            //   that.grid.updateRowCount();
-            //   that.grid.render();
+              that.grid.updateRowCount();
+              that.grid.render();
 
-            //   that.dataView.syncGridSelection(that.grid, true);
+              that.dataView.syncGridSelection(that.grid, true);
 
-            //   $("#amplicon_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
-            //   that.listenToSelectedRows();
-            }
+              $("#amplicon_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
+              that.listenToSelectedRows();
+            },
+		error: function(response){
+     	           $("#amplicon_table").prepend('<br><span id="amplicon_badge" class="badge">Query error, please contact the admin.</span>');
+		that.unsetLoaderIcon();
+		}
           });
       },
 

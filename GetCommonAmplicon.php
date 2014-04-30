@@ -258,6 +258,7 @@ function genQuery($ampliconINString)
 $tidarray = GETlist("tid");
 $checkedAmplicons = GETList("checkedAmplicons");
 
+
 if (isset($_GET['csv'])) {
 		header('Content-Type: text/plain');
 		// Prepare for download.
@@ -565,8 +566,8 @@ if (isset($_GET['csv'])) {
 	}
 }
 else if(count($tidarray) > 1) {
+
 	$qCommonAmp = "SELECT * FROM sswap_get_common_amplicons_per_sample(ARRAY['".implode("','",$tidarray)."'])";
-	exit(var_dump($qCommonAmp));
 	$resCommonAmp = DBQuery($qCommonAmp);
 	$countCommonAmp = pg_num_rows($resCommonAmp);
 	$ampliconINString = "";
@@ -575,17 +576,65 @@ else if(count($tidarray) > 1) {
 			$ampliconINString .= "'" . $idRes['amplicon_name'] . "',";
 		}
 		$ampliconINString = substr($ampliconINString, 0, -1);
-		
 		$query = genQuery($ampliconINString);
 		$resCommonAnnot = DBQuery($query);
 		$countCommonAnnot = pg_num_rows($resCommonAnnot);
 
+
 		if($countCommonAnnot > 0) {
-			$amplicons = array();
-			while($annotation = pg_fetch_assoc($resCommonAnnot)){
-				$amplicons[] = $annotation;
+			$allAmpId = array();
+			$output = array();
+			while($annotRes = pg_fetch_assoc($resCommonAnnot)){
+				$ampliconId = $annotRes['amplicon_name'];
+				$annot_type = $annotRes['annot_type'];
+				$annot_id = $annotRes['annot_id'];
+				$annot_term = $annotRes['annot_term'];
+				
+				//hash loads
+				if(!in_array($ampliconId,$allAmpId)){
+					$allAmpId[] = $ampliconId;
+					$output[$ampliconId] = array();
+				}
+				
+				if(array_key_exists($annot_type,$output[$ampliconId])){
+					if($annot_type == 'blast-nr' || $annot_type =='tmhmmsignalp' || $annot_type == 'blast-species'){
+						$output[$ampliconId][$annot_type] .= "$annot_term";
+					}
+					else{
+						$output[$ampliconId][$annot_type] .= "$annot_id $annot_term";
+					}
+				}
+				else{
+					if($annot_type == 'blast-nr' || $annot_type =='tmhmmsignalp' || $annot_type == 'blast-species'){
+						$output[$ampliconId][$annot_type] = $annot_term;
+					}
+					else{
+						$output[$ampliconId][$annot_type] = $annot_id.' '.$annot_term;
+					}
+				}
+			}//organize data into respective fields
+			// echo var_dump($output);
+			$col_type = array('blast-nr','blast-species','go','interpro','pfam','ec','tmhmmsignalp');
+			// $iterator = 1;
+			// // $prev_sel_amp = isset($_SESSION['checkedAmplicons']) ? $_SESSION['checkedAmplicons']: array();
+			// $json = array();
+
+			$all_amps_json = array();
+			$i = 1;
+			foreach($output as $ampID => $data){
+				$json = array("id"=>$i,"amplicon_id"=>$ampID);
+				foreach($col_type as $type){
+					if(array_key_exists($type,$data)){
+						$json[$type] = $data[$type];
+					}
+					else{
+						$json[$type] = "";
+					}
+				}
+				$all_amps_json[] = $json;
+				$i++;
 			}
-			echo json_encode($amplicons);
+			echo json_encode($all_amps_json);
 		}
 	}
 }

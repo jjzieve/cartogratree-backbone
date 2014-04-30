@@ -123,9 +123,7 @@ define([
                                         '<div id="amplicon_table_container">'+
                                         '<div class="btn-group">'+
                                         '<button class="btn btn-default" type="button" id="remove_amplicons">Remove selected amplicons</button>'+ 
-                                        '<br><br>'+
-                                        '<span id="amplicon_badge" class="badge">Run the amplicon tool from "Map selection" to view</span>'+
-                                         '</div>'+
+                                        '</div>'+
                                          '<table id="amplicon_table">'+
                                          '<td valign="top" class="grid-col">'+
                                          '<div id="amplicon_grid" class="grid"></div>'+
