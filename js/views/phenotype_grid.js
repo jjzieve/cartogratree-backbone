@@ -67,8 +67,7 @@ define([
         this.grid.registerPlugin(this.checkboxSelector);
       },
 
-
-
+	
       updateSlickGrid: function(){
           var that = this;
           this.data = [];
@@ -80,6 +79,11 @@ define([
             dataType: "json",
             data: {"tid":checkedSamples.join()},//GET uri as string tid1,tid2,...
             success: function (response) {
+              that.unsetLoaderIcon();
+          		if(response === null){
+          			$("#message_display_phenotype").append('<br><span id="phenotype_badge" class="badge">No phenotypes found.</span>')    ;
+          			return false;
+          		}
               var prev_phenotypes = that.prev_phenotypes;
               var new_phenotypes = response["phenotypes"];
               if ( that.arrayCmp(prev_phenotypes,new_phenotypes) || typeof(this.columns) === "undefined") { 
@@ -99,7 +103,6 @@ define([
               });
 
 
-              that.unsetLoaderIcon();
               var sortCol = undefined;
               var sortDir = true;
               function comparer(a, b) {
@@ -135,18 +138,6 @@ define([
           });
       },
 
-    setLoaderIcon: function(){
-      this.$el.css({
-          "background-image": "url(images/ajax-loader.gif)",
-          "background-repeat" : "no-repeat",
-          "background-position" : "center"
-      }).addClass("loading");
-    },
-    
-    unsetLoaderIcon: function(){
-      this.$el.css({"background-image":"none"}).removeClass("loading");
-    },
-    
     pollForOpenTab: function(){
       if(this.collection.meta("phenotype_tab_open")){
         this.updateSlickGrid();

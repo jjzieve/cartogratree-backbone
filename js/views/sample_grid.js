@@ -145,10 +145,11 @@ Array.prototype.uniqueObjects = function(){
             return _.pluck(that.data,"id").indexOf(row[1]) === -1
           });
           that.data = that.data.concat($.map(filtered,function(a,i){return that.toObj(a,i)}));
-	  that.data = that.data.uniqueObjects(["id"]);
-	 var uniq_ids = _.uniq(_.pluck(that.data,"id")).length;
-	 var data_ids = _.pluck(that.data,"id").length; 
-	console.log(uniq_ids,data_ids);
+      	  that.data = that.data.uniqueObjects(["id"]);
+      	  var uniq_ids = _.uniq(_.pluck(that.data,"id")).length;
+      	  var data_ids = _.pluck(that.data,"id").length; 
+      	  console.log(uniq_ids,data_ids);
+
           var sortCol = undefined;
           var sortDir = true;
           function comparer(a, b) {
@@ -186,19 +187,6 @@ Array.prototype.uniqueObjects = function(){
         }
       });
     },
-
-	setLoaderIcon: function(){
-		this.$el.css({
-	   		"background-image": "url(images/ajax-loader.gif)",
-	   		"background-repeat" : "no-repeat",
-	   		"background-position" : "center"
-    }).addClass("loading");
-	},
-	
-	unsetLoaderIcon: function(){
- 		this.$el.css({"background-image":"none"}).removeClass("loading");
-	},
-	
 		
 	refreshTable: function(){
     var rectangleQueryModel = this.collection.get("rectangle");

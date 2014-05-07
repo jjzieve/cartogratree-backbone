@@ -14,6 +14,7 @@ define([
 	'views/sidebar_selection_tree',
 	'views/sidebar_tree_id_search',
 	'views/sidebar_filters',
+	'views/grid_mixin',
 	'views/sample_grid',
 	'views/genotype_grid',
 	'views/phenotype_grid',
@@ -22,15 +23,16 @@ define([
 	'views/bottom_tabs',
 	], function($, _, Backbone, QueryModel, TreeNodeModel, TreeIDModel,
 		QueriesCollection, TreeIDCollection,
-		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, SamplesView, GenotypeView, PhenotypeView, WorldClimView, AmpliconView, BottomTabsView) {
+		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, GridMixin, SamplesView, GenotypeView, PhenotypeView, WorldClimView, AmpliconView, BottomTabsView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'(/)(?tid=:tree_ids)':'index',
-				 '(/)about':'about',
+				'(/)about':'about',
 			},
-			navigate: function (url) { window.location = url; }
+			navigate: function (url) { 
+				window.location = url; 
+			}
 		});
-	
 		var initialize = function(){
 			var appRouter = new AppRouter();
 			
@@ -58,6 +60,14 @@ define([
 					});
 					console.log("Number of tree_ids supplied: "+tree_ids_array.length);
 				}
+
+				//add some functions from the Mixin to the views to maintain DRY
+				_.extend(SamplesView.prototype, GridMixin);
+				_.extend(GenotypeView.prototype, GridMixin);
+				_.extend(PhenotypeView.prototype, GridMixin);
+				_.extend(WorldClimView.prototype, GridMixin);
+				_.extend(AmpliconView.prototype, GridMixin);
+
 
  				var treeNode = new TreeNodeModel();
 				var map = new MapView({collection: queries,model: query}); //get rid of generic endings "view,map"

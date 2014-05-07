@@ -144,18 +144,6 @@ define([
           });
       },
 
-    setLoaderIcon: function(){
-      this.$el.css({
-          "background-image": "url(images/ajax-loader.gif)",
-          "background-repeat" : "no-repeat",
-          "background-position" : "center"
-      }).addClass("loading");
-    },
-    
-    unsetLoaderIcon: function(){
-      this.$el.css({"background-image":"none"}).removeClass("loading");
-    },
-    
     pollForOpenTab: function(){
       if(this.collection.meta("genotype_tab_open")){
         this.updateSlickGrid();

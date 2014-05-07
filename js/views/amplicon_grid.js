@@ -127,18 +127,6 @@ define([
           });
       },
 
-    setLoaderIcon: function(){
-      this.$el.css({
-          "background-image": "url(images/ajax-loader.gif)",
-          "background-repeat" : "no-repeat",
-          "background-position" : "center"
-      }).addClass("loading");
-    },
-    
-    unsetLoaderIcon: function(){
-      this.$el.css({"background-image":"none"}).removeClass("loading");
-    },
-    
     pollForOpenPill: function(){
       if(this.collection.meta("amplicon_pill_open")){
         this.updateSlickGrid();

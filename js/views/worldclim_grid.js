@@ -154,19 +154,6 @@ define([
       });
     },
 
-	setLoaderIcon: function(){
-		this.$el.css({
-	   		"background-image": "url(images/ajax-loader.gif)",
-	   		"background-repeat" : "no-repeat",
-	   		"background-position" : "center"
-    }).addClass("loading");
-	},
-	
-	unsetLoaderIcon: function(){
- 		this.$el.css({"background-image":"none"}).removeClass("loading");
-	},
-	
-		
   listenToSelectedRows: function(){
     var that = this;
     this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
