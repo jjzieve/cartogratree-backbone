@@ -22,24 +22,26 @@ define([
   'slick_selection',
   'bootstrap'
  ], function($, _, Backbone, QueryModel, QueriesCollection, TreeIDCollection){
-Array.prototype.uniqueObjects = function(){
-    function compare(a, b){
-        for(var prop in a){
-            if(a[prop] !== b[prop]){
-                return false;
+    //should probably put prototypes like this in a seperate file
+    Array.prototype.uniqueObjects = function(){
+        function compare(a, b){
+            for(var prop in a){
+                if(a[prop] !== b[prop]){
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        return this.filter(function(item, index, list){
+            for(var i=0; i<index;i++){
+                if(compare(item,list[i])){
+                    return false;
+                }
+            }
+            return true;
+        });
     }
-    return this.filter(function(item, index, list){
-        for(var i=0; i<index;i++){
-            if(compare(item,list[i])){
-                return false;
-            }
-        }
-        return true;
-    });
-}
+
 	var SamplesView = Backbone.View.extend({
 		el: '#data_table_container',
     model: QueryModel,
@@ -108,24 +110,9 @@ Array.prototype.uniqueObjects = function(){
       }
     },
 
-    clearSlickGrid: function(){
-      $("#clear_table").trigger("click"); // map view listens to this to remove rectangles
-      this.data = [];//clear data
-      this.dataView.beginUpdate();
-      this.dataView.setItems(this.data);
-      this.dataView.endUpdate();
-
-      this.grid.updateRowCount();
-      this.grid.render();
-      $(".slick-column-name input[type=checkbox]").attr('checked',false); //should do this automatically but it doesn't for some reason...
-      this.dataView.syncGridSelection(this.grid, true);
-      $("#sample_count").html(0); //reset selected count
-      this.sub_collection.reset(); //reset collection
-    },
 
     updateSlickGrid: function(rectangleQuery){
       var that = this;
-
       var sts_is_query = encodeURIComponent(this.getTableQueryRectangle("sts_is",rectangleQuery));
       var tgdr_query = encodeURIComponent(this.getTableQueryRectangle("tgdr",rectangleQuery));
       var try_db_query = encodeURIComponent(this.getTableQueryRectangle("try_db",rectangleQuery));
@@ -146,43 +133,12 @@ Array.prototype.uniqueObjects = function(){
           });
           that.data = that.data.concat($.map(filtered,function(a,i){return that.toObj(a,i)}));
       	  that.data = that.data.uniqueObjects(["id"]);
-      	  var uniq_ids = _.uniq(_.pluck(that.data,"id")).length;
-      	  var data_ids = _.pluck(that.data,"id").length; 
-      	  console.log(uniq_ids,data_ids);
+          //DEBUG for "not unique ID"
+      	  // var uniq_ids = _.uniq(_.pluck(that.data,"id")).length;
+      	  // var data_ids = _.pluck(that.data,"id").length; 
+      	  // console.log(uniq_ids,data_ids);
 
-          var sortCol = undefined;
-          var sortDir = true;
-          function comparer(a, b) {
-            var x = a[sortCol], y = b[sortCol];
-            return (x == y ? 0 : (x > y ? 1 : -1));
-          }
-          that.grid.onSort.subscribe(function (e, args) {
-              sortDir = args.sortAsc;
-              sortCol = args.sortCol.field;
-              that.dataView.sort(comparer, sortDir);
-              that.grid.invalidateAllRows();
-              that.grid.render();
-          });
-		
-          // set the initial sorting to be shown in the header
-          if (sortCol) {
-              that.grid.setSortColumn(sortCol, sortDir);
-          }
-
-          that.dataView.beginUpdate();
-          that.dataView.setItems(that.data);
-          // that.dataView.setFilterArgs({
-          //   searchString: that.searchString
-          // });
-          // that.dataView.setFilter(that.myFilter);
-          that.dataView.endUpdate();
-
-          that.grid.updateRowCount();
-          that.grid.render();
-
-          that.dataView.syncGridSelection(that.grid, true);
-
-
+          that.gridFunctions();
           //console.log("Total samples: "+that.grid.getDataLength());
         }
       });
@@ -194,7 +150,7 @@ Array.prototype.uniqueObjects = function(){
 			this.updateSlickGrid(rectangleQueryModel.get("value"));
 		}
 		else{//no rectangle and rectangle query is undefined
-			this.clearSlickGrid();
+			this.clearSlickGrid("sample");
 		}
 	},
 
@@ -228,7 +184,7 @@ Array.prototype.uniqueObjects = function(){
     var that = this;
     this.initColumns();
     this.initGrid();
-		this.clearSlickGrid();//clear at first
+		this.clearSlickGrid("sample");//clear at first
     this.listenToSelectedRows();
     // this.listenTo(this.sub_collection,'change_selection',this.updateSelectedRows);
 		this.collection.on('add change remove',this.refreshTable,this); //possibly reset?
@@ -253,7 +209,7 @@ Array.prototype.uniqueObjects = function(){
   removeSelected: function(){
     var that = this;
     if (this.grid.getSelectedRows().length == this.grid.getDataLength()){ // clear if all selected, not iterate remove
-      this.clearSlickGrid();
+      this.clearSlickGrid("sample");
     }
     else{
       var ids = this.dataView.mapRowsToIds(this.grid.getSelectedRows());

@@ -61,6 +61,13 @@ define([
 					console.log("Number of tree_ids supplied: "+tree_ids_array.length);
 				}
 
+ 				var treeNode = new TreeNodeModel();
+				var map = new MapView({collection: queries,model: query}); //get rid of generic endings "view,map"
+				var selectionTree = new SelectionTreeView({collection: queries, model: treeNode});
+				var treeIDSearch = new TreeIDSearchView({collection: queries});
+				var filters = new FiltersView({collection: queries,model: query});
+				var tabs = new BottomTabsView({collection: selected_tree_ids,model: selected_tree_id});
+
 				//add some functions from the Mixin to the views to maintain DRY
 				_.extend(SamplesView.prototype, GridMixin);
 				_.extend(GenotypeView.prototype, GridMixin);
@@ -68,19 +75,11 @@ define([
 				_.extend(WorldClimView.prototype, GridMixin);
 				_.extend(AmpliconView.prototype, GridMixin);
 
-
- 				var treeNode = new TreeNodeModel();
-				var map = new MapView({collection: queries,model: query}); //get rid of generic endings "view,map"
-				var selectionTree = new SelectionTreeView({collection: queries, model: treeNode});
-				var treeIDSearch = new TreeIDSearchView({collection: queries});
-				var filters = new FiltersView({collection: queries,model: query});
-				var tabs = new BottomTabsView({collection: selected_tree_ids,model: selected_tree_id});
 				var sample_table = new SamplesView({collection: queries, sub_collection: selected_tree_ids, model: query}); //parent of the other tables
 				var geno_table = new GenotypeView({collection: selected_tree_ids,model:selected_tree_id});
 				var pheno_table = new PhenotypeView({collection: selected_tree_ids,model:selected_tree_id});
 				var worldclim_table = new WorldClimView({collection: selected_tree_ids,model:selected_tree_id});
 				var amplicon_table = new AmpliconView({collection: selected_tree_ids,model:selected_tree_id});
-
 
 			});
 			appRouter.on('route:about', function(){
