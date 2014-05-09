@@ -130,7 +130,6 @@ define([
 
     initialize: function(options){
       var that = this;
-      console.log(this);
       this.listenTo(this.collection,"done",this.pollForOpenPill);
     },
 

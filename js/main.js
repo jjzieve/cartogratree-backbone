@@ -93,6 +93,12 @@ require.config({
         'slick_selection':{
             deps: ['slick_checkbox']
         },
+        'tablecloth':{
+            deps: ['jquery']
+        },
+        'tablesorter':{
+            deps: ['jquery']
+        },
         'select2':{
             deps: ['jquery']
         }

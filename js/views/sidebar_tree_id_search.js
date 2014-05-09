@@ -52,6 +52,15 @@ define([
       return "SELECT tree_id FROM "+table_id;
     },
 	
+    unselectSideBarSelectionTree: function(){
+      var that = this;
+     //close selection tree if searching by ID
+      $("#selection_tree").find(".selected").each(function(index){
+        that.collection.reset();
+        $(this).removeClass("selected");
+      });
+    },
+
     initialize: function(){
     	var that = this;
       var sts_is_query = encodeURIComponent(this.genQuery("sts_is"));
@@ -76,7 +85,11 @@ define([
             multiple: true,
             width: "resolve",
             minimumInputLength: 4,
+          })
+          .on("select2-opening",function(){
+            that.unselectSideBarSelectionTree();
           });
+
         }
 		  });
     },
