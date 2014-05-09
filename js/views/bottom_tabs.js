@@ -77,7 +77,8 @@ define([
     },
   
     runTool: function(e){
-      var tool = $("#tools ul li").find("a.selected").attr("id");
+      var parent_id = $(e.target).parent().parent().attr("id");
+      var tool = $("#"+parent_id+" ul li").find("a.selected").attr("id");
       console.log(tool);
       var ids = this.collection.pluck('id');
       switch(tool){
@@ -85,9 +86,12 @@ define([
 		      this.openAmpliconPill(ids);
         	break;
         case 'amplicons_tab_csv':
-          var checked = $('#amplicon_grid').find('input[type="checkbox"]:checked');
-          var checked = _.pluck(checked,"value").join();
-          window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked+'&csv';
+          // hack to get the checked amplicons without using slickgrid's API, I would've had to include the view 
+          var checked = [];
+          $('#amplicon_grid').find('input[type="checkbox"]:checked').each(function(index){
+            checked.push($(this).parent().next().next().html());
+          });
+          window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked.join()+'&csv';
           break;
         case 'phenotypes_tab_csv':
           window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
