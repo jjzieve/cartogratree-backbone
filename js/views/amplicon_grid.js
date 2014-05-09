@@ -75,11 +75,14 @@ define([
           },
 
             success: function (response) {
+              that.unsetLoaderIcon();
               that.data = response;
               if(that.data === null){
-                $("#amplicon_table").prepend('<br><span id="amplicon_badge" class="badge">No common amplicons found.</span>');
-              	that.unsetLoaderIcon();
-		            return false;
+                $("#message_display_amplicon").text('No common amplicons found.');
+              	return false;
+              }
+              else{
+                $("#message_display_amplicon").empty();
               }
               that.initColumns();
               that.initGrid();
@@ -92,7 +95,7 @@ define([
                 that.listenToSelectedRows();
               },
 		        error: function(response){
-     	        $("#amplicon_table").prepend('<br><span id="amplicon_badge" class="badge">Query error, please contact the admin.</span>');
+              $("#message_display_amplicon").text('Query error, please contact the admin.');
 		          that.unsetLoaderIcon();
 		        }
           });

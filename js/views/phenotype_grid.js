@@ -83,6 +83,9 @@ define([
           			$("#message_display_phenotype").text('No phenotypes found.');
           			return false;
           		}
+              else{
+                $("#message_display_phenotype").empty();
+              }
               var prev_phenotypes = that.prev_phenotypes;
               var new_phenotypes = response["phenotypes"];
               if ( that.arrayCmp(prev_phenotypes,new_phenotypes) || typeof(this.columns) === "undefined") { 

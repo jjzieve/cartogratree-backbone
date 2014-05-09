@@ -52,8 +52,7 @@ define([
     tabContentTemplate: _.template('<div id="<%= name %>_tab_content" class="tab-pane active">'+
                                     '<div class="button-wrapper">'+
                                     '<button class="btn btn-default" type="button" id="remove_<%= name %>">'+
-                                    'Remove selected samples</button></div>'+
-                                    '<br><span id="message_display_<%= name %>" class="badge"></span>'+
+                                    'Remove selected samples</button> <span id="message_display_<%= name %>" class="badge"></span></div>'+
                                     '<table><td valign="top" class="grid-col"><div id="<%= name %>_grid" class="grid"></div></td></table>'+
                                     'Total samples selected: <span id="<%= name %>_count">0</span></div>'),
 
@@ -137,8 +136,7 @@ define([
                                         '</div>'+
                                         '<div id="amplicon_table_container">'+
                                         '<div class="btn-group">'+
-                                        '<button class="btn btn-default" type="button" id="remove_amplicons">Remove selected amplicons</button>'+ 
-                                        '<br><span id="message_display_amplicons" class="badge"></span>'+
+                                        '<button class="btn btn-default" type="button" id="remove_amplicons">Remove selected amplicons</button> <span id="message_display_amplicon" class="badge"></span>'+ 
                                         '</div>'+
                                          '<table id="amplicon_table">'+
                                          '<td valign="top" class="grid-col">'+

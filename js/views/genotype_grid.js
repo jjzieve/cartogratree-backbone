@@ -34,8 +34,6 @@ define([
         topPanelHeight: 25
       },
       data: [],
-      over_limit_html: _.template("<button class='btn btn-default' type='button' id='remove_genotype'>Remove selected samples</button> <span class='badge'>25 of <%= num_columns %> columns shown. Download the CSV to view every genotype.</span>"),
-      no_genotypes_html: " <span class='badge'>No genotypes found. Please select a different set of samples</span>",
 
       arrayCmp: function(arr1,arr2){ //returns true if same elements and lengths of two arrays, not necessarily in same order
       return !($(arr1).not(arr2).length == 0 && $(arr1).not(arr2).length == 0);
@@ -43,10 +41,13 @@ define([
 
       initColumns: function(genotype_accessions,over_limit){
         if (over_limit){
-          $("#message_display_genotype").html(this.over_limit_html({num_columns:genotype_accessions.length}));
+          $("#message_display_genotype").text("25 of "+genotype_accessions.length+" columns shown. Download the CSV to view every genotype.");
         }
-        if(genotype_accessions.length === 0){
-          $("#message_display_genotype").append(this.no_genotypes_html);
+        else if(genotype_accessions.length === 0){
+          $("#message_display_genotype").text("No genotypes found.");
+        }
+        else{
+          $("#message_display_genotype").empty();
         }
         var that = this;
         this.columns = [

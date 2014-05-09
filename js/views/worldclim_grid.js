@@ -114,6 +114,10 @@ define([
 
         success: function (response) {
           that.unsetLoaderIcon();
+          if(that.data === null){
+            $("#message_display_worldclim").text('No environmental data found.');
+            return false;
+          }
           var prev_ids = _.pluck(that.data,"id");
           var filtered = _.filter(response,function(row){// checks for overlapping markers
             return prev_ids.indexOf(row["id"]) === -1;
