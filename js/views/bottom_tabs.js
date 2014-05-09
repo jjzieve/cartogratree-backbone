@@ -59,6 +59,7 @@ define([
     collection: Tree_IDCollection,
     events:{
       "click #tools ul li a" : "changeTitle",
+      "click #amplicon_tools ul li a" : "changeTitle",
       "click .close" : "closeTab",
       "click .run_tool" : "runTool",
       "click #genotype_tool" : "openTab",
@@ -67,9 +68,11 @@ define([
       "show.bs.tab a[data-toggle='tab']" : "changeTools"    
     },
 
-    changeTitle: function(e){
-      $('#tools_title').html($(e.target).html());
-      $("#tools ul li a").not(e.target).removeClass("selected");
+    changeTitle: function(e){//should probably encode parent as a data-* attribute
+      var parent_id = $(e.target).parent().parent().parent().attr("id");
+      $("#"+parent_id+"_title").html($(e.target).html());
+      $("#"+parent_id+" ul li a").not(e.target).removeClass("selected");
+
       $(e.target).addClass('selected');
     },
   
@@ -110,7 +113,7 @@ define([
 		$(".analysis_pills").append("<li id='amplicon_pill'><a data-toggle='pill' href='#amplicon_pill_content'>Amplicons</a></li>");
 		$("#analysis_pills_content").append('<div class="tab-pane fade active in" id="amplicon_pill_content">'+
                                         '<div id="amplicon_tools" class="btn-group pull-right">'+
-                                        '<button class="btn btn-default" type="button" data-toggle="dropdown">Select tool <span class="caret"></span></button>'+
+                                        '<button class="btn btn-default" type="button" data-toggle="dropdown"><span id="amplicon_tools_title">Select tool</span> <span class="caret"></span></button>'+
                                         '<ul id="tools_dropdown_amplicon" class="dropdown-menu">'+
                                         '<li role="presentation"><a id="amplicons_tab_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>'+
                                         '<li role="presentation" class="divider"></li>'+
@@ -121,9 +124,9 @@ define([
                                         '<button type="button" class="btn btn-default run_tool">Run tool on selected</button></div>'+
                                         '</div>'+
                                         '<div id="amplicon_table_container">'+
-                                        // '<div class="btn-group">'+
+                                        '<div class="btn-group">'+
                                         '<button class="btn btn-default" type="button" id="remove_amplicons">Remove selected amplicons</button>'+ 
-                                        // '</div>'+
+                                        '</div>'+
                                          '<table id="amplicon_table">'+
                                          '<td valign="top" class="grid-col">'+
                                          '<div id="amplicon_grid" class="grid"></div>'+
@@ -138,21 +141,6 @@ define([
     console.log(this.collection._meta);
 	},
 		
-
-	
-
-    setLoaderIcon: function(el){
-    	$("#data_table_container").css({
-          "background-image": "url(images/ajax-loader.gif)",
-          "background-repeat" : "no-repeat",
-          "background-position" : "center"
-    	}).addClass("loading");
-    },  
-    
-    unsetLoaderIcon: function(el){
-    	$("#data_table_container").css({"background-image":"none"}).removeClass("loading");
-    },  
-
     openTab: function(e){ // use a template
        // only allow one tab for one type at a time
       var id = e.target.id;
