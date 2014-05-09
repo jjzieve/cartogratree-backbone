@@ -40,7 +40,8 @@ define([
 		      this.$el.css({"background-image":"none"}).removeClass("loading");
 		    },
 
-		    gridFunctions: function(){
+		    gridFunctions: function(){ 
+		    	var that = this; //for the onSort method, otherwise contexts get messed up
 		    	var sortCol = undefined;
 				var sortDir = true;
 				function comparer(a, b) {
@@ -50,9 +51,9 @@ define([
 				this.grid.onSort.subscribe(function (e, args) {
 				  sortDir = args.sortAsc;
 				  sortCol = args.sortCol.field;
-				  this.dataView.sort(comparer, sortDir);
-				  this.grid.invalidateAllRows();
-				  this.grid.render();
+				  that.dataView.sort(comparer, sortDir);
+				  that.grid.invalidateAllRows();
+				  that.grid.render();
 				});
 
 				// set the initial sorting to be shown in the header

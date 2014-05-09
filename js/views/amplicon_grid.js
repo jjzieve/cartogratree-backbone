@@ -131,11 +131,9 @@ define([
     initialize: function(options){
       var that = this;
       this.listenTo(this.collection,"done",this.pollForOpenPill);
-      console.log($(this));
     },
 
     removeSelected: function(){
-      console.log('removed');
       var that = this;
       if (this.grid.getSelectedRows().length == this.grid.getDataLength()){ // clear if all selected, not iterate remove
         this.clearSlickGrid("amplicon");
