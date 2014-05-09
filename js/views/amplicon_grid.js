@@ -73,7 +73,6 @@ define([
             dataType: "json",
             data: {"tid":checkedSamples.join()//GET url as string tid1,tid2,...
           },
-
             success: function (response) {
               that.unsetLoaderIcon();
               that.data = response;

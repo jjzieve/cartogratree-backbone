@@ -73,7 +73,14 @@ define([
 				this.grid.render();
 
 				this.dataView.syncGridSelection(this.grid, true);
-		    }
+		    },
+		    
+		    deleteGrid: function(){
+		      delete this.columns;
+		      delete this.grid;
+		      delete this.dataView;
+		      delete this.prev_accessions;
+		    },
 			
 		}
 		return GridMixin;

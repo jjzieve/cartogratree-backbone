@@ -105,39 +105,8 @@ define([
                 i++;
               });
 
-              // if (typeof(that.grid) === "undefined"){
-              //   that.initGrid();
-              // }
-
               that.unsetLoaderIcon();
-              var sortCol = undefined;
-              var sortDir = true;
-              function comparer(a, b) {
-                var x = a[sortCol], y = b[sortCol];
-                return (x == y ? 0 : (x > y ? 1 : -1));
-              }
-              that.grid.onSort.subscribe(function (e, args) {
-                  sortDir = args.sortAsc;
-                  sortCol = args.sortCol.field;
-                  that.dataView.sort(comparer, sortDir);
-                  that.grid.invalidateAllRows();
-                  that.grid.render();
-              });
-        
-              // set the initial sorting to be shown in the header
-              if (sortCol) {
-                that.grid.setSortColumn(sortCol, sortDir);
-              }
-
-              that.dataView.beginUpdate();
-              that.dataView.setItems(that.data);
-              that.grid.setSelectedRows(that.collection.pluck("index"));
-              that.dataView.endUpdate();
-
-              that.grid.updateRowCount();
-              that.grid.render();
-
-              that.dataView.syncGridSelection(that.grid, true);
+              that.gridFunctions();
 
               $("#genotype_sample_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
               that.listenToSelectedRows();
@@ -149,13 +118,6 @@ define([
       if(this.collection.meta("genotype_tab_open")){
         this.updateSlickGrid();
       }
-    },
-
-    deleteGrid: function(){
-      delete this.columns;
-      delete this.grid;
-      delete this.dataView;
-      delete this.prev_accessions;
     },
 
     listenToSelectedRows: function(){
