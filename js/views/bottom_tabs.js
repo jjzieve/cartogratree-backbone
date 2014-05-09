@@ -76,6 +76,15 @@ define([
       $(e.target).addClass('selected');
     },
   
+    // hack to get the checked amplicons without using slickgrid's API, I would've had to include the view 
+    getCheckedAmplicons: function(){
+      var checked = [];
+      $('#amplicon_grid').find('input[type="checkbox"]:checked').each(function(index){
+        checked.push($(this).parent().next().next().html());
+      });
+      return checked.join();
+    },
+
     runTool: function(e){
       var parent_id = $(e.target).parent().parent().attr("id");
       var tool = $("#"+parent_id+" ul li").find("a.selected").attr("id");
@@ -86,12 +95,10 @@ define([
 		      this.openAmpliconPill(ids);
         	break;
         case 'amplicons_tab_csv':
-          // hack to get the checked amplicons without using slickgrid's API, I would've had to include the view 
-          var checked = [];
-          $('#amplicon_grid').find('input[type="checkbox"]:checked').each(function(index){
-            checked.push($(this).parent().next().next().html());
-          });
-          window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked.join()+'&csv';
+          window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+this.getCheckedAmplicons()+'&csv';
+          break;
+        case 'sswap_amplicon':
+          this.openSSWAPAmplicons(this.getCheckedAmplicons());
           break;
         case 'phenotypes_tab_csv':
           window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
@@ -159,9 +166,18 @@ define([
       this.collection.trigger("done");
     },
    
+    openSSWAPAmplicons: function(amplicon_ids){
+      var that = this;
+      $.getJSON('GetCommonAmplicon.php?checkedAmplicons='+amplicon_ids+"&jsonRRG").success(function(jsonRRG){
+          SSWAP.discover(jsonRRG, "#pipelineButton");
+          $("#sswap_form").submit();
+      });
+    },
+
     openSSWAPTassel: function(ids){
     	var that = this;
     	$.getJSON('AssociationRRG.php?tid='+ids).success(function(jsonRRG){
+          console.log(jsonRRG);
           SSWAP.discover(jsonRRG, "#pipelineButton");
     	    $("#sswap_form").submit();
     	});
