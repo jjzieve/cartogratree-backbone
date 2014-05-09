@@ -44,6 +44,12 @@ require.config({
         sswap: 'sswap'
    	},
 	shim: {
+        'bootstrap': {
+            deps: ['jquery']
+        },
+        'treetable':{
+            deps: ['jquery']
+        },
     	'backbone': {
                 deps: ['underscore', 'jquery'],
                 exports: 'Backbone'

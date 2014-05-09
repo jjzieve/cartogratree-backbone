@@ -50,9 +50,10 @@ define([
     defaultToolTemplate: _.template('<li role="presentation"><a id="<%= tool %>_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>'),
     tabTemplate: _.template('<li id="<%= name %>_tab"><a href="#<%= name %>_tab_content" data-toggle="tab"><button class="close" type="button">x</button><%= label %></a></li>'),
     tabContentTemplate: _.template('<div id="<%= name %>_tab_content" class="tab-pane active">'+
-                                    '<div class="button-wrapper" id="message_display_<%= name %>">'+
+                                    '<div class="button-wrapper">'+
                                     '<button class="btn btn-default" type="button" id="remove_<%= name %>">'+
                                     'Remove selected samples</button></div>'+
+                                    '<br><span id="message_display_<%= name %>" class="badge"></span>'+
                                     '<table><td valign="top" class="grid-col"><div id="<%= name %>_grid" class="grid"></div></td></table>'+
                                     'Total samples selected: <span id="<%= name %>_count">0</span></div>'),
 
@@ -137,6 +138,7 @@ define([
                                         '<div id="amplicon_table_container">'+
                                         '<div class="btn-group">'+
                                         '<button class="btn btn-default" type="button" id="remove_amplicons">Remove selected amplicons</button>'+ 
+                                        '<br><span id="message_display_amplicons" class="badge"></span>'+
                                         '</div>'+
                                          '<table id="amplicon_table">'+
                                          '<td valign="top" class="grid-col">'+

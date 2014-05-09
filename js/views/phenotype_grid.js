@@ -34,7 +34,6 @@ define([
         topPanelHeight: 25
       },
       data: [],
-      no_phenotypes_html: " <span class='badge'>No phenotypes found. Please select a different set of samples</span>",
 
       arrayCmp: function(arr1,arr2){ //returns true if same elements and lengths of two arrays, not necessarily in same order
       return !($(arr1).not(arr2).length == 0 && $(arr1).not(arr2).length == 0);
@@ -81,7 +80,7 @@ define([
             success: function (response) {
               that.unsetLoaderIcon();
           		if(response === null){
-          			$("#message_display_phenotype").append('<br><span id="phenotype_badge" class="badge">No phenotypes found.</span>')    ;
+          			$("#message_display_phenotype").text('No phenotypes found.');
           			return false;
           		}
               var prev_phenotypes = that.prev_phenotypes;
