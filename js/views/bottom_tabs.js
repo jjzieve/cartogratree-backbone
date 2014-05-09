@@ -81,11 +81,11 @@ define([
         case 'amplicon_tool':
 		      this.openAmpliconPill(ids);
         	break;
-       /* case 'amplicons_tab_csv': //this may change
-           var checked = $('#common_amplicon_table').find('input[type="checkbox"]:checked');
-           var checked = _.pluck(checked,"value").join();
-           window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked+'&csv';
-           break;*/
+        case 'amplicons_tab_csv':
+          var checked = $('#amplicon_grid').find('input[type="checkbox"]:checked');
+          var checked = _.pluck(checked,"value").join();
+          window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked+'&csv';
+          break;
         case 'phenotypes_tab_csv':
           window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
           break;
@@ -112,7 +112,7 @@ define([
                                         '<div id="amplicon_tools" class="btn-group pull-right">'+
                                         '<button class="btn btn-default" type="button" data-toggle="dropdown">Select tool <span class="caret"></span></button>'+
                                         '<ul id="tools_dropdown_amplicon" class="dropdown-menu">'+
-                                        '<li role="presentation"><a id="amplicon_tool_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>'+
+                                        '<li role="presentation"><a id="amplicons_tab_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>'+
                                         '<li role="presentation" class="divider"></li>'+
                                         '<li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>'+
                                         '<li role="presentation"><a id="sswap_amplicon" role="menuitem" tabindex="-1" href="javascript:void(0);">Discover pipelines at SSWAP</a></li>'+
@@ -121,9 +121,9 @@ define([
                                         '<button type="button" class="btn btn-default run_tool">Run tool on selected</button></div>'+
                                         '</div>'+
                                         '<div id="amplicon_table_container">'+
-                                        '<div class="btn-group">'+
+                                        // '<div class="btn-group">'+
                                         '<button class="btn btn-default" type="button" id="remove_amplicons">Remove selected amplicons</button>'+ 
-                                        '</div>'+
+                                        // '</div>'+
                                          '<table id="amplicon_table">'+
                                          '<td valign="top" class="grid-col">'+
                                          '<div id="amplicon_grid" class="grid"></div>'+

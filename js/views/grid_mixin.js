@@ -55,14 +55,6 @@ define([
 				  this.grid.render();
 				});
 
-				this.grid.onSort.subscribe(function (e, args) {
-				  sortDir = args.sortAsc;
-				  sortCol = args.sortCol.field;
-				  this.dataView.sort(comparer, sortDir);
-				  this.grid.invalidateAllRows();
-				  this.grid.render();
-				});
-
 				// set the initial sorting to be shown in the header
 				if (sortCol) {
 				  this.grid.setSortColumn(sortCol, sortDir);

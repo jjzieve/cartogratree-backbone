@@ -23,7 +23,7 @@ define([
     // Above we have passed in jQuery, Underscore and Backbone
     // They will not be accessible in the global scope
     var AmpliconView = Backbone.View.extend({ 
-      el: '#data_table_container',
+      // no el for this at first, because the DOM is dynamic
       model: Tree_IDModel,
       collection: Tree_IDCollection,
       options: {
@@ -79,56 +79,28 @@ define([
               if(that.data === null){
                 $("#amplicon_table").prepend('<br><span id="amplicon_badge" class="badge">No common amplicons found.</span>');
               	that.unsetLoaderIcon();
-		return false;
+		            return false;
               }
               that.initColumns();
               that.initGrid();
-
-              
+             
               that.unsetLoaderIcon();
 
-
-              var sortCol = undefined;
-              var sortDir = true;
-              function comparer(a, b) {
-                var x = a[sortCol], y = b[sortCol];
-                return (x == y ? 0 : (x > y ? 1 : -1));
-              }
-              that.grid.onSort.subscribe(function (e, args) {
-                  sortDir = args.sortAsc;
-                  sortCol = args.sortCol.field;
-                  that.dataView.sort(comparer, sortDir);
-                  that.grid.invalidateAllRows();
-                  that.grid.render();
-              });
-        
-              // set the initial sorting to be shown in the header
-              if (sortCol) {
-                that.grid.setSortColumn(sortCol, sortDir);
-              }
-
-              that.dataView.beginUpdate();
-              that.dataView.setItems(that.data);
-              that.grid.setSelectedRows(that.collection.pluck("index"));
-              that.dataView.endUpdate();
-
-              that.grid.updateRowCount();
-              that.grid.render();
-
-              that.dataView.syncGridSelection(that.grid, true);
+              that.gridFunctions();
 
               $("#amplicon_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
-              that.listenToSelectedRows();
-            },
-		error: function(response){
-     	           $("#amplicon_table").prepend('<br><span id="amplicon_badge" class="badge">Query error, please contact the admin.</span>');
-		that.unsetLoaderIcon();
-		}
+                that.listenToSelectedRows();
+              },
+		        error: function(response){
+     	        $("#amplicon_table").prepend('<br><span id="amplicon_badge" class="badge">Query error, please contact the admin.</span>');
+		          that.unsetLoaderIcon();
+		        }
           });
       },
 
     pollForOpenPill: function(){
       if(this.collection.meta("amplicon_pill_open")){
+        this.setElement("#amplicon_table_container"); //set the el for this when the amplicon DOM is added
         this.updateSlickGrid();
       }
     },
@@ -137,7 +109,7 @@ define([
       if(this.grid){
         var that = this;
         this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-        $("#amplicon_count").html(that.grid.getSelectedRows().length);
+          $("#amplicon_count").html(that.grid.getSelectedRows().length);
           // that.collection.reset();//remove all previous ids
           // $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
           //   var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
@@ -159,13 +131,14 @@ define([
     initialize: function(options){
       var that = this;
       this.listenTo(this.collection,"done",this.pollForOpenPill);
-
+      console.log($(this));
     },
 
     removeSelected: function(){
+      console.log('removed');
       var that = this;
       if (this.grid.getSelectedRows().length == this.grid.getDataLength()){ // clear if all selected, not iterate remove
-        this.clearSlickGrid();
+        this.clearSlickGrid("amplicon");
       }
       else{
         var ids = this.dataView.mapRowsToIds(this.grid.getSelectedRows());
@@ -177,28 +150,11 @@ define([
       }
     },
 
-    clearSlickGrid: function(){
-      // $("#clear_table").trigger("click");
-      this.data = [];//clear data
-      this.dataView.beginUpdate();
-      this.dataView.setItems(this.data);
-      this.dataView.endUpdate();
-
-      this.grid.updateRowCount();
-      this.grid.render();
-      this.dataView.syncGridSelection(this.grid, true);
-      $(".slick-column-name input[type=checkbox]").attr('checked',false);
-      $("#amplicon_count").html(0); //reset selected count
-      this.collection.reset(); // reset checked rows
-    },
-
-              
     events:{
       "click #remove_amplicons": "removeSelected",
-    }
+    },
 
-      
-  });
+});
 
   return AmpliconView; 
   // What we return here will be used by other modules

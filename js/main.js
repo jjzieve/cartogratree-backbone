@@ -93,6 +93,9 @@ require.config({
         'slick_selection':{
             deps: ['slick_checkbox']
         },
+        'select2':{
+            deps: ['jquery']
+        }
 
 	}
 });
