@@ -35,6 +35,7 @@ define([
   var BottomTabsView = Backbone.View.extend({
     el: "#tabs_container",
     model: Tree_IDModel,
+    collection: Tree_IDCollection,
     //static html
     sampleToolHTML: '<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Tools</a></li>'+
                     '<li role="presentation"><a id="amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Find common amplicons</a></li>'+
@@ -56,7 +57,7 @@ define([
                                     '<table><td valign="top" class="grid-col"><div id="<%= name %>_grid" class="grid"></div></td></table>'+
                                     'Total samples selected: <span id="<%= name %>_count">0</span></div>'),
 
-    collection: Tree_IDCollection,
+
     events:{
       "click #tools ul li a" : "changeTitle",
       "click #amplicon_tools ul li a" : "changeTitle",
@@ -90,6 +91,8 @@ define([
       var tool = $("#"+parent_id+" ul li").find("a.selected").attr("id");
       console.log(tool);
       var ids = this.collection.pluck('id');
+      var lats = this.collection.pluck('lat');
+      var lngs = this.collection.pluck('lng');
       switch(tool){
         case 'amplicon_tool':
 		      this.openAmpliconPill(ids);
@@ -100,13 +103,13 @@ define([
         case 'sswap_amplicon':
           this.openSSWAPAmplicons(this.getCheckedAmplicons());
           break;
-        case 'phenotypes_tab_csv':
+        case 'phenotype_tab_csv':
           window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
           break;
-        case 'worldclims_tab_csv':
-          window.location.href = 'GetWorldClimData.php?tid='+ids+'&csv';
+        case 'worldclim_tab_csv':
+          window.location.href = 'GetWorldClimData.php?tid='+ids+'&lat='+lats+'&lon='+lngs+'&csv';
           break;
-        case 'snps_tab_csv':
+        case 'genotype_tab_csv':
           window.location.href = 'GetCommonSNP.php?tid='+ids+'&csv';
           break;
         case 'diversitree_tool':
@@ -223,7 +226,7 @@ define([
           this.collection.meta("amplicon_tab_open",false);
           this.collection.trigger("close_amplicon_tab");
           break;
-        case '#world_tab_content':
+        case '#worldclim_tab_content':
           this.collection.meta("worldclim_tab_open",false);
           this.collection.trigger("close_worldclim_tab");
           break;

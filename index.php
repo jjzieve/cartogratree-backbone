@@ -247,7 +247,7 @@ Updated:
 										<div id="clear_table" style="display: none;"></div> <!-- just used to remove rectangles from map -->
 									<table id="data_table"> 
 								    	<td valign="top" class="grid-col">
-											<div id="grid" class="grid"></div>
+											<div id="sample_grid" class="grid"></div>
 										</td>
 									</table>
 									Total samples selected: <span id="sample_count">0</span>

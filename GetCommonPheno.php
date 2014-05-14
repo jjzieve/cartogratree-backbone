@@ -86,7 +86,7 @@ if(isset($_GET['csv'])) {
 		while ($r = pg_fetch_assoc($res)) {
 			$identifier = $r["tree_identifier"];
 			$metric_description = $r["metric_description"];
-			$measurement_value = $r["measurement_value"];
+			$measurement_value = $r["metric_value"];
 			
 			if($prev_identifier == ''){
 				$prev_identifier = $identifier;

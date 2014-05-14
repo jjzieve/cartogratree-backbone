@@ -24,17 +24,17 @@ define([
     // They will not be accessible in the global scope
     var AmpliconView = Backbone.View.extend({ 
       // no el for this at first, because the DOM is dynamic
+      type: "amplicon", //workaround to get mixin listenTo functions to get called with no arguments
       model: Tree_IDModel,
       collection: Tree_IDCollection,
-      options: {
-        enableCellNavigation: true,
-        enableColumnReorder: true,
-        // forceFitColumns: true,
-        rowHeight: 35,
-        topPanelHeight: 25
-      },
-      data: [],
-      queryCache: [], //cache of ids to stored so redundant queries aren't made
+      // options: {
+      //   enableCellNavigation: true,
+      //   enableColumnReorder: true,
+      //   // forceFitColumns: true,
+      //   rowHeight: 35,
+      //   topPanelHeight: 25
+      // },
+      // data: [],
 
       initColumns: function(){
         var that = this;
@@ -53,12 +53,12 @@ define([
         this.columns.unshift(this.checkboxSelector.getColumnDefinition());
        },
 
-      initGrid: function(){
-        this.dataView = new Slick.Data.DataView();
-        this.grid = new Slick.Grid("#amplicon_grid", this.dataView, this.columns, this.options);
-        this.grid.setSelectionModel(new Slick.RowSelectionModel());
-        this.grid.registerPlugin(this.checkboxSelector);
-      },
+      // initGrid: function(){
+      //   this.dataView = new Slick.Data.DataView();
+      //   this.grid = new Slick.Grid("#amplicon_grid", this.dataView, this.columns, this.options);
+      //   this.grid.setSelectionModel(new Slick.RowSelectionModel());
+      //   this.grid.registerPlugin(this.checkboxSelector);
+      // },
 
       updateSlickGrid: function(){
           var that = this;
@@ -100,55 +100,56 @@ define([
           });
       },
 
-    pollForOpenPill: function(){
-      if(this.collection.meta("amplicon_pill_open")){
-        this.setElement("#amplicon_table_container"); //set the el for this when the amplicon DOM is added
-        this.updateSlickGrid();
-      }
-    },
+    // pollForOpenPill: function(){
+    //   if(this.collection.meta("amplicon_pill_open")){
+    //     this.setElement("#amplicon_table_container"); //set the el for this when the amplicon DOM is added
+    //     this.updateSlickGrid();
+    //   }
+    // },
 
-    listenToSelectedRows: function(){
-      if(this.grid){
-        var that = this;
-        this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-          $("#amplicon_count").html(that.grid.getSelectedRows().length);
-          // that.collection.reset();//remove all previous ids
-          // $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
-          //   var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
-          //   var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
-          //   var lng = that.dataView.getItemByIdx(idx)["lng"];
-          //   var index = index;
-          //   that.collection.add({
-          //     id: id,
-          //     lat: lat,
-          //     lng: lng,
-          //     index: index
-          //   }); 
-          // });
-          // that.collection.trigger("done");
-      });
-    }
-  },
+  //   listenToSelectedRows: function(){
+  //     if(this.grid){
+  //       var that = this;
+  //       this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
+  //         $("#amplicon_count").html(that.grid.getSelectedRows().length);
+  //         // that.collection.reset();//remove all previous ids
+  //         // $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
+  //         //   var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
+  //         //   var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
+  //         //   var lng = that.dataView.getItemByIdx(idx)["lng"];
+  //         //   var index = index;
+  //         //   that.collection.add({
+  //         //     id: id,
+  //         //     lat: lat,
+  //         //     lng: lng,
+  //         //     index: index
+  //         //   }); 
+  //         // });
+  //         // that.collection.trigger("done");
+  //     });
+  //   }
+  // },
 
     initialize: function(options){
       var that = this;
-      this.listenTo(this.collection,"done",this.pollForOpenPill);
+      // this.listenTo(this.collection,"done",this.pollForOpenPill);
+      this.listenTo(this.collection,"done",this.pollForOpenTab);
     },
 
-    removeSelected: function(){
-      var that = this;
-      if (this.grid.getSelectedRows().length == this.grid.getDataLength()){ // clear if all selected, not iterate remove
-        this.clearSlickGrid("amplicon");
-      }
-      else{
-        var ids = this.dataView.mapRowsToIds(this.grid.getSelectedRows());
-        $.each(ids,function(index,id){
-          console.log("deleting: "+id);
-          that.dataView.deleteItem(id);
-        });
-        this.grid.invalidate();
-      }
-    },
+    // removeSelected: function(){
+    //   var that = this;
+    //   if (this.grid.getSelectedRows().length == this.grid.getDataLength()){ // clear if all selected, not iterate remove
+    //     this.clearSlickGrid("amplicon");
+    //   }
+    //   else{
+    //     var ids = this.dataView.mapRowsToIds(this.grid.getSelectedRows());
+    //     $.each(ids,function(index,id){
+    //       console.log("deleting: "+id);
+    //       that.dataView.deleteItem(id);
+    //     });
+    //     this.grid.invalidate();
+    //   }
+    // },
 
     events:{
       "click #remove_amplicons": "removeSelected",

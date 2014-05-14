@@ -24,27 +24,13 @@ define([
     // They will not be accessible in the global scope
     var GenotypeView = Backbone.View.extend({ 
       el: '#data_table_container',
+      type: "genotype", //workaround to get mixin listenTo functions to get called with no arguments
       model: Tree_IDModel,
       collection: Tree_IDCollection,
-      options: {
-        enableCellNavigation: true,
-        enableColumnReorder: true,
-        // forceFitColumns: true,
-        rowHeight: 35,
-        topPanelHeight: 25
-      },
-      data: [],
-
-      arrayCmp: function(arr1,arr2){ //returns true if same elements and lengths of two arrays, not necessarily in same order
-      return !($(arr1).not(arr2).length == 0 && $(arr1).not(arr2).length == 0);
-      }, 
 
       initColumns: function(genotype_accessions,over_limit){
         if (over_limit){
           $("#message_display_genotype").text("25 of "+genotype_accessions.length+" columns shown. Download the CSV to view every genotype.");
-        }
-        else if(genotype_accessions.length === 0){
-          $("#message_display_genotype").text("No genotypes found.");
         }
         else{
           $("#message_display_genotype").empty();
@@ -65,15 +51,6 @@ define([
         
       },
 
-      initGrid: function(){
-        this.dataView = new Slick.Data.DataView();
-        this.grid = new Slick.Grid("#genotype_grid", this.dataView, this.columns, this.options);
-        this.grid.setSelectionModel(new Slick.RowSelectionModel());
-        this.grid.registerPlugin(this.checkboxSelector);
-      },
-
-
-
       updateSlickGrid: function(){
           var that = this;
           this.data = [];
@@ -87,6 +64,12 @@ define([
             dataType: "json",
             data: {"tid":checkedSamples.join()},//GET uri as string tid1,tid2,...
             success: function (response) {
+
+              that.unsetLoaderIcon();
+              if(response["snp_accessions"].length === 0){
+                $("#message_display_genotype").text("No genotypes found.");
+                return false;
+              }
               var prev_accessions = that.genotype_accessions;
               var new_accessions = response["snp_accessions"];
               if ( that.arrayCmp(prev_accessions,new_accessions) || typeof(this.columns) === "undefined") { 
@@ -104,8 +87,6 @@ define([
                 that.data.push(row);
                 i++;
               });
-
-              that.unsetLoaderIcon();
               that.gridFunctions();
 
               $("#genotype_sample_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
@@ -114,35 +95,6 @@ define([
           });
       },
 
-    pollForOpenTab: function(){
-      if(this.collection.meta("genotype_tab_open")){
-        this.updateSlickGrid();
-      }
-    },
-
-    listenToSelectedRows: function(){
-      if(this.grid){
-        var that = this;
-        this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-        $("#genotype_count").html(that.grid.getSelectedRows().length);
-             that.collection.reset();//remove all previous ids
-             $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
-              var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
-            	var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
-             	var lng = that.dataView.getItemByIdx(idx)["lng"];
-             	var index = index;
-             	that.collection.add({
-               		id: id,
-               		lat: lat,
-              		lng: lng,
-               		index: index
-             	}); 
-           });
-        // that.collection.trigger("done");
-      });
-    }
-  },
-
     initialize: function(options){
       var that = this;
       this.listenTo(this.collection,"done",this.pollForOpenTab);
@@ -150,37 +102,6 @@ define([
 
     },
 
-    removeSelected: function(){
-      var that = this;
-      if (this.grid.getSelectedRows().length == this.grid.getDataLength()){ // clear if all selected, not iterate remove
-        this.clearSlickGrid();
-      }
-      else{
-        var ids = this.dataView.mapRowsToIds(this.grid.getSelectedRows());
-        $.each(ids,function(index,id){
-          console.log("deleting: "+id);
-          that.dataView.deleteItem(id);
-        });
-        this.grid.invalidate();
-      }
-    },
-
-    clearSlickGrid: function(){
-      // $("#clear_table").trigger("click");
-      this.data = [];//clear data
-      this.dataView.beginUpdate();
-      this.dataView.setItems(this.data);
-      this.dataView.endUpdate();
-
-      this.grid.updateRowCount();
-      this.grid.render();
-      this.dataView.syncGridSelection(this.grid, true);
-      $(".slick-column-name input[type=checkbox]").attr('checked',false);
-      $("#genotype_count").html(0); //reset selected count
-      this.collection.reset(); // reset checked rows
-    },
-
-              
     events:{
       "click #remove_genotype": "removeSelected",
     }
