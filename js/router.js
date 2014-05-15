@@ -14,6 +14,7 @@ define([
 	'views/sidebar_selection_tree',
 	'views/sidebar_tree_id_search',
 	'views/sidebar_filters',
+	'views/grid_mixin',
 	'views/sample_grid',
 	'views/genotype_grid',
 	'views/phenotype_grid',
@@ -22,15 +23,16 @@ define([
 	'views/bottom_tabs',
 	], function($, _, Backbone, QueryModel, TreeNodeModel, TreeIDModel,
 		QueriesCollection, TreeIDCollection,
-		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, SamplesView, GenotypeView, PhenotypeView, WorldClimView, AmpliconsView, BottomTabsView) {
+		NavBarView, MapView, SelectionTreeView, TreeIDSearchView, FiltersView, GridMixin, SamplesView, GenotypeView, PhenotypeView, WorldClimView, AmpliconView, BottomTabsView) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'(/)(?tid=:tree_ids)':'index',
-				 '(/)about':'about',
+				'(/)about':'about',
 			},
-			navigate: function (url) { window.location = url; }
+			navigate: function (url) { 
+				window.location = url; 
+			}
 		});
-	
 		var initialize = function(){
 			var appRouter = new AppRouter();
 			
@@ -65,12 +67,19 @@ define([
 				var treeIDSearch = new TreeIDSearchView({collection: queries});
 				var filters = new FiltersView({collection: queries,model: query});
 				var tabs = new BottomTabsView({collection: selected_tree_ids,model: selected_tree_id});
+
+				//add some functions from the Mixin to the views to maintain DRY
+				_.extend(SamplesView.prototype, GridMixin);
+				_.extend(GenotypeView.prototype, GridMixin);
+				_.extend(PhenotypeView.prototype, GridMixin);
+				_.extend(WorldClimView.prototype, GridMixin);
+				_.extend(AmpliconView.prototype, GridMixin);
+
 				var sample_table = new SamplesView({collection: queries, sub_collection: selected_tree_ids, model: query}); //parent of the other tables
 				var geno_table = new GenotypeView({collection: selected_tree_ids,model:selected_tree_id});
 				var pheno_table = new PhenotypeView({collection: selected_tree_ids,model:selected_tree_id});
 				var worldclim_table = new WorldClimView({collection: selected_tree_ids,model:selected_tree_id});
-				// var amplicon_table = new AmpliconsView({collection: selected_tree_ids,model:selected_tree_id});
-
+				var amplicon_table = new AmpliconView({collection: selected_tree_ids,model:selected_tree_id});
 
 			});
 			appRouter.on('route:about', function(){

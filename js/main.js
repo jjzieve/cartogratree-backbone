@@ -44,6 +44,12 @@ require.config({
         sswap: 'sswap'
    	},
 	shim: {
+        'bootstrap': {
+            deps: ['jquery']
+        },
+        'treetable':{
+            deps: ['jquery']
+        },
     	'backbone': {
                 deps: ['underscore', 'jquery'],
                 exports: 'Backbone'
@@ -93,6 +99,15 @@ require.config({
         'slick_selection':{
             deps: ['slick_checkbox']
         },
+        'tablecloth':{
+            deps: ['jquery']
+        },
+        'tablesorter':{
+            deps: ['jquery']
+        },
+        'select2':{
+            deps: ['jquery']
+        }
 
 	}
 });

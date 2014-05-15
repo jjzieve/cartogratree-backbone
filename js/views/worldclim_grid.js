@@ -24,16 +24,9 @@ define([
  ], function($, _, Backbone, QueryModel, QueriesCollection, TreeIDCollection){
 	var WorldClimView = Backbone.View.extend({
 		el: '#data_table_container',
+    type: "worldclim", //workaround to get mixin listenTo functions to get called with no arguments
     model: QueryModel,
     collection: QueriesCollection,
-    options: {
-      enableCellNavigation: true,
-      enableColumnReorder: true,
-      // forceFitColumns: true,
-      rowHeight: 35,
-      topPanelHeight: 25
-    },
-    data: [],
 
     initColumns: function(){
       this.columns = [
@@ -62,28 +55,6 @@ define([
       this.columns.unshift(this.checkboxSelector.getColumnDefinition());
     },
 
-    initGrid: function(){
-      this.dataView = new Slick.Data.DataView();
-      this.grid = new Slick.Grid("#worldclim_grid", this.dataView, this.columns, this.options);
-      this.grid.setSelectionModel(new Slick.RowSelectionModel());
-      this.grid.registerPlugin(this.checkboxSelector);
-    },
-
-    clearSlickGrid: function(){
-      $("#clear_table").trigger("click"); // map view listens to this to remove rectangles
-      this.data = [];//clear data
-      this.dataView.beginUpdate();
-      this.dataView.setItems(this.data);
-      this.dataView.endUpdate();
-
-      this.grid.updateRowCount();
-      this.grid.render();
-      $(".slick-column-name input[type=checkbox]").attr('checked',false); //should do this automatically but it doesn't for some reason...
-      this.dataView.syncGridSelection(this.grid, true);
-      $("#worldclim_count").html(0); //reset selected count
-      this.collection.reset(); //reset collection
-    },
-
     getCleanedIDs: function(){
       var cleaned = _.map(_.pluck(this.data,"id"),function(id){
         return id.substr(0,id.indexOf('.'))
@@ -92,14 +63,18 @@ define([
     },
 
     updateSlickGrid: function(){
+      console.log('update worldclim');
+      console.log(this.grid);
       var that = this;
       var ids = this.collection.pluck("id").join(","); 
       var lats = this.collection.pluck("lat").join(","); 
       var lngs = this.collection.pluck("lng").join(",");
+      console.log(ids);
+      console.log(lats);
+      console.log(lngs);
       if(typeof(this.grid) === "undefined"){ // first instantiation
         this.initColumns();
         this.initGrid();
-        // this.clearSlickGrid();//clear at first
         this.listenToSelectedRows(); 
       }
 
@@ -108,119 +83,38 @@ define([
         url : 'GetWorldClimData.php',
         dataType: "json",
         data: {
-          "id":ids,
+          "tid":ids,
           "lat":lats,
           "lon":lngs},
 
         success: function (response) {
           that.unsetLoaderIcon();
+          if(response === null){
+            $("#message_display_worldclim").text('No environmental data found.');
+            return false;
+          }
           var prev_ids = _.pluck(that.data,"id");
           var filtered = _.filter(response,function(row){// checks for overlapping markers
             return prev_ids.indexOf(row["id"]) === -1;
           });
           that.data = that.data.concat(filtered);
-          var sortCol = undefined;
-          var sortDir = true;
-          function comparer(a, b) {
-            var x = a[sortCol], y = b[sortCol];
-            return (x == y ? 0 : (x > y ? 1 : -1));
-          }
-          that.grid.onSort.subscribe(function (e, args) {
-              sortDir = args.sortAsc;
-              sortCol = args.sortCol.field;
-              that.dataView.sort(comparer, sortDir);
-              that.grid.invalidateAllRows();
-              that.grid.render();
-          });
-		
-          // set the initial sorting to be shown in the header
-          if (sortCol) {
-              that.grid.setSortColumn(sortCol, sortDir);
-          }
 
-          that.dataView.beginUpdate();
-          that.dataView.setItems(that.data);
-          that.grid.setSelectedRows(that.collection.pluck("index"));
-          that.dataView.endUpdate();
-
-          that.grid.updateRowCount();
-          that.grid.render();
-
-          that.dataView.syncGridSelection(that.grid, true);
-
-
+          that.gridFunctions();
+          // DEBUG
           //console.log("Total samples: "+that.grid.getDataLength());
+        },
+        error: function(response){
+          $("#message_display_worldclim").text('Query error, please contact the admin.');
+          that.unsetLoaderIcon();
         }
       });
     },
 
-	setLoaderIcon: function(){
-		this.$el.css({
-	   		"background-image": "url(images/ajax-loader.gif)",
-	   		"background-repeat" : "no-repeat",
-	   		"background-position" : "center"
-    }).addClass("loading");
-	},
-	
-	unsetLoaderIcon: function(){
- 		this.$el.css({"background-image":"none"}).removeClass("loading");
-	},
-	
-		
-  listenToSelectedRows: function(){
-    var that = this;
-    this.grid.onSelectedRowsChanged.subscribe(function(){  // update selected count and set the sub collection to the selected ids
-      $("#worldclim_count").html(that.grid.getSelectedRows().length);
-      that.collection.reset();//remove all previous ids
-      $.each(that.grid.getSelectedRows(), function(index,idx){ //add newly selected ones
-        var id = that.dataView.getItemByIdx(idx)["id"];//.replace(/\.\d+$/,""); maybe add back in
-        var lat = that.dataView.getItemByIdx(idx)["lat"]; //lat and lng for world_clim tool
-        var lng = that.dataView.getItemByIdx(idx)["lng"];
-        var index = index;
-        that.collection.add({
-          id: id,
-          lat: lat,
-          lng: lng,
-          index: index
-        }); 
-      });
-    //   that.sub_collection.trigger("done");
-    });
-  },
-
-    deleteGrid: function(){
-      delete this.columns;
-      delete this.grid;
-      delete this.dataView;
-    },
-
-  pollForOpenTab: function(){
-    if(this.collection.meta("worldclim_tab_open")){
-      this.updateSlickGrid();
-      this.listenTo(this.collection,"close_worldclim_tab", this.deleteGrid);
-    }
-  },
-
 	initialize: function(options){
     this.listenTo(this.collection,"done",this.pollForOpenTab);
+    this.listenTo(this.collection,"close_worldclim_tab", this.deleteGrid);
 },
 
-  removeSelected: function(){
-    var that = this;
-    if (this.grid.getSelectedRows().length == this.grid.getDataLength()){ // clear if all selected, not iterate remove
-      this.clearSlickGrid();
-    }
-    else{
-      var ids = this.dataView.mapRowsToIds(this.grid.getSelectedRows());
-      $.each(ids,function(index,id){
-        console.log("deleting: "+id);
-        that.dataView.deleteItem(id);
-      });
-      this.grid.invalidate();
-    }
-  },
-
-            
   events:{
     "click #remove_worldclim": "removeSelected",
   }

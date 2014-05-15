@@ -1,4 +1,4 @@
-//Filename: markers.js
+//geneticFilename: markers.js
 
 define([
   // These are path alias that we configured in our bootstrap
@@ -13,7 +13,7 @@ define([
         //fusion table ids
         "tgdr_id":"1yGLoUUyGDoIxWF3I4iuKq3Y3-ru_7C4knPF4H2Y",
         "sts_is_id":"1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI",
-        "try_db_id":"1XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw",
+        "try_db_id":"19aWeUgZ_DA7ElGzHnx8X-w-BCCZJdAqs6fO8BxhI",
         "ameriflux_id":"1huZ12FnVaWgeUZKaXozbLR0lZfLcxZ_y9RF2h-A"
       };
     },      

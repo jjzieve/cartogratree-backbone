@@ -35,13 +35,11 @@ define([
   var BottomTabsView = Backbone.View.extend({
     el: "#tabs_container",
     model: Tree_IDModel,
+    collection: Tree_IDCollection,
     //static html
-    sampleToolHTML: '<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Select tool</a></li>'+
-                    '<li role="presentation"><a id="amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Amplicons</a></li>'+
-                    '<li role="presentation"><a id="phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Traits</a></li>'+
-                    '<li role="presentation"><a id="genotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Genotypes</a></li>'+
-                    '<li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Environmental Data</a></li>'+
-                    '<li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>'+
+    sampleToolHTML: '<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Tools</a></li>'+
+                    '<li role="presentation"><a id="amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Find common amplicons</a></li>'+
+                    '<li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download tree ids</a></li>'+
                     '<li role="presentation" class="divider"></li>'+
                     '<li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>'+
                     '<li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>',
@@ -53,103 +51,115 @@ define([
     defaultToolTemplate: _.template('<li role="presentation"><a id="<%= tool %>_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>'),
     tabTemplate: _.template('<li id="<%= name %>_tab"><a href="#<%= name %>_tab_content" data-toggle="tab"><button class="close" type="button">x</button><%= label %></a></li>'),
     tabContentTemplate: _.template('<div id="<%= name %>_tab_content" class="tab-pane active">'+
-                                    '<div class="button-wrapper" id="message_display_<%= name %>">'+
+                                    '<div class="button-wrapper">'+
                                     '<button class="btn btn-default" type="button" id="remove_<%= name %>">'+
-                                    'Remove selected samples</button></div>'+
+                                    'Remove selected samples</button> <span id="message_display_<%= name %>" class="badge"></span></div>'+
                                     '<table><td valign="top" class="grid-col"><div id="<%= name %>_grid" class="grid"></div></td></table>'+
                                     'Total samples selected: <span id="<%= name %>_count">0</span></div>'),
 
-    collection: Tree_IDCollection,
+
     events:{
       "click #tools ul li a" : "changeTitle",
+      "click #amplicon_tools ul li a" : "changeTitle",
       "click .close" : "closeTab",
-      "click #run_tool" : "runTool",
+      "click .run_tool" : "runTool",
+      "click #genotype_tool" : "openTab",
+      "click #phenotype_tool" : "openTab",
+      "click #worldclim_tool" : "openTab",
       "show.bs.tab a[data-toggle='tab']" : "changeTools"    
     },
 
-    changeTitle: function(e){
-      $('#tools_title').html($(e.target).html());
-      $("#tools ul li a").not(e.target).removeClass("selected");
+    changeTitle: function(e){//should probably encode parent as a data-* attribute
+      var parent_id = $(e.target).parent().parent().parent().attr("id");
+      $("#"+parent_id+"_title").html($(e.target).html());
+      $("#"+parent_id+" ul li a").not(e.target).removeClass("selected");
+
       $(e.target).addClass('selected');
     },
   
+    // hack to get the checked amplicons without using slickgrid's API, I would've had to include the view 
+    getCheckedAmplicons: function(){
+      var checked = [];
+      $('#amplicon_grid').find('input[type="checkbox"]:checked').each(function(index){
+        checked.push($(this).parent().next().next().html());
+      });
+      return checked.join();
+    },
+
     runTool: function(e){
-      var tool = $("#tools ul li").find("a.selected").attr("id");
+      var parent_id = $(e.target).parent().parent().attr("id");
+      var tool = $("#"+parent_id+" ul li").find("a.selected").attr("id");
       console.log(tool);
+      var ids = this.collection.pluck('id');
+      var lats = this.collection.pluck('lat');
+      var lngs = this.collection.pluck('lng');
       switch(tool){
-        // case 'common_amplicon_tool':
-	       //  this.openTab("amplicon");
-        //   break;
-        // case 'amplicons_tab_csv': //this may change
-        //   var checked = $('#common_amplicon_table').find('input[type="checkbox"]:checked');
-        //   var checked = _.pluck(checked,"value").join();
-        //   window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+checked+'&csv';
-           // break;
-        case 'phenotype_tool':
-	        this.openTab("phenotype","Traits");
+        case 'amplicon_tool':
+		      this.openAmpliconPill(ids);
+        	break;
+        case 'amplicons_tab_csv':
+          window.location.href = 'GetCommonAmplicon.php?checkedAmplicons='+this.getCheckedAmplicons()+'&csv';
           break;
-        case 'phenotypes_tab_csv':
+        case 'sswap_amplicon':
+          this.openSSWAPAmplicons(this.getCheckedAmplicons());
+          break;
+        case 'phenotype_tab_csv':
           window.location.href = 'GetCommonPheno.php?tid='+ids+'&csv';
           break;
-        case 'worldclim_tool':
-	        this.openTab("worldclim","Environmental data");
+        case 'worldclim_tab_csv':
+          window.location.href = 'GetWorldClimData.php?tid='+ids+'&lat='+lats+'&lon='+lngs+'&csv';
           break;
-        case 'worldclims_tab_csv':
-          window.location.href = 'GetWorldClimData.php?tid='+ids+'&csv';
-          break;
-        case 'genotype_tool':
-	        this.openTab("genotype","Genotypes");
-          break;
-        case 'snps_tab_csv':
+        case 'genotype_tab_csv':
           window.location.href = 'GetCommonSNP.php?tid='+ids+'&csv';
           break;
         case 'diversitree_tool':
-          this.openDiversitree(ids);
+      	  window.location.href = 'DiversitreeDownload.php?tid='+ids+'&csv';
           break;
         case 'tassel_tool':
           this.openSSWAPTassel(ids);
           break;
       }
-	       console.log(this.collection._meta);
     },
-
-    setLoaderIcon: function(el){
-    	$("#data_table_container").css({
-        	"background-image": "url(images/ajax-loader.gif)",
-          "background-repeat" : "no-repeat",
-          "background-position" : "center"
-    	}).addClass("loading");
-    },  
-    
-    unsetLoaderIcon: function(el){
-    	$("#data_table_container").css({"background-image":"none"}).removeClass("loading");
-    },  
-
-    // openCommonAmplicon: function(ids){
-    //   var that = this;
-    //   // only allow one tab for one type at a time
-
-    //   $("#amplicon_tab").remove();
-    //   $("#amplicon_phenotypes").remove();
-    //   $("#data_tabs").append("<li id='amplicon_tab'><a href='#common_amplicons' data-toggle='tab'><button class='close' type='button'>x</button>Amplicons</a></li>");
-    //   $("#data_table_container").append("<div id='common_amplicons' class='tab-pane active'>");
-    //   this.setLoaderIcon("#data_table_container");
-    //   this.$("ul.nav-tabs li a:last").tab('show');
-    //   $.get('GetCommonAmplicon.php?tid='+ids, function(html){
-    //     that.unsetLoaderIcon("#data_table_container");
-    //     $("#common_amplicons").append(html);    
-    //     $("#common_amplicon_table").tablecloth({
-    //       theme: "default",
-    //       condensed: true,
-    //       striped: true,
-    //       sortable: true,
-    //     });
-      
-    //   });
-    // },
-
-    openTab: function(name,label){ // use a template
+	
+	openAmpliconPill: function(ids){
+    $("#amplicon_pill").remove();
+    $("#amplicon_pill_content").remove();
+		$(".analysis_pills").append("<li id='amplicon_pill'><a data-toggle='pill' href='#amplicon_pill_content'>Amplicons</a></li>");
+		$("#analysis_pills_content").append('<div class="tab-pane fade active in" id="amplicon_pill_content">'+
+                                        '<div id="amplicon_tools" class="btn-group pull-right">'+
+                                        '<button class="btn btn-default" type="button" data-toggle="dropdown"><span id="amplicon_tools_title">Select tool</span> <span class="caret"></span></button>'+
+                                        '<ul id="tools_dropdown_amplicon" class="dropdown-menu">'+
+                                        '<li role="presentation"><a id="amplicons_tab_csv" role="menuitem" tabindex="-1" href="javascript:void(0);">Download CSV</a></li>'+
+                                        '<li role="presentation" class="divider"></li>'+
+                                        '<li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>'+
+                                        '<li role="presentation"><a id="sswap_amplicon" role="menuitem" tabindex="-1" href="javascript:void(0);">Discover pipelines at SSWAP</a></li>'+
+                                        '</ul>'+
+                                        '<div class="btn-group">'+
+                                        '<button type="button" class="btn btn-default run_tool">Run tool on selected</button></div>'+
+                                        '</div>'+
+                                        '<div id="amplicon_table_container">'+
+                                        '<div class="btn-group">'+
+                                        '<button class="btn btn-default" type="button" id="remove_amplicons">Remove selected amplicons</button> <span id="message_display_amplicon" class="badge"></span>'+ 
+                                        '</div>'+
+                                         '<table id="amplicon_table">'+
+                                         '<td valign="top" class="grid-col">'+
+                                         '<div id="amplicon_grid" class="grid"></div>'+
+                                         '</td>'+
+                                         '</table>'+
+                                         'Total samples selected: <span id="amplicon_count">0</span>'+
+                                         '</div>'+
+                                         '</div>');
+		this.$("ul.nav-pills li a:last").tab('show');
+    this.collection.meta("amplicon_pill_open",true);
+    this.collection.trigger("done");
+    console.log(this.collection._meta);
+	},
+		
+    openTab: function(e){ // use a template
        // only allow one tab for one type at a time
+      var id = e.target.id;
+      var name = id.substring(0,id.indexOf("_"));//remove the _tool
+      var label = $("#"+id).html();
       $("#"+name+"_tab").remove();
       $("#common_"+name).remove();
       $("#data_tabs").append(this.tabTemplate({"name":name,"label":label}));
@@ -159,23 +169,29 @@ define([
       this.collection.trigger("done");
     },
    
-    openDiversitree: function(ids){
-      window.location.href = 'DiversitreeDownload.php?tid='+ids+'&csv';
+    openSSWAPAmplicons: function(amplicon_ids){
+      var that = this;
+      $.getJSON('GetCommonAmplicon.php?checkedAmplicons='+amplicon_ids+"&jsonRRG").success(function(jsonRRG){
+          SSWAP.discover(jsonRRG, "#pipelineButton");
+          $("#sswap_form").submit();
+      });
     },
+
     openSSWAPTassel: function(ids){
     	var that = this;
     	$.getJSON('AssociationRRG.php?tid='+ids).success(function(jsonRRG){
-          	    SSWAP.discover(jsonRRG, "#pipelineButton");
+          console.log(jsonRRG);
+          SSWAP.discover(jsonRRG, "#pipelineButton");
     	    $("#sswap_form").submit();
     	});
     },
     
     toggleRunDisabled: function(){
     	if(this.collection.length > 0){
-    		$("#run_tool").removeClass("disabled");
+    		$(".run_tool").removeClass("disabled");
     	}
     	else{
-    		$("#run_tool").addClass("disabled");
+    		$(".run_tool").addClass("disabled");
     	}
    },
 
@@ -187,9 +203,6 @@ define([
     if(id === "samples_tab"){
       $("#tools_dropdown").append(this.sampleToolHTML);
     }
-    else if(id === "amplicon_tab"){
-      $("#tools_dropdown").append(this.defaultToolTemplate({"tool":id})+this.sswapHTML);
-    }
     else{
       $("#tools_dropdown").append(this.defaultToolTemplate({"tool":id}));
     }
@@ -199,6 +212,7 @@ define([
    closeTab: function(e){
       //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
       var tabContentId = $(e.target).parent().attr("href");
+      console.log($(e.target).parent().parent().attr("id"));
       switch(tabContentId){// send flag to the shared tree id collection that the tab is closed and to create instead of update
         case '#genotype_tab_content':
           this.collection.meta("genotype_tab_open",false);
@@ -212,7 +226,7 @@ define([
           this.collection.meta("amplicon_tab_open",false);
           this.collection.trigger("close_amplicon_tab");
           break;
-        case '#world_tab_content':
+        case '#worldclim_tab_content':
           this.collection.meta("worldclim_tab_open",false);
           this.collection.trigger("close_worldclim_tab");
           break;
@@ -222,7 +236,7 @@ define([
       }
       this.collection.trigger("done");// let this event bubble to the views after closing
       $(e.target).parent().parent().remove(); //remove li of tab
-      this.$("ul.nav-tabs li a:first").tab('show'); // Select first tab
+      this.$("ul.nav-tabs li a:last").tab('show'); // Select first tab
     //  $(tabContentId).remove(); //remove respective tab content
    },
 	
@@ -234,15 +248,11 @@ define([
       this.toggleRunDisabled();    
 
       //nested tabs
-      // $("ul.nav-pills a").click(function (e) {
-      //   e.preventDefault();  
-      //   $(this).tab('show');
-      // });
-
-      // $("ul.nav-tabs a").click(function (e) {
-      //   e.preventDefault();  
-      //   $(this).tab('show');
-      // });     
+      $("ul.analysis_pills li a").click(function (e) {
+        e.preventDefault();  
+        $(this).tab('show');
+      });
+  
     },
 
     render: function(){

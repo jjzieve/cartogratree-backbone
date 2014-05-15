@@ -12,10 +12,10 @@ function outputCSV($data) {
 
 if (isset($_GET['lat'])) {
 	if(isset($_GET['lon'])){
-		if(isset($_GET['id'])){
+		if(isset($_GET['tid'])){
 			$escapedLat = pg_escape_string(trim($_GET['lat']));
 			$escapedLon = pg_escape_string(trim($_GET['lon']));
-			$escapedId = pg_escape_string(trim($_GET['id']));
+			$escapedId = pg_escape_string(trim($_GET['tid']));
 		}
 	}
 }
@@ -23,6 +23,8 @@ if (isset($_GET['lat'])) {
 $latArr = explode(",", $escapedLat);
 $lonArr = explode(",", $escapedLon);
 $idArr = explode(",", $escapedId);
+
+
 
 if(isset($_GET['csv'])) {
 	$arrayForCSV = array();
@@ -60,10 +62,8 @@ if(isset($_GET['csv'])) {
 		$tempArray = array();
 
         $jsonurl = "http://castle.iplantcollaborative.org:9000/info?lat=$lat&lon=$lon";
-        $json = file_get_contents($jsonurl);
 
-        $jsonarray = json_decode($json, true);
-
+        $jsonarray = json_decode(file_get_contents($jsonurl), true);
         $mat = $jsonarray['mat'] / 10; 
         $mdr = $jsonarray['mdr'] / 10; 
         $iso = $jsonarray['iso'] / 10; 
@@ -119,6 +119,7 @@ if(isset($_GET['csv'])) {
 	header("Content-disposition: attachment; filename=\"worldclim_spreadsheet.csv\"");
 	header("Expires: 0");
 	outputCSV($arrayForCSV);
+
 } else {
 	$json_array = array();
 	for($i = 0; $i < count($latArr); $i++) {
@@ -127,6 +128,7 @@ if(isset($_GET['csv'])) {
 		$id = $idArr[$i];
 		$jsonurl = "http://castle.iplantcollaborative.org:9000/info?lat=$lat&lon=$lon";
 		$json = json_decode(file_get_contents($jsonurl));
+		//should've used associative array instead of object, lol
 		$json->mat = $json->mat / 10; 
         $json->mdr = $json->mdr / 10; 
         $json->iso = $json->iso / 10; 

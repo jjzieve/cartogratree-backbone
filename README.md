@@ -114,6 +114,7 @@ I highly recommend re-doing all my terrible css with a pre-processor such as [LE
 ##### Bottom
 - js/views/bottom_tabs.js, a controller *per se* for all the grids, when they should be destroyed,created,deleted from, inserted into, etc. based on the run_tools and view buttons
 - js/views/*grid.js, slickgrids with corresponding data. My solution for how to handle destruction and creation for these through the tree_nodes_meta attributes is very hacky. Needs a lot of work!!
+- js/views/grid_mixin.js, added this to take out a lot of the duplicate functionalities of the grid, may have introduced some errors but at least its DRY! I highly recommend the use of mixins, and I'm sure its relevant elsewhere in the app.
 
 Hopefully this drawing can visually explain whats going on. Essentially, the models (circles) share the data with the views (rectangles) that they overlap. The arrows indicate directionality of data (e.g. the selection_tree can update the map, but not vice versa) and everything is roughly laid out how it is on the actual page.
 ![](images/ctree_code.png?raw=true)
@@ -136,15 +137,22 @@ Related topics are [closures](http://stackoverflow.com/questions/111102/how-do-j
 1. **Allow map display to reflect URI.** 
 This is a significant problem because google won't allow a GET parameter to go beyond a certain number of chars and this is how the map is currently being filtered down (see [models and collections](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#models--collections))
 1. **Merge backend scripts and general code refactoring.** 
-Example, GetCommonSNP.php and GetGenoData.php, effectively run the same query; they just return different things. Also, my code for the grids often uses the same functions, I realize it was bad design on my part but I was in a hurry, Modularize!
+Example, GetCommonSNP.php and GetGenoData.php, effectively run the same query; they just return different things.
 3. **Allow filtering in analysis tables.** 
 Because the analysis tables are linked, this will allow a user to subset their data based on knowledge of metadata (e.g. only analyze the samples with a certain genotype). See the original [cartogratree](https://dendrome.ucdavis.edu/cartogratree/) and how filtering works for the amplicon table. Also relevant is how to apply filtering in [slickgrids](http://mleibman.github.io/SlickGrid/examples/example4-model.html)
 4. **Allow phenotype search in the map display.** 
 This would go under the tree id search and allow users to only show markers with certain phenotypes. Ontology may be necessary here, along with cleaning up some data in the backend.
 5. **Integrate soil data.**
 Ameriflux is too sparse a resource to really be utilized. If we could somehow mirror what was done with the worldclim data using the same source as the soil survey ArcGIS layer this could be invaluable. I also never fully integrated ameriflux with the analysis tables, this would be a start.
-6. **Include genotype marker types**
+6. **Include other genotype marker types**
 For instance, right now our genotype grid sort of assumes the data is SNPs but the majority of our data is actually SSRs.
 7. **TEST!!!!**
-I'm sure there are countless bugs. Try using qunit.js and test.hml
+I'm sure there are countless bugs. I only did "integration" testing, but unit testing might be in order?(frontend: [qunit.js](http://qunitjs.com/), backend: [phpunit](http://phpunit.de/)). Also, cross-browser support is important as many users will likely be using older versions of IE (which isn't supported at all yet), I recommend just a basic [user-agent plugin](http://chrispederick.com/work/user-agent-switcher/) or, if you're very thorough, using [Vagrant](http://www.vagrantup.com/) to virtualize some older Microsoft + IE environments.  
+8. **Reduce number of AJAX calls**, especially for the filtering map counts, slows down app quite a bit (i.e. look at network tab in firebug). Also, adding error checking to these calls is necessary, I only added an "error" callback to a couple of the grid views.
+9. **Update main.js dependencies periodically.** The require.js shim config captures most of these dependecies (most libraries need jquery) but I didn't get them all, so if you reload the page and everything is broken... firebug will tell you what dependency broke(e.g. "jQuery is undefined in slickgrid.js", so add 'slick_grid':{ deps: ['jquery'] })
+10. **Consider "unsyncing" the grids**, this functionality makes the various states quite convuluted...
+11. **Cron everything in the update_scripts directory**, so no manual refreshes are required for new TGDR submissions
+
+
+
 

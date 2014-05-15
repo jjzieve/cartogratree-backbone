@@ -56,7 +56,7 @@ Updated:
 				<a href="#"><img class="img-responsive" id="ctree_logo" src="images/logo_cartogratree_v2.png"></a>
 			</div>
 			<div class="col-xs-7 col-xs-offset-1">
-				<ul class="nav nav-pills">
+				<ul class="nav nav-pills navbar">
 					<li><a target="_blank" href="about.html">About</a></li>
 					<li><a target="_blank" href="http://dendrome.ucdavis.edu/treegenes/" >TreeGenes</a></li>
 					<li><a target="_blank" href="http://dendrome.ucdavis.edu/DiversiTree/">DiversiTree</a></li>
@@ -201,85 +201,63 @@ Updated:
 			<div class="col-xs-12">
 				<div id="tabs_container" class="well well-sm">
 					<h4>Analyze the data</h4>
-					<div id="tools" class="btn-group pull-right">
-						<button class="btn btn-default" type="button" data-toggle="dropdown"><span id="tools_title">Select tool</span> <span class="caret"></span></button>
-						<ul id="tools_dropdown" class="dropdown-menu">
-						    <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Select tool</a></li>
-						  	<li role="presentation"><a id="amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Amplicons</a></li>
-						    <li role="presentation"><a id="phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Traits</a></li>
-						    <li role="presentation"><a id="genotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Genotypes</a></li>
-						    <li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">View Environmental data</a></li>
-						    <li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download Diversitree input file</a></li>
-						    <li role="presentation" class="divider"></li>
-						    <li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>
-				    		<li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>
-						</ul>
-						<div class="btn-group">
-				 			<button id="run_tool" type="button" class="btn btn-default">Run tool on selected</button>		
-				 		</div>
+					<div class="analysis_pills_container">
+					    <ul class="nav nav-pills analysis_pills">
+					        <li class="active" ><a data-toggle="pill" href="#map_selection_pill">Map selection</a>
+					        </li>
+					    </ul>
 					</div>
-					<ul class="nav nav-tabs" id="data_tabs"> <!--Diversitree, SSWAP, and TASSEL don't have tabs -->
-						<li id="samples_tab">
-							<a href="#samples" data-toggle="tab">Samples</a>
-						</li>
-					</ul>
-					<div id="data_table_container" class="tab-content">
-						<div class="tab-pane fade in" id="samples">
-							<div class="button-wrapper">
+					<div id="analysis_pills_content" class="tab-content">
+						<div class="tab-pane fade active in" id="map_selection_pill">
+							<div id="tools" class="btn-group pull-right">
+								<button class="btn btn-default" type="button" data-toggle="dropdown"><span id="tools_title">Tools</span> <span class="caret"></span></button>
+								<ul id="tools_dropdown" class="dropdown-menu">
+								    <li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0);">Tools</a></li>
+								  	<li role="presentation"><a id="amplicon_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Find common amplicons</a></li>
+								    <li role="presentation"><a id="diversitree_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Download tree ids</a></li>
+								    <li role="presentation" class="divider"></li>
+								    <li class="dropdown-header"><img src="images/sswapinfoicon.png"> sswap</li>
+						    		<li role="presentation"><a id="tassel_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">TASSEL</a></li>
+								</ul>
 								<div class="btn-group">
-									<button class="btn btn-default" type="button" id="remove_samples">Remove selected samples</button>
-									<button id="sswap_demo" type="button" style="color:white;"class="btn btn-success">Tassel demo data</button>
+						 			<button type="button" class="btn btn-default run_tool">Run tool on selected</button>		
+						 		</div>
+							</div>
+							<div id="views" class="btn-group pull-right">
+								<button class="btn btn-default" type="button" data-toggle="dropdown">View<span class="caret"></span></button>
+								<ul id="view_dropdown" class="dropdown-menu">
+									<li role="presentation"><a id="genotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Genotypes</a></li>
+									<li role="presentation"><a id="phenotype_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Phenotypes</a></li>
+								    <li role="presentation"><a id="worldclim_tool" role="menuitem" tabindex="-1" href="javascript:void(0);">Environmental data</a></li>
+								</ul>
+							</div>
+							<ul class="nav nav-tabs" id="data_tabs"> <!--Diversitree, SSWAP, and TASSEL don't have tabs -->
+								<li id="samples_tab">
+									<a href="#samples" data-toggle="tab">Samples</a>
+								</li>
+							</ul>
+							<div id="data_table_container" class="tab-content">
+								<div class="tab-pane fade in" id="samples">
+									<div class="button-wrapper">
+										<div class="btn-group">
+											<button class="btn btn-default" type="button" id="remove_samples">Remove selected samples</button>
+											<button id="sswap_demo" type="button" style="color:white;"class="btn btn-success">Tassel demo data</button>
+										</div>
+									</div>
+										<div id="clear_table" style="display: none;"></div> <!-- just used to remove rectangles from map -->
+									<table id="data_table"> 
+								    	<td valign="top" class="grid-col">
+											<div id="sample_grid" class="grid"></div>
+										</td>
+									</table>
+									Total samples selected: <span id="sample_count">0</span>
 								</div>
 							</div>
-								<div id="clear_table" style="display: none;"></div> <!-- just used to remove rectangles from map -->
-							<table id="data_table"> 
-						    	<td valign="top" class="grid-col">
-									<div id="grid" class="grid"></div>
-								</td>
-							</table>
-							Total samples selected: <span id="sample_count">0</span>
 						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-
-<!-- Nested tabs -->
-<!-- 			<div>
-			    <ul class="nav nav-pills">
-			        <li class="active"><a href="#set1">Map</a>
-			        </li>
-			        <li><a href="#set2">Amplicons</a>
-			        </li>
-			    </ul>
-			    <div class="tab-content">
-			        <div class="tab-pane fade active in" id="set1">
-			            <div>
-			                <ul class="nav nav-tabs">
-			                    <li class="active"><a href="#sub11">Samples</a>
-			                    </li>
-			                    <li><a href="#sub12">Genotypes</a>
-			                    </li>
-			                </ul>
-			                <div class="tab-content">
-			                    <div class="tab-pane fade active in" id="sub11">
-			                        <p>TID001</p>
-			                    </div>
-			                    <div class="tab-pane fade" id="sub12">
-			                        <p>AT</p>
-			                    </div>
-			                </div>
-			            </div>
-			        </div>
-			        <div class="tab-pane fade" id="set2">
-			            <div>
-			                <div class="tab-content">
-			                    AID_001 = ATGACAGT
-			                </div>
-			            </div>
-			        </div>
-			    </div>
-			</div>
--->	
 
 	 <!--FOOTER-->
 		<div class="row" id="footer">

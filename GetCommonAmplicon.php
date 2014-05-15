@@ -1,20 +1,23 @@
 <?php
 /*
-   TreeSampleWizard.php 
-   by Hans Vasquez
+   GetCommonAmplicon.php 
+   by Jacob Zieve
    Designed for use with CartograTree.
 
-   Started: 4/25/12
-   This Release: 5/2/12
+   Started: 5/9/14
+   This Release: ?
 
 
 */
 // DEBUG MODE.
 ini_set('display_errors', 1);
 
-include_once("../includes/db_access/db_connect_sswap.php");
+#include_once("../includes/db_access/db_connect_sswap.php");
+include_once("../../dev/includes/db_access/db_connect_sswap.php");//for dev box
 //include_once("includes/incPGSQL.php");
-session_start();
+session_start(); // should use this so user can bring up amplicon queries again
+
+/*** Start Functions **/
 
 function GETlist($id)
 {
@@ -254,8 +257,82 @@ function genQuery($ampliconINString)
 		ORDER BY amplicon_name, annot_type";
 }
 
+function generateJsonAmpliconById($array) {
+        $jsonRRG = '{
+		 
+		        "api" : "/makeRRG",
+
+		        "prefix" : {
+		                "treeGenes" : "http://sswapmeet.sswap.info/treeGenes/",
+		                "requests" : "http://sswapmeet.sswap.info/treeGenes/requests/"
+		        },
+
+		        "http://sswap.dendrome.ucdavis.edu/resources/ampliconService/AmpliconService" : {},';
+
+
+		        $jsonRRG = $jsonRRG.'
+
+		        "mapping" : {
+		        ';
+
+		        $size = count($array);
+		        //foreach term create a subject node
+		        foreach($array as $i => $value) {
+		                $subNum = $i + 1;
+		                if($i < $size - 1) {
+		                        $jsonRRG = $jsonRRG.'
+		                "_:subject'.$subNum.'" : "urn:treeGenes:amplicon:id:'.$value.'",';
+		                } else {
+		                        $jsonRRG = $jsonRRG.'
+		                "_:subject'.$subNum.'" : "urn:treeGenes:amplicon:id:'.$value.'"';
+		                }
+		        }
+
+		        $jsonRRG = $jsonRRG.'
+
+		        },
+
+		        "definitions" : {
+		        ';
+
+		        foreach($array as $i => $value) {
+		                $subNum = $i + 1;
+		                if($i < $size) {
+		                        $jsonRRG = $jsonRRG.'
+		                "_:subject'.$subNum.'" : { "treeGenes:amplicon/id" : "'.$value.'" },';
+		                }
+		        }
+
+		        $jsonRRG = $jsonRRG.'
+		        ';
+		        foreach($array as $i => $value) {
+		                if($i < $size - 1) {
+		                        $jsonRRG = $jsonRRG.'
+		                "urn:treeGenes:amplicon:id:'.$value.'" : {
+		                        "rdf:type" : "treeGenes:amplicon/Amplicon",
+		                        "treeGenes:amplicon/id" : "'.$value.'"
+		                },';
+		                } else {
+		                        $jsonRRG = $jsonRRG.'
+		                "urn:treeGenes:amplicon:id:'.$value.'" : {
+		                        "rdf:type" : "treeGenes:amplicon/Amplicon",
+		                        "treeGenes:amplicon/id" : "'.$value.'"
+		                }';
+		                }
+		        }
+
+		        $jsonRRG = $jsonRRG.'
+
+		        }
+		}';
+	return $jsonRRG;
+}
+/*** End Functions ***/
+
+/*** Start AJAX Calls ***/
 $tidarray = GETlist("tid");
 $checkedAmplicons = GETList("checkedAmplicons");
+
 
 if (isset($_GET['csv'])) {
 	header('Content-Type: text/plain');
@@ -560,187 +637,88 @@ if (isset($_GET['csv'])) {
 		$iterator = $iterator - 1;
 		$finalOutput = "\"Amplicon Id\",\"Top Blast Description (BLAST nr)\",\"Species-Specific BLASTs\",\"GO Annotations\",\"Interpro Annotations\",\"PFAM Annotations\",\"ExPASY EC Annotations\",\"thmm / SignalP\"".$finalOutput;
 		echo $finalOutput;
-	
-	exit;
+		exit;
+	}
 }
-?>
+else if(count($tidarray) > 1) { //for the grid
 
-<?php
-} else if(count($tidarray) > 1) {
 	$qCommonAmp = "SELECT * FROM sswap_get_common_amplicons_per_sample(ARRAY['".implode("','",$tidarray)."'])";
 	$resCommonAmp = DBQuery($qCommonAmp);
-
 	$countCommonAmp = pg_num_rows($resCommonAmp);
 	$ampliconINString = "";
-	
 	if($countCommonAmp != 0) {
 		while($idRes = pg_fetch_assoc($resCommonAmp)) {
 			$ampliconINString .= "'" . $idRes['amplicon_name'] . "',";
 		}
 		$ampliconINString = substr($ampliconINString, 0, -1);
-		
 		$query = genQuery($ampliconINString);
 		$resCommonAnnot = DBQuery($query);
 		$countCommonAnnot = pg_num_rows($resCommonAnnot);
 
+
 		if($countCommonAnnot > 0) {
-		?>
-					<table id='common_amplicon_table' style='font-size:14px'>
-						<thead>
-							<tr>
-								<th><b>Number</b></th>
-								<th><b>Amplicon Id</b></th>
-								<th><b>Top Blast Description <br>(BLAST nr)</b></th>
-								<th><b>Species-Specific BLASTs</b></th>
-								<th><b>GO Annotations</b></th>
-								<th><b>Interpro Annotations</b></th>
-								<th><b>PFAM Annotations</b></th>
-								<th><b>ExPASY EC Annotations</b></th>
-								<th><b>thmm / SignalP</b></th>
-							</tr>
-						</thead>
-						<tbody>
-						<?php
-						$allAmpId = array();
-						$output = array();
-						while($annotRes = pg_fetch_assoc($resCommonAnnot)) {
-							$ampliconId = $annotRes['amplicon_name'];
-							$annot_type = $annotRes['annot_type'];
-							$annot_id = $annotRes['annot_id'];
-							$annot_term = $annotRes['annot_term'];
-							
-							//hash loads
-							if(!in_array($ampliconId,$allAmpId)){
-								$allAmpId[] = $ampliconId;
-								$output[$ampliconId] = array();
-							}
-							
-							if(array_key_exists($annot_type,$output[$ampliconId])){
-								if($annot_type == 'blast-nr' || $annot_type =='tmhmmsignalp' || $annot_type == 'blast-species'){
-									$output[$ampliconId][$annot_type] .= "<br><br>$annot_term";
-								}
-								else{
-									$output[$ampliconId][$annot_type] .= "<br><br>$annot_id $annot_term";
-								}
-							}
-							else{
-								if($annot_type == 'blast-nr' || $annot_type =='tmhmmsignalp' || $annot_type == 'blast-species'){
-									$output[$ampliconId][$annot_type] = $annot_term;
-								}
-								else{
-									$output[$ampliconId][$annot_type] = $annot_id.' '.$annot_term;
-								}
-							}
-						}//organize data into respective fields
-						
-						$col_type = array('blast-nr','blast-species','go','interpro','pfam','ec','tmhmmsignalp');
-						$iterator = 1;
-						$prev_sel_amp = isset($_SESSION['checkedAmplicons']) ? $_SESSION['checkedAmplicons']: array();
-						foreach($output as $ampID => $data){
-							$iterator%2 == 1 ? $css_class = 'class=odd' : $css_class = '';
-							print "<tr $css_class><td><input type=checkbox value=\"$ampID\" name=checkedAmplicons[] ";
-							if(in_array($ampID,$prev_sel_amp)){print "checked";}
-							print ">$iterator</td><td>$ampID</td>";
-							foreach($col_type as $type){
-								print array_key_exists($type,$data) ? "<td>".$data[$type]."</td>" : "<td></td>";
-							}
-							print "</tr>";
-							$iterator++;
-						}
-						unset($output);	
-						session_destroy();
-						?>
-						</tbody>
-					</table>
-		
-		<?php
-		} else {
-			print "<br><br> No functional annotations were found for the common ammplicons. Please select another set.";
-			echo "<script language=javascript>$('#stats > tbody').append('<tr><td align=right></td><td>No functional annotations were found for the common ammplicons. Please select another set.</td></tr>');</script>";
+			$allAmpId = array();
+			$output = array();
+			while($annotRes = pg_fetch_assoc($resCommonAnnot)){
+				$ampliconId = $annotRes['amplicon_name'];
+				$annot_type = $annotRes['annot_type'];
+				$annot_id = $annotRes['annot_id'];
+				$annot_term = $annotRes['annot_term'];
+				
+				//hash loads
+				if(!in_array($ampliconId,$allAmpId)){
+					$allAmpId[] = $ampliconId;
+					$output[$ampliconId] = array();
+				}
+				
+				if(array_key_exists($annot_type,$output[$ampliconId])){
+					if($annot_type == 'blast-nr' || $annot_type =='tmhmmsignalp' || $annot_type == 'blast-species'){
+						$output[$ampliconId][$annot_type] .= "$annot_term";
+					}
+					else{
+						$output[$ampliconId][$annot_type] .= "$annot_id $annot_term";
+					}
+				}
+				else{
+					if($annot_type == 'blast-nr' || $annot_type =='tmhmmsignalp' || $annot_type == 'blast-species'){
+						$output[$ampliconId][$annot_type] = $annot_term;
+					}
+					else{
+						$output[$ampliconId][$annot_type] = $annot_id.' '.$annot_term;
+					}
+				}
+			}//organize data into respective fields
+			// echo var_dump($output);
+			$col_type = array('blast-nr','blast-species','go','interpro','pfam','ec','tmhmmsignalp');
+			// $iterator = 1;
+			// // $prev_sel_amp = isset($_SESSION['checkedAmplicons']) ? $_SESSION['checkedAmplicons']: array();
+			// $json = array();
 
+			$all_amps_json = array();
+			$i = 1;
+			foreach($output as $ampID => $data){
+				$json = array("id"=>$i,"amplicon_id"=>$ampID);
+				foreach($col_type as $type){
+					if(array_key_exists($type,$data)){
+						$json[$type] = $data[$type];
+					}
+					else{
+						$json[$type] = "";
+					}
+				}
+				$all_amps_json[] = $json;
+				$i++;
+			}
+			echo json_encode($all_amps_json);
+			exit;
 		}
-
-	} else {
-		echo "<p style=\"margin-left:50px\">Please remove a Tree Sample from the Selected Markers tab and rerun the Common Amplicon tool until you have a set of common amplicons</p>";
 	}
-} 
-else{
-	echo "<p style=\"margin-left:50px\">Please select at least two tree markers to run the Common Amplicon tool</p>";	
 }
 
-function generateJsonAmpliconById($array) {
-
-        $jsonRRG = '{
- 
-        "api" : "/makeRRG",
-
-        "prefix" : {
-                "treeGenes" : "http://sswapmeet.sswap.info/treeGenes/",
-                "requests" : "http://sswapmeet.sswap.info/treeGenes/requests/"
-        },
-
-        "http://sswap.dendrome.ucdavis.edu/resources/ampliconService/AmpliconService" : {},';
-
-
-        $jsonRRG = $jsonRRG.'
-
-        "mapping" : {
-        ';
-
-        $size = count($array);
-        //foreach term create a subject node
-        foreach($array as $i => $value) {
-                $subNum = $i + 1;
-                if($i < $size - 1) {
-                        $jsonRRG = $jsonRRG.'
-                "_:subject'.$subNum.'" : "urn:treeGenes:amplicon:id:'.$value.'",';
-                } else {
-                        $jsonRRG = $jsonRRG.'
-                "_:subject'.$subNum.'" : "urn:treeGenes:amplicon:id:'.$value.'"';
-                }
-        }
-
-        $jsonRRG = $jsonRRG.'
-
-        },
-
-        "definitions" : {
-        ';
-
-        foreach($array as $i => $value) {
-                $subNum = $i + 1;
-                if($i < $size) {
-                        $jsonRRG = $jsonRRG.'
-                "_:subject'.$subNum.'" : { "treeGenes:amplicon/id" : "'.$value.'" },';
-                }
-        }
-
-        $jsonRRG = $jsonRRG.'
-        ';
-        foreach($array as $i => $value) {
-                if($i < $size - 1) {
-                        $jsonRRG = $jsonRRG.'
-                "urn:treeGenes:amplicon:id:'.$value.'" : {
-                        "rdf:type" : "treeGenes:amplicon/Amplicon",
-                        "treeGenes:amplicon/id" : "'.$value.'"
-                },';
-                } else {
-                        $jsonRRG = $jsonRRG.'
-                "urn:treeGenes:amplicon:id:'.$value.'" : {
-                        "rdf:type" : "treeGenes:amplicon/Amplicon",
-                        "treeGenes:amplicon/id" : "'.$value.'"
-                }';
-                }
-        }
-
-        $jsonRRG = $jsonRRG.'
-
-        }
-}';
-
-        return $jsonRRG;
+else if(isset($_GET['jsonRRG'])){ //return RRG for sswap
+	echo generateJsonAmpliconById($checkedAmplicons);
+	exit;
 }
 
-
-
+/*** End AJAX Calls ***/
 ?>

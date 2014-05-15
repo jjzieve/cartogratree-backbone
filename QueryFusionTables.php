@@ -9,9 +9,9 @@
 	}
 	else{ // to test from command line and get all ids for autocomplete 
 		$sts_is_query = "SELECT%20tree_id%20FROM%201bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI";
-        	$tgdr_query = "SELECT%20tree_id%20FROM%20118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M";
-          	$try_db_query = "SELECT%20tree_id%20FROM%201XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw";
-        //  	$ameriflux_query = "SELECT%20icon_name,site_id,lat,lng,num_sequences,num_genotypes,num_phenotypes,species%20FROM%201XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw%20WHERE%20ST_INTERSECTS('lat'%2C%20RECTANGLE(LATLNG(47.628873510464814%2C%20-122.87109375)%2CLATLNG(49.31843827419398%2C%20-120.76171875)))";
+    	$tgdr_query = "SELECT%20tree_id%20FROM%20118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M";
+      	$try_db_query = "SELECT%20tree_id%20FROM%201XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw";
+        // $ameriflux_query = "SELECT%20icon_name,site_id,lat,lng,num_sequences,num_genotypes,num_phenotypes,species%20FROM%201XwP3nc6H5_AUjdCjpXtrIlrSmtOHXr0Q9p_vrPw%20WHERE%20ST_INTERSECTS('lat'%2C%20RECTANGLE(LATLNG(47.628873510464814%2C%20-122.87109375)%2CLATLNG(49.31843827419398%2C%20-120.76171875)))";
 	}
 		
 	function extractJSON($response){
@@ -26,21 +26,15 @@
 	$tgdr_json_url = $prefix.$tgdr_query.$key;
 	$sts_is_json_url = $prefix.$sts_is_query.$key;
 	$try_db_json_url = $prefix.$try_db_query.$key;
-    	$tgdr_json = extractJSON(json_decode(file_get_contents($tgdr_json_url)));
+    $tgdr_json = extractJSON(json_decode(file_get_contents($tgdr_json_url)));
 	$sts_is_json = extractJSON(json_decode(file_get_contents($sts_is_json_url)));
 	$try_db_json = extractJSON(json_decode(file_get_contents($try_db_json_url)));
 	
 	$json = json_encode(array_merge(array_merge($tgdr_json,$sts_is_json),$try_db_json));// needed to call ->rows to pull array out of php's stdClass
-	//$json = json_encode($tgdr_json+$sts_is_json+$try_db_json);// needed to call ->rows to pull array out of php's stdClass
-	//debug
-//	var_dump($json);
+	// debug
+	// var_dump($json);
 	echo $json;
 	
-
-
-
-
-
 
 
 

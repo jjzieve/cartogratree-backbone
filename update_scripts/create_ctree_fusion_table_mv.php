@@ -198,11 +198,11 @@ UNION ALL (
 
 ) 
 ORDER BY species ASC, identifier ASC;
-ALTER TABLE tgdr_data_availability_mv
+ALTER TABLE ctree_fusion_table_mv
   OWNER TO jzieve;
-GRANT ALL ON TABLE tgdr_data_availability_mv TO jzieve;
-GRANT SELECT ON TABLE tgdr_data_availability_mv TO btearse;
-GRANT SELECT ON TABLE tgdr_data_availability_mv TO hansvg;
+GRANT ALL ON TABLE ctree_fusion_table_mv TO jzieve;
+GRANT SELECT ON TABLE ctree_fusion_table_mv TO btearse;
+GRANT SELECT ON TABLE ctree_fusion_table_mv TO hansvg;
 ";
 
 DbQuery($q);
