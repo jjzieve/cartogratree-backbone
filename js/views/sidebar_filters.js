@@ -17,25 +17,21 @@ define([
 			collection: QueriesCollection,
         				
 			events : {
-				"click .checkbox": "toggleFilter"
+				"click input[type=checkbox]": "toggleFilter"
 			},
 
 			toggleFilter : function(event){
     			var filter = event.target.id;
-    			if (filter) {
-    				if ($('#'+filter).parents('label').hasClass('active')) {
-    					this.collection.remove(filter);
-    				}
-    				else {
-    					this.collection.add(
-    					{
-    						id: filter, // so it can be removed
-    						filter: filter
-    					});
-    				}
-    			}
-    			$('#'+filter).parents('label').toggleClass('active');
-    			$('#'+filter).attr('checked', !$('#'+filter).attr('checked'));
+   				if ($('#'+filter).is(":checked")) {
+   					this.collection.add(
+   					{
+   						id: filter, // so it can be removed
+   						filter: filter
+   					});   					
+   				}
+   				else {
+   					this.collection.remove(filter);    				
+   				}
     		},
 
 			getColumn: function(column){//repeated from map view, not very DRY...
@@ -64,7 +60,8 @@ define([
 					return 0;
 				}
         	},
-  
+
+ 
 			refreshCounts: function(){
 				var that = this;
 				this.$el.children().each(function(){ //check each filter/checkbox
@@ -87,28 +84,34 @@ define([
 							var columnQuery = "is_exact_gps_coordinate = 'false'";
 						}
 
-						var tgdrQuery = that.getCountQuery("tgdr",columnQuery);
-						var sts_isQuery = that.getCountQuery("sts_is",columnQuery);
-						var try_dbQuery = that.getCountQuery("try_db",columnQuery);
-						var amerifluxQuery = that.getCountQuery("ameriflux",columnQuery);
+						var tgdrQuery = encodeURIComponent(that.getCountQuery("tgdr",columnQuery));
+						var sts_isQuery = encodeURIComponent(that.getCountQuery("sts_is",columnQuery));
+						var try_dbQuery = encodeURIComponent(that.getCountQuery("try_db",columnQuery));
+						var amerifluxQuery = encodeURIComponent(that.getCountQuery("ameriflux",columnQuery));
 
 						var url = that.model.get("fusion_table_query_url");
 						var key = that.model.get("fusion_table_key");
-
-						$.getJSON(url+tgdrQuery+key).success(function(data){
-							var tgdrCount = that.addCount(data);
-		    				$.getJSON(url+sts_isQuery+key).success(function(data){
-								var sts_isCount = that.addCount(data);
-								$.getJSON(url+try_dbQuery+key).success(function(data){
-	    							var try_dbCount = that.addCount(data); 
-		    						$.getJSON(url+amerifluxQuery+key).success(function(data){
-	    								var amerifluxCount = that.addCount(data); 
-		    							$("#"+id).parent().html($("#"+id).parent().html().replace(/\d+/,tgdrCount+sts_isCount+try_dbCount+amerifluxCount));
-			    					});
-		    					});
-				 			});
+						//ameriflux?
+						$.ajax({
+        						url : 'QueryFusionTables.php',
+      							dataType: "json",
+      							data: {
+      							    "sts_is_query":sts_isQuery,
+      							    "tgdr_query":tgdrQuery,
+      							    "try_db_query":try_dbQuery},
+							success: function(response){
+								var counts = _.map(_.flatten(response),function(n){return parseInt(n)});
+								if (counts.length > 0){
+									var sum = _.reduce(counts,function(first,next){return first+next;});
+								}
+								else{
+		    						var sum = 0;	
+		    					}
+		    					$("#"+id+"_count").html(sum);
+							}
 						});
 					}
+
 				});
 			},
   		
@@ -118,6 +121,8 @@ define([
 				$('#phenotyped_qmark').popover({trigger:'hover'});
 				$('#exact_gps_qmark').popover({trigger:'hover'});
 				$('#approx_gps_qmark').popover({trigger:'hover'});
+				// $("#exact_gps").attr('checked',true); // do we really need this?
+				// $("#approx_gps").attr('checked',true);
 				this.refreshCounts();
 				this.collection.on('add remove reset',this.refreshCounts,this);	
 			},

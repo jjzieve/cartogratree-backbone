@@ -10,59 +10,19 @@ define([
   'text!templates/try_db_infowindow.html',
   'text!templates/ameriflux_infowindow.html',
   'text!templates/table_row.html',
-  'goog!maps,3,other_params:libraries=drawing&sensor=false',
+  //'goog!maps,3,other_params:libraries=drawing&sensor=false',
+  'async!http://maps.google.com/maps/api/js?sensor=false&libraries=drawing,visualization',
+  'context_menu',
+  'heatmap_data',
+  'arcgis',
+  'tablesorter',
+  'metadata',
+  'tablecloth'
 ], function($,_, Backbone, QueryModel, QueriesCollection, tgdrInfoWindow, sts_isInfoWindow, try_dbInfoWindow, amerifluxInfoWindow, tableRow){
 
-  google.maps.Polygon.prototype.Contains = function(point) {
-        // ray casting alogrithm http://rosettacode.org/wiki/Ray-casting_algorithm
-        var crossings = 0,
-            path = this.getPath();
-
-        // for each edge
-        for (var i=0; i < path.getLength(); i++) {
-            var a = path.getAt(i),
-                j = i + 1;
-            if (j >= path.getLength()) {
-                j = 0;
-            }
-            var b = path.getAt(j);
-            if (rayCrossesSegment(point, a, b)) {
-                crossings++;
-            }
-        }
-
-        // odd number of crossings?
-        return (crossings % 2 == 1);
-
-        function rayCrossesSegment(point, a, b) {
-            var px = point.lng(),
-                py = point.lat(),
-                ax = a.lng(),
-                ay = a.lat(),
-                bx = b.lng(),
-                by = b.lat();
-            if (ay > by) {
-                ax = b.lng();
-                ay = b.lat();
-                bx = a.lng();
-                by = a.lat();
-            }
-            // alter longitude to cater for 180 degree crossings
-            if (px < 0) { px += 360 };
-            if (ax < 0) { ax += 360 };
-            if (bx < 0) { bx += 360 };
-
-            if (py == ay || py == by) py += 0.00000001;
-            if ((py > by || py < ay) || (px > Math.max(ax, bx))) return false;
-            if (px < Math.min(ax, bx)) return true;
-
-            var red = (ax != bx) ? ((by - ay) / (bx - ax)) : Infinity;
-            var blue = (ax != px) ? ((py - ay) / (px - ax)) : Infinity;
-            return (blue >= red);
-
-        }
-
-     };
+  String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  }
 
   	var MapView = Backbone.View.extend({
         el : '#map_canvas',
@@ -73,185 +33,204 @@ define([
         try_dbInfoWindowTemplate: _.template(try_dbInfoWindow),
         amerifluxInfoWindowTemplate: _.template(amerifluxInfoWindow),
         tableRowTemplate: _.template(tableRow),
+        rectangles: [],
+         mapOptions : {
+           zoom: 4,
+           minZoom: 2,
+           maxZoom: 25,
+           center: new google.maps.LatLng(38.5539,-121.7381), //Davis, CA
+           mapTypeId: 'terrain',
+           mapTypeControl: true,
+           mapTypeControlOptions: { 
+             mapTypeIds: [
+               'terrain',
+               'satellite',
+             ],
+             style: google.maps.MapTypeControlStyle.DROPDOWN_MENU 
+           },
+           navigationControl: true,
+           navigationControlOptions: { 
+             style: google.maps.NavigationControlStyle.ZOOM_PAN 
+           },
+           scrollwheel: false,
+           scaleControl: true,
+           disableDoubleClickZoom: true
+         },
 
-        mapOptions : {
-          zoom: 4,
-          minZoom: 2,
-          maxZoom: 25,
-          center: new google.maps.LatLng(38.5539,-121.7381), //Davis, CA
-          mapTypeId: 'terrain',
-          mapTypeControl: true,
-          mapTypeControlOptions: { 
-            mapTypeIds: [
-              'terrain',
-              'satellite'
-            ],
-            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU 
-          },
-          navigationControl: true,
-          navigationControlOptions: { 
-            style: google.maps.NavigationControlStyle.ZOOM_PAN 
-          },
-          scrollwheel: false,
-          scaleControl: true,
-        },
-
-        clearTable: function(){
-          var table = document.getElementById("data_table");
-          for(var i = table.rows.length - 1; i > 0; i--)
-          {
-            table.deleteRow(i);
-          }
-        },
-
+	//should add heatmap toggle here also
+	events: {
+	  "click #layers ul li a" : "changeArcGISLayer",
+	},
+		
         initMap: function() {
           this.map =  new google.maps.Map(this.el, this.mapOptions);
+          this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById("toggle_heatmap"));
+          this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById("layers"));
+          this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById("legend"));
+
         },
         
-        getTableQueryCircle: function(table,circle){
-          var radius = circle.getRadius();
-          var center = circle.getCenter();
-          var lat = center.lat();
-          var lng = center.lng();
-          var circleQuery = " WHERE ST_INTERSECTS('lat', CIRCLE(LATLNG("+lat+","+lng+"),"+radius+"))";
-          console.log(circleQuery);
-          var table_id = this.collection.meta(table+"_id");
-          var prefix = "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+table_id;
+    	changeTitle: function(e){
+      		$('#layers_title').html($(e.target).html());
+     		$("#layers ul li a").not(e.target).removeClass("selected");
+      		$(e.target).addClass('selected');
+    	},  
 
-          if (this.collection.meta(table+"WhereClause") == ""){
-            return prefix + circleQuery;
-          }
-          else if (typeof(this.collection.meta(table+"WhereClause")) !== "undefined"){
-            return prefix+circleQuery+" AND "+this.collection.meta(table+"WhereClause")
-          }
-          else{
-            return prefix+" WHERE lat = 1000" // just a dumby url to return 0 on count()
-          }
-        },
+	clearArcGISLayer: function(){
+		if(this.arcGISLayer){
+			this.arcGISLayer.setMap(null);
+		}
+	},
+		
+	changeArcGISLayer: function(e){
+		this.changeTitle(e);
+		var url = $(e.target).attr("value");
+		this.clearArcGISLayer();
+		$("#legend").css({"display":"none"});
+		if(url){
+			this.arcGISLayer = new gmaps.ags.MapOverlay(url);
+			this.arcGISLayer.setMap(this.map);
+			$.ajax({
+				url: "GetArcGISLegends.php",
+				dataType: "json",
+				data: {"url":url+"/legend?f=json&pretty=true"},
+				success: function(response){
+					var legendHTML = "<h5><a target='_blank' href='"+url+"'>ArcGIS Legend</a></h5>";
+					_.each(response["layers"],function(layer){
+						var layerName = layer["layerName"];
+						legendHTML += "<table class='table table-borderless table-condensed table-hover infowindow'>";
+						legendHTML += "<tr><td colspan='2'>"+layerName+"</td></tr>";
+						 _.each(layer["legend"],function(key){
+							var label = key["label"];
+							var image = key["imageData"];
+							var imageType = key["contentType"];
+							legendHTML += "<tr><td>"+label+"</td>"+"<td><img src='data:"+imageType+";base64,"+image+"'></td></tr>";
+						});
+					legendHTML += "</table>";
+					});
+					$("#legend").empty();
+					$("#legend").append(legendHTML);
+					$("#legend").css({"display":"block"});
+				}
+			});
+		}
+	},
 
-        getTableQuery: function(table){
-          var table_id = this.collection.meta(table+"_id");
-          var prefix = "SELECT icon_name,tree_id,lat,lng,num_sequences,num_genotypes,species FROM "+table_id
-          if (this.collection.meta(table+"WhereClause") == ""){
-            return prefix
-          }
-          else if (typeof(this.collection.meta(table+"WhereClause")) !== "undefined"){
-            return prefix+" WHERE "+this.collection.meta(table+"WhereClause")
-          }
-          else{
-            return prefix+" WHERE lat = 1000" // just a dumby url to return 0 on count()
-          }
-        },
-
-        appendToTableCircle: function(result){
-          var that = this;
-          _.each(result.rows,function(row,index){
-              var rowObj = {
-                "icon_name":row[0],
-                "tree_id":row[1],
-                "lat":row[2],
-                "lng":row[3],
-                "num_sequences":row[4],
-                "num_genotypes":row[5],
-                "species":row[6]
-              }
-              // console.log(rowObj);
-              $('#data_table tbody').append(that.tableRowTemplate(rowObj));
-              $('#data_table').trigger("update");
+        clearRectangles: function(){
+          $.each(this.rectangles,function(index,rectangle){
+            rectangle.setMap(null);
           });
-        },
-
-        appendToTable: function(result,polygon){
-          var that = this;
-          _.each(result.rows,function(row,index){
-            var point = new google.maps.LatLng(row[2],row[3]);
-            if(polygon.Contains(point)) {
-              var rowObj = {
-                "icon_name":row[0],
-                "tree_id":row[1],
-                "lat":row[2],
-                "lng":row[3],
-                "num_sequences":row[4],
-                "num_genotypes":row[5],
-                "species":row[6]
-              }
-              // console.log(rowObj);
-              $('#data_table tbody').append(that.tableRowTemplate(rowObj));
-              $('#data_table').trigger("update");
-            }
-          });
+          this.collection.remove("rectangle"); 
         },
 
         initDrawingManager: function() {
           var that = this;
-          var url = that.model.get("fusion_table_query_url");
-          var key = that.model.get("fusion_table_key");
-          
-
           this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingControl: true,
             drawingControlOptions: {
               position: google.maps.ControlPosition.TOP_CENTER,
               drawingModes: [
-                google.maps.drawing.OverlayType.POLYGON,
-                google.maps.drawing.OverlayType.CIRCLE,
+		            google.maps.drawing.OverlayType.RECTANGLE
               ]
             },
           });
-
+	  
           this.drawingManager.setMap(this.map);
-          google.maps.event.addListener(this.drawingManager,'circlecomplete', function(circle){
-            if(that.circle){
-              that.circle.setMap(null);
-              that.clearTable();
-              // $('#data_table').dataTable().fnClearTable();
-            }
-            var tgdrQuery = that.getTableQueryCircle("tgdr",circle);
-            var sts_isQuery = that.getTableQueryCircle("sts_is",circle);
-            var try_dbQuery = that.getTableQueryCircle("try_db",circle);
-            var circleQuery = ""
-            that.circle = circle;
-            $.getJSON(url+tgdrQuery+key).success(function(result){
-              that.appendToTableCircle(result);
-              $.getJSON(url+sts_isQuery+key).success(function(result){
-                that.appendToTableCircle(result);
-                $.getJSON(url+try_dbQuery+key).success(function(result){
-                  that.appendToTableCircle(result);
-                });
+	
+          google.maps.event.addListener(this.drawingManager,'rectanglecomplete', function(rectangle){
+            that.rectangles.push(rectangle); //store map rectangle objects but effectively only cache and 
+	    if(!$("#toggle_heatmap").hasClass("selected")){// do nothing to the collection if in heat map mode
+            var sw = rectangle.getBounds().getSouthWest();
+            var ne = rectangle.getBounds().getNorthEast();
+            var rectangleQuery = "ST_INTERSECTS('lat', RECTANGLE(LATLNG"+sw+",LATLNG"+ne+"))";
+            var rectangleModel = that.collection.get("rectangle");
+
+         		if(typeof(rectangleModel) !== "undefined"){
+              rectangleModel.set({"value":rectangleQuery});
+              that.collection.set(rectangleModel,{remove:false});
+        		}
+            else{
+              that.collection.add({
+                id: "rectangle",
+                value: rectangleQuery // a bit hackish because it doesn't follow the format of the other models but its the best I could come up with...
               });
-            }); 
-
-          });
-
-          google.maps.event.addListener(this.drawingManager,'polygoncomplete', function(polygon){
-            if(that.polygon){
-              that.polygon.setMap(null);
-              that.clearTable();
-              // $('#data_table').dataTable().fnClearTable();
             }
-            var tgdrQuery = that.getTableQuery("tgdr");
-            var sts_isQuery = that.getTableQuery("sts_is");
-            var try_dbQuery = that.getTableQuery("try_db");
-            // var amerifluxQuery = that.getTableQuery("ameriflux");// implement later
-            that.polygon = polygon;
-            $.getJSON(url+tgdrQuery+key).success(function(result){
-              that.appendToTable(result,polygon);
-              $.getJSON(url+sts_isQuery+key).success(function(result){
-                that.appendToTable(result,polygon);
-                $.getJSON(url+try_dbQuery+key).success(function(result){
-                  that.appendToTable(result,polygon);
-                });
-              });
-            });
-                              
-            // google.maps.event.addListener(that.map,'click',function(){
-            //   console.log(polygon);
-            //   polygon.setMap(null);
-            // });
+	}
+	//listeners
+      	  });
+          $("#clear_table").on("click", function(){
+            that.clearRectangles();
           });
-
+          google.maps.event.addListener(this.map,'click',function(){// on map click remove all the rectangles from the map and the current query
+            that.clearRectangles();
+          });
+		
         },
       
+	initHeatMap: function(){
+	  var that = this;
+	  //Heatmap configuration
+          var heatMapData = get_heatmapdata();
+          this.heatmap = new google.maps.visualization.HeatmapLayer({
+            data: heatMapData
+          }); 
+      	  var gradient = [
+      	   'rgba(0, 255, 255, 0)',
+      	   'rgba(0, 255, 255, 1)',
+      	   'rgba(0, 191, 255, 1)',
+      	   'rgba(0, 127, 255, 1)',
+      	   'rgba(0, 63, 255, 1)',
+      	   'rgba(0, 0, 255, 1)',
+      	   'rgba(0, 0, 223, 1)',
+      	   'rgba(0, 0, 191, 1)',
+      	   'rgba(0, 0, 159, 1)',
+      	   'rgba(0, 0, 127, 1)',
+      	   'rgba(0, 63, 91, 1)',
+      	   'rgba(0, 127, 63, 1)',
+      	   'rgba(0, 191, 31, 1)',
+      	   'rgba(0, 255, 0, 1)'
+      	  ];
+
+      	  this.heatmap.set('radius', 7);
+      	  this.heatmap.set('maxIntensity', 150);
+      	  this.heatmap.set('dissipating', true);
+      	  this.heatmap.set('gradient', gradient);
+	  // this.toggleHeatMap($("#toggle_heatmap"));//initially off 
+	  
+	//listener
+	  $("#toggle_heatmap").on("click", function(){
+		that.toggleHeatMap($(this));
+	  });
+	},
+	
+	toggleHeatMap: function(heatMapToggle){
+		heatMapToggle.toggleClass("selected");
+		var columns = this.collection.pluck("column");
+		// don't add the heat map if tree_ids are in the url
+		// && columns.indexOf("tree_id_sts_is") === -1 && columns.indexOf("tree_id_tgdr") === -1 ){
+		if (heatMapToggle.hasClass("selected")){ 
+			this.heatmap.setMap(this.map);
+			this.clearLayers();
+			$("#heatmap_tooltip").tooltip('hide');
+			$('#heatmap_tooltip').data('tooltip',false)          // Delete the tooltip
+              			.tooltip({title: 'Heat map (All studies)',placement: 'bottom'});
+		}
+		else{
+			this.heatmap.setMap(null);
+			this.refreshLayers();
+			$("#heatmap_tooltip").tooltip('hide');
+			$('#heatmap_tooltip').data('tooltip',false)          // Delete the tooltip
+              			.tooltip({ title: 'Selected markers',placement:"bottom"});
+		}
+	},
+	  
+
+	clearLayers: function(){
+	  this.tgdrLayer.setMap(null);
+	  this.sts_isLayer.setMap(null);
+	  this.try_dbLayer.setMap(null);
+	  this.amerifluxLayer.setMap(null);
+	},
 
         initLayers: function() {
           this.tgdrLayer = new google.maps.FusionTablesLayer({
@@ -314,9 +293,9 @@ define([
               return 'Exact GPS';
             }
             else if (icon_name == 'small_yellow'){
-              return 'Approximate GPS';
+              return 'Approx. GPS';
             }
-            else if (icon_name == 'parks'){
+            else if (icon_name == 'measle_brown'){
               return 'TRY-DB';
             }
             else{
@@ -325,10 +304,11 @@ define([
           }
 
 
-          this.tgdrInfoWindow = new google.maps.InfoWindow({maxWidth:250});
-          this.sts_isInfoWindow = new google.maps.InfoWindow({maxWidth:250});
-          this.try_dbInfoWindow = new google.maps.InfoWindow({maxWidth:250});
-          this.amerifluxInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+
+          this.tgdrInfoWindow = new google.maps.InfoWindow({maxWidth:350});
+          this.sts_isInfoWindow = new google.maps.InfoWindow({maxWidth:350});
+          this.try_dbInfoWindow = new google.maps.InfoWindow({maxWidth:350});
+          this.amerifluxInfoWindow = new google.maps.InfoWindow({maxWidth:350});
           google.maps.event.addListener(this.tgdrLayer, 'click', function(e){
               that.tgdrInfoWindow.setContent(
                 that.tgdrInfoWindowTemplate({
@@ -336,8 +316,8 @@ define([
                   icon_type: convertIconToInfoWindowOutput(e.row["icon_name"].value),
                   tree_id: e.row["tree_id"].value,
                   species: e.row["species"].value,
-                  lat: e.row["lat"].value,
-                  lng: e.row["lng"].value,
+                  lat: new Number(e.row["lat"].value).toFixed(4),
+                  lng: new Number(e.row["lng"].value).toFixed(4),
                   sequenced: convertNumToInfoWindowOutput(e.row["num_sequences"].value),
                   genotyped: convertNumToInfoWindowOutput(e.row["num_genotypes"].value),
                   phenotyped: convertNumToInfoWindowOutput(e.row["num_phenotypes"].value),
@@ -358,8 +338,8 @@ define([
                   family: e.row["family"].value,
                   genus: e.row["genus"].value,
                   species: e.row["species"].value,
-                  lat: e.row["lat"].value,
-                  lng: e.row["lng"].value,
+                  lat: new Number(e.row["lat"].value).toFixed(4),
+                  lng: new Number(e.row["lng"].value).toFixed(4),
                   sequenced: convertNumToInfoWindowOutput(e.row["num_sequences"].value),
                   genotyped: convertNumToInfoWindowOutput(e.row["num_genotypes"].value),
                   phenotyped: convertNumToInfoWindowOutput(e.row["num_phenotypes"].value),
@@ -373,11 +353,11 @@ define([
                 that.try_dbInfoWindowTemplate({
                   icon_name: e.row["icon_name"].value,
                   icon_type: convertIconToInfoWindowOutput(e.row["icon_name"].value),
-                  angio_gymno: e.row["class"].value,
+                  angio_gymno: e.row["class"].value.capitalize(),
                   institution: e.row["institution"].value,
                   species: e.row["species"].value,
-                  lat: e.row["lat"].value,
-                  lng: e.row["lng"].value,
+                  lat: new Number(e.row["lat"].value).toFixed(4),
+                  lng: new Number(e.row["lng"].value).toFixed(4),
                   phenotyped: convertNumToInfoWindowOutput(e.row["num_phenotypes"].value),
                   dataset: e.row["dataset"].value,
                   })
@@ -393,79 +373,74 @@ define([
                   src_url: e.row["src_url"].value,
                   site_name: e.row["site_name"].value,
                   type: e.row["type"].value,
-                  lat: e.row["lat"].value,
-                  lng: e.row["lng"].value,
+                  lat: new Number(e.row["lat"].value).toFixed(4),
+                  lng: new Number(e.row["lng"].value).toFixed(4),
                   })
               );
+
               that.amerifluxInfoWindow.setPosition(new google.maps.LatLng(e.row["lat"].value,e.row["lng"].value));
               that.amerifluxInfoWindow.open(that.map);
           });
         },
 
-        initialize: function(){
-          var that = this;
-          this.initMap();
-          this.initLayers();
-          this.initInfoWindows();
-          this.initDrawingManager();
-          this.collection.on('add remove reset',this.refreshLayers,this);
-          google.maps.event.addListener(this.map, 'click', function(){ //clears bottom table and removes polygons from map
-            // $('#data_table').dataTable().fnClearTable();
-            if(that.polygon){
-              // console.log(that.polygon);
-              that.clearTable();
-              that.polygon.setMap(null);
-            }
+        initContextMenu: function(){
+      		var that = this;
+      		var contextMenuOptions={};
+          contextMenuOptions.classNames={menu:'context_menu', menuSeparator:'context_menu_separator'};
+          
+          //      create an array of ContextMenuItem objects
+          var menuItems=[];
+          menuItems.push({className:'context_menu_item', eventName:'zoom_in_click', label:'Zoom in'});
+          menuItems.push({className:'context_menu_item', eventName:'zoom_out_click', label:'Zoom out'});
+          //      a menuItem with no properties will be rendered as a separator
+          menuItems.push({});
+          menuItems.push({className:'context_menu_item', eventName:'center_map_click', label:'Center map here'});
+          menuItems.push({});
+          menuItems.push({className:'context_menu_item', eventName:'get_worldclim_data', label:'Get WorldClim Data'});
+          contextMenuOptions.menuItems=menuItems;
+          
+          //      create the ContextMenu object
+          var contextMenu=new ContextMenu(this.map, contextMenuOptions);
+          
+          //      display the ContextMenu on a Map right click
+          google.maps.event.addListener(this.map, 'rightclick', function(mouseEvent){
+                  contextMenu.show(mouseEvent.latLng);
+          });
+  
+          //      listen for the ContextMenu 'menu_item_selected' event
+          google.maps.event.addListener(contextMenu, 'menu_item_selected', function(latLng, eventName){
+          //      latLng is the position of the ContextMenu
+          //      eventName is the eventName defined for the clicked ContextMenuItem in the ContextMenuOptions
+            switch(eventName){
+              case 'zoom_in_click':
+                      this.map.setZoom(this.map.getZoom()+1);
+                      break;
+              case 'zoom_out_click':
+                      this.map.setZoom(this.map.getZoom()-1);
+                      break;
+              case 'center_map_click':
+                      this.map.panTo(latLng);
+                      break;
+              case 'get_worldclim_data':
+                      var lat = latLng.lat();
+                      var lng = latLng.lng();
+    				that.worldClimInfoWindow = new google.maps.InfoWindow({maxWidth:250});
+      				$.get("worldclimjson.php?lat="+lat+"&lon="+lng,function(html){
+      				    that.worldClimInfoWindow.setContent(html);
+      				});
+      				that.worldClimInfoWindow.setPosition(new google.maps.LatLng(lat,lng));
+      				that.worldClimInfoWindow.open(that.map);
+                                  break;
+                  }
           });
         },
+
 
         getColumn: function(column){
           return (this.collection.filter(function(query){return query.get("column") === column}).map(function(query){return query.get("value")}));
         },
 
-        genQuerySTS_IS: function(families,genuses,species,filters){
-          var familiesQuery = "";
-          var genusesQuery = "";
-          var speciesQuery = "";
-          var sequencedQuery = "";
-          var genotypedQuery = "";
-          var phenotypedQuery = "";
-          var gpsQuery = "";
-          if (families.length > 0){
-            familiesQuery = "'family' IN ('"+families.join("','")+"')";
-          }
-          if (genuses.length > 0){
-            genusesQuery = "'genus' IN ('"+genuses.join("','")+"')";
-          }
-          if (species.length > 0){
-            speciesQuery = "'species' IN ('"+species.join("','")+"')";
-          }
-          if (filters.indexOf("sequenced") != -1) {
-            sequencedQuery = "'num_sequences' > 0";
-          }
-          if (filters.indexOf("genotyped") != -1) {
-            genotypedQuery = "'num_genotypes' > 0";
-          }
-          if (filters.indexOf("phenotyped") != -1) {
-            phenotypedQuery = "'num_phenotypes' > 0";
-          }
-          if (filters.indexOf("exact_gps") != -1 && gpsQuery == "") {//if both or none are set shows all
-            gpsQuery = "'is_exact_gps_coordinate' = 'true'";
-          }
-          if (filters.indexOf("approx_gps") != -1 && gpsQuery == "") {
-            gpsQuery = "'is_exact_gps_coordinate' = 'false'";
-          }
-          return _.filter([
-            familiesQuery,
-            genusesQuery,
-            speciesQuery,
-            sequencedQuery,
-            genotypedQuery,
-            phenotypedQuery,
-            gpsQuery],function(string){ return string != ""}).join(' AND ');          
-        },
-
-        genQuery: function(table,years,families,genuses,species_tgdr,species_sts_is,accessions,filters){
+        genQuery: function(table,years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters){
           var studiesQuery = "";
           var yearsQuery = "";
           var familiesQuery = "";
@@ -473,6 +448,8 @@ define([
           var speciesTGDRQuery = "";
           var speciesSTS_ISQuery = "";
           var accessionsQuery = "";
+          var tree_idTGDRQuery = "";
+          var tree_idSTS_ISQuery = "";
           var sequencedQuery = ""; // no samples are sequenced in tgdr, may change in future
           var genotypedQuery = "";
           var phenotypedQuery = "";
@@ -491,6 +468,12 @@ define([
           }
           if (species_sts_is.length > 0){
             speciesSTS_ISQuery = "'species' IN ('"+species_sts_is.join("','")+"')";
+          }
+          if (tree_ids_tgdr.length > 0){
+            tree_idTGDRQuery = "'tree_id' IN ('"+tree_ids_tgdr.join("','")+"')";
+          }
+          if (tree_ids_sts_is.length > 0){
+            tree_idSTS_ISQuery = "'tree_id' IN ('"+tree_ids_sts_is.join("','")+"')";
           }
           if (accessions.length > 0){ 
             accessionsQuery = "'accession' IN ('"+accessions.join("','")+"')";
@@ -511,10 +494,10 @@ define([
             gpsQuery = "'is_exact_gps_coordinate' = 'false'";
           }
           if (table == "tgdr"){
-            return _.filter([yearsQuery,speciesTGDRQuery,accessionsQuery,sequencedQuery,genotypedQuery,phenotypedQuery,gpsQuery],function(string){ return string != ""}).join(' AND '); 
+            return _.filter([yearsQuery,speciesTGDRQuery,accessionsQuery,tree_idTGDRQuery,sequencedQuery,genotypedQuery,phenotypedQuery,gpsQuery],function(string){ return string != ""}).join(' AND '); 
           } 
           else if (table == "sts_is"){
-            return _.filter([familiesQuery, genusesQuery, speciesSTS_ISQuery, sequencedQuery, genotypedQuery, phenotypedQuery, gpsQuery],function(string){ return string != ""}).join(' AND '); 
+            return _.filter([familiesQuery, genusesQuery, speciesSTS_ISQuery, tree_idSTS_ISQuery, sequencedQuery, genotypedQuery, phenotypedQuery, gpsQuery],function(string){ return string != ""}).join(' AND '); 
           }
           else {//try_db or ameriflux
             return _.filter([sequencedQuery, genotypedQuery, phenotypedQuery, gpsQuery],function(string){ return string != ""}).join(' AND '); 
@@ -528,6 +511,7 @@ define([
           }
           else{
             this.collection.meta(table+"WhereClause",whereClause); //sets the new where clause
+	    if(!$("#toggle_heatmap").hasClass("selected")){//if heat map on, don't set layer
             layer.setOptions({
               query: {
                 select: "lat",
@@ -536,6 +520,7 @@ define([
               }
             });
             layer.setMap(this.map);
+	}
           }
 
         },
@@ -555,20 +540,22 @@ define([
           var species_tgdr = this.getColumn("species_tgdr");
           var species_sts_is = this.getColumn("species_sts_is");
           var accessions = this.getColumn("accession");
+          var tree_ids_tgdr = this.getColumn("tree_id_tgdr");
+          var tree_ids_sts_is = this.getColumn("tree_id_sts_is");
           var filters = this.collection.pluck("filter");
           
 
-          if (all.length > 0 || studies.length > 0 || years.length > 0 || species_tgdr.length > 0 || accessions.length > 0 || filters > 0){
-            var tgdrWhereClause = this.genQuery("tgdr",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
+          if (all.length > 0 || studies.length > 0 || years.length > 0 || species_tgdr.length > 0 || accessions.length > 0 || tree_ids_tgdr.length > 0 || filters > 0){
+            var tgdrWhereClause = this.genQuery("tgdr",years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters);
           }
-          if (all.length > 0 || taxa.length > 0 || families.length > 0 || genuses.length > 0 || species_sts_is.length > 0 || filters > 0){
-            var sts_isWhereClause = this.genQuery("sts_is",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
+          if (all.length > 0 || taxa.length > 0 || families.length > 0 || genuses.length > 0 || species_sts_is.length > 0 || tree_ids_sts_is.length > 0 || filters > 0){
+            var sts_isWhereClause = this.genQuery("sts_is",years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters);
           }
           if (all.length > 0 || phenotypes.length > 0 || try_db.length > 0 || filters > 0){
-            var try_dbWhereClause = this.genQuery("try_db",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
+            var try_dbWhereClause = this.genQuery("try_db",years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters);
           }
           if (all.length > 0 || environmental.length > 0 || ameriflux.length > 0 || filters > 0){
-            var amerifluxWhereClause = this.genQuery("ameriflux",years,families,genuses,species_tgdr,species_sts_is,accessions,filters);
+            var amerifluxWhereClause = this.genQuery("ameriflux",years,families,genuses,species_tgdr,species_sts_is,accessions,tree_ids_tgdr,tree_ids_sts_is,filters);
           }
 
           this.refreshLayer("tgdr",tgdrWhereClause,this.tgdrLayer,this.collection.meta("tgdr_id"));
@@ -578,9 +565,25 @@ define([
           //debug
           console.log("tgdrWhereClause:"+this.collection.meta("tgdrWhereClause")+"\n"+
                   "sts_isWhereClause:"+this.collection.meta("sts_isWhereClause")+"\n"+
+                  "rectangleWhereClause:"+this.collection.meta("rectangleWhereClause")+"\n"+
                   "try_dbWhereClause:"+this.collection.meta("try_dbWhereClause")+"\n"+
                   "amerifluxWhereClause:"+this.collection.meta("amerifluxWhereClause"));   
         },
+
+        initialize: function(){
+          var that = this;
+          this.initMap();
+          this.initLayers();
+          this.initHeatMap();
+          this.initInfoWindows();
+          this.initDrawingManager();
+          this.initContextMenu();
+          this.collection.on('add remove reset',this.refreshLayers,this);
+          if(this.collection.length > 0){// check if tree_ids are in url. if so, refresh map
+            this.refreshLayers();
+          }
+        },
+
 
         render: function(){
           return this;

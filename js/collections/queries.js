@@ -1,4 +1,4 @@
-//Filename: markers.js
+//geneticFilename: markers.js
 
 define([
   // These are path alias that we configured in our bootstrap
@@ -11,9 +11,9 @@ define([
     initialize: function() {
       this._meta = {
         //fusion table ids
-        "tgdr_id":"118Vk00La9Ap3wSg8z8LnZQG0mYz5iZ67o3uqa8M",
+        "tgdr_id":"1yGLoUUyGDoIxWF3I4iuKq3Y3-ru_7C4knPF4H2Y",
         "sts_is_id":"1bL0GwAL_mlUutv9TVFqknjKLkwzq4sAn5mHiiaI",
-        "try_db_id":"1V1SC2gVdElnoEZWDpqTcMOEQlyW1ArpEDTTcW3E",
+        "try_db_id":"19aWeUgZ_DA7ElGzHnx8X-w-BCCZJdAqs6fO8BxhI",
         "ameriflux_id":"1huZ12FnVaWgeUZKaXozbLR0lZfLcxZ_y9RF2h-A"
       };
     },      
@@ -28,6 +28,9 @@ define([
     },
     
     reset: function(){
+      // if (typeof(this._meta["rectangleWhereClause"]) != undefined){// no model associated with it, could be implemented better
+	     //   delete this._meta["rectangleWhereClause"]; 
+      // }
       if (typeof(this._meta["tgdrWhereClause"]) != undefined){
         delete this._meta["tgdrWhereClause"];
       }

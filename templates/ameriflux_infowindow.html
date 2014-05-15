@@ -1,7 +1,7 @@
-<div id="infowindow">
-  <table class="table table-borderless table-condensed table-hover">
+<div id="ameriflux_infowindow">
+  <table id="ameriflux_infowindow_table" class="table table-borderless table-condensed table-hover infowindow">
     <tr>
-      <td><img class="img-responsive" src="images/<%= icon_name %>.png"></td>
+      <td><img class="inline_image" src="images/<%= icon_name %>.png"></td>
       <td>Ameriflux</td>
     </tr>
     <tr>
@@ -11,10 +11,6 @@
     <tr>
       <td>Site Name</td>
       <td><%= site_name %></td>
-    </tr>
-    <tr>
-      <td>Source</td>
-      <td><%= src_url %></td>
     </tr>
     <tr>
       <td>Type</td>
@@ -27,6 +23,15 @@
     <tr>
       <td>Longitude</td>
       <td><%= lng %></td>
+    </tr>
+    <tr>
+      <td>FTP Source</td>
+      <td><a target="_blank" href="<%= src_url %>">Download</a></td>
+    </tr>
+    <tr>
+	<td colspan=2>
+		<iframe src="GetAmerifluxData.php?siteid=<%= site_id %>">iframe not supported</iframe>
+	</td>
     </tr>
    </table>
 </div> 

@@ -8,7 +8,6 @@ define([
   'treetable',
   'models/tree_node',
   'collections/queries',
-  // 'goog!maps,3,other_params:sensor=false'
 ], function($, _, Backbone, TreeNodeModel , QueriesCollection){
 		var SelectionTreeView = Backbone.View.extend({
 			el: "#selection_tree",
@@ -37,10 +36,6 @@ define([
 						this.model.set("value",data);
 						this.model.set("display",data);
 					}
-					
-
-					
-					// console.log(type);
 					this.$el.treetable("loadBranch",parent_node,that.template(this.model.toJSON()));
 					this.$el.treetable("collapseNode",node_num);
 				}
@@ -93,65 +88,77 @@ define([
     			}
     		},
 
-			initialize: function(){
-				// console.log(treeNodeTemplate.text);
-				var that = this;
-				this.$el.treetable({expandable:true});
+		addTreeID: function(column,tree_id){
+			this.collection.add({
+				id: tree_id,
+				column: column,
+				value: tree_id
+			});
+		},
 
-				$.getJSON('data/studies.JSON',
-					function(data){
-						that.loadBranch(data,"1-1",0,0,"studies");
-					}
-				);
-				$.getJSON('data/taxa.JSON',
-					function(data){
-						that.loadBranch(data,"1-2",0,0,"taxa");
-					}
-				);
+		getColumn: function(column){
+          		return (this.collection.filter(function(query){return query.get("column") === column}).map(function(query){return query.get("value")}));
+        	},  
+	
+		initialize: function(){
+			// open to depth of 2
+			var that = this;
+			this.$el.treetable({expandable:true});
+			$.getJSON('GetStudies.php',function(data){
+				that.loadBranch(data,"1-1",0,0,"studies");
+			});
+
+			$.getJSON('GetTaxa.php', function(data){
+				that.loadBranch(data,"1-2",0,0,"taxa");
+			});
+
+			if (this.collection.length == 0){ //if no tree_ids in url
 				this.$('[name="all"]').toggleClass('selected');	//toggle all markers shown by default	
 				this.collection.add({
-                	id: "1",
-                	column: "all",
-               		value: "all"
-              	});  
-			
-			},
-
-			events: {
-			    "click": "toggleSelection",
-			},
-
-			toggleSelection: function(event){
-		  		var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
-  				var column = $(event.target).attr('name');
-				var value = $(event.target).attr('value');
-  				if (column && value){
-  					if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the queries
-  						this.collection.reset();
-  					}
-					$(event.target).toggleClass('selected');
-	  				if ($(event.target).hasClass('selected'))
-  					{
-						this.collection.add(
-	  					{
-	  						id: id,
-	  						column: column,
-	  						value: value,
-	  					});
-  					}
-  					else {
-						this.collection.remove(id);
-					}
-  					if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the selected classes (i.e. highlighted rows)
-  						$(".selected").not(event.target).removeClass("selected");
-  					}
-		  			
-		  		}
-	  		},
-	  				
-			render: function(){
-				return this
+	        			id: "1",
+	        			column: "all",
+	        			value: "all"
+	        		});  
 			}
+			
+			this.$el.treetable("expandNode","1");
+		},		
+		
+		events: {
+		    "click": "toggleSelection",
+		},
+		
+		toggleSelection: function(event){
+			var id = $(event.target).parent().attr('data-tt-id'); //just using this as an id to delete from the collection
+  			var column = $(event.target).attr('name');
+			var value = $(event.target).attr('value');
+  			if (column && value){
+  				if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the queries
+  					this.collection.reset();
+  				}
+				$(event.target).toggleClass('selected');
+	  			if ($(event.target).hasClass('selected'))
+  				{
+					this.collection.add(
+	  				{
+	  					id: id,
+	  					column: column,
+	  					value: value,
+	  				});
+  				}
+  				else {
+					this.collection.remove(id);
+				}
+  				if (!(event.ctrlKey || event.metaKey)){ //if ctrl-click we want to not reset the selected classes (i.e. highlighted rows)
+  					$("#selection_tree .selected").not(event.target).removeClass("selected");
+  				}
+		  			
+		  	}
+	  	},
+	  				
+		render: function(){
+			return this
+		}
 	});
   return SelectionTreeView;
   // What we return here will be used by other modules

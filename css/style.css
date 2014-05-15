@@ -5,10 +5,15 @@ a{
 a:hover{
   color: #3C746B;
 }
+.btn {
+  color: #3C746B;
+}
+.dropdown-menu li a{
+  color: #3C746B;
+}
 
 h4{
   color: #3C746B;
-  /*opacity: 0.6;*/
 }
 
 /*HEADER*/
@@ -17,40 +22,48 @@ h4{
   padding-bottom: 15px;
 }
 
-.nav-pills li a {
-  padding-top: 1cm;
+.navbar li a {
+  padding-top: 50px;
+  font-size:  16px;
 }
 
 /*SIDE-BAR*/
+#tree_id_search_container {
+	margin-bottom:15px;
+}
+.select2-container-multi .select2-dropdown-open .select2-choices{
+	overflow-y: hidden;
+}
+.select2-container-multi .select2-choices{
+	max-height: 30px;
+	overflow-y: auto;
+}
+
 #select_tree_header {
   position:absolute;
 }
 
-/*#sidebar_selection {
-    background-color: #f2f2f2;
-    height: 477px;
-    overflow: auto;
-    padding-top: 15px;
-}*/
-
+#display_description{
+	margin-left: 35px;
+	margin-bottom:15px;
+	font-size: 10;
+	color: #999999;
+}
 .root {
     font-weight: bold;
 }
 
 .filler{/* to give spaceing between divs with absolute position*/
+  padding: 25px;
+}
+.filler2{/* to give spaceing between divs with absolute position*/
   padding: 15px;
 }
 
 #selection_tree_container {
   overflow:auto;
-  height: 405px;
+  height: 150px;
 }
-
-/*#selection_tree td.selected {
-    background-color: #3C746B;
-    color:white;
-    border: 1px solid white;
-}*/
 
 #filter_header {
   position: absolute;
@@ -58,101 +71,152 @@ h4{
 
 .gps {
   margin-left: 25px;
-  font-weight: normal;
+  /*font-weight: bold;*/
+}
+
+.inline_image{
+  height: 16px;
+  width: 16px;
 }
 /*MAP*/
 #map_canvas {
-  height: 686px;
+  height: 515;
   width: 100%;
 }
 
-#legend {
-  font-family: Arial, sans-serif;
-  background: #fff;
-  padding: 5px;
-  margin: 5px;
-  border: 3px solid #000;
+/*attempted to model after google's styles for the mouse etc., firebug it*/
+#toggle_heatmap{
+  -moz-border-bottom-colors: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  -moz-user-select: none;
+  background-clip: padding-box;
+  background-color: #FFFFFF;
+  border-bottom-right-radius: 2px;
+  border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) -moz-use-text-color;
+  border-image: none;
+  border-style: solid solid solid none;
+  border-top-right-radius: 2px;
+  border-width: 1px 1px 1px 0;
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+  color: #565656;
+  direction: ltr;
+  font-family: Roboto,Arial,sans-serif;
+  font-size: 11px;
+  padding: 4px;
+  position: relative;
+  text-align: left;
+  margin-top: 5px; 
+  margin-left: -5px;
+}
+#toggle_heatmap img{
+ height: 14px;
+ width: 16px;
+ opacity: 0.3;
 }
 
-#infowindow img{
-  height:25%;
-  width:25%;
+#toggle_heatmap.selected img{
+ opacity: 1;
 }
 
-#infowindow td{
+/*attempted to model after google's styles for terrain, satellite, etc. button, firebug it*/
+#layers_button{
+  -moz-user-select: none;
+  background-clip: padding-box;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+  color: #000000;
+  direction: ltr;
+  font-family: Roboto,Arial,sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  overflow: hidden;
+  padding: 1px 6px;
+  position: relative;
+  text-align: left;
+  margin-top: 5px;
+}
+
+#legend{
+	overflow: auto;
   font-size: 10px;
+  font-weight: normal;
+	max-height:200px;
+	width:200px;
+  background-color:white;
+  border:3px solid gray;
+	padding: 4px 1px 1px 6px;
+	margin-bottom:40px;
+}
+	
+.infowindow td{
+  font-size: 10px;
+  font-weight: normal;
+}
+
+.context_menu{
+        background-color:white;
+        border:1px solid gray;
+}
+.context_menu_item{
+        padding:3px 6px;
+}
+.context_menu_item:hover {
+	color:white;
+        background-color:#3C746B;
+}
+.context_menu_separator{
+        background-color:gray;
+        height:1px;
+        margin:0;
+        padding:0;
 }
 
 /*BOTTOM-PANEL*/
-/*#analysis_pane {
-    padding-top: 20px;
-    background-color:white;
-}
-*/
+
 #data_table_container{
   overflow:auto;
-  height: 200px;
+  height: 475px;
 }
 
-#data_table{
-    border: 0;
-    background-color:#efefef;
+.button-wrapper{
+  padding-top: 10px;
 }
 
-
-.table-borderless td,
-.table-borderless th {
-    border: 0;
+.analysis_pills > li.active > a, .analysis_pills > li.active > a:hover, .analysis_pills > li.active > a:focus {
+    color: white;
 }
 
-div.dataTables_length label {
-  width: 460px;
-  float: left;
-  text-align: left;
+.analysis_pills_container{
+  padding-bottom: 10px;
 }
 
-div.dataTables_length select {
-  width: 75px;
+.nav-tabs > li .close {
+	margin: -2px 0 0 10px;
+	font-size: 18px;
 }
 
-div.dataTables_filter label {
-  float: right;
-  width: 460px;
+.grid *, .grid *:before, .grid *:after { 
+  -webkit-box-sizing: content-box; 
+  -moz-box-sizing: content-box; 
+  box-sizing: content-box; 
 }
-
-div.dataTables_info {
-  padding-top: 8px;
-}
-
-div.dataTables_paginate {
-  float: right;
-  margin: 0;
-}
-
-table {
-  margin: 1em 0;
-  clear: both;
-}
-
-/*table.table thead .sorting,
-table.table thead .sorting_asc,
-table.table thead .sorting_desc,
-table.table thead .sorting_asc_disabled,
-table.table thead .sorting_desc_disabled {
-    cursor: pointer;
-    *cursor: hand;
-}
- 
-table.table thead .sorting { background: url('../images/sort_both.jpg') no-repeat center right; }
-table.table thead .sorting_asc { background: url('../images/sort_asc.jpg') no-repeat center right; }
-table.table thead .sorting_desc { background: url('../images/sort_desc.jpg') no-repeat center right; }
- 
-table.table thead .sorting_asc_disabled { background: url('images/sort_asc_disabled.png') no-repeat center right; }
-table.table thead .sorting_desc_disabled { background: url('images/sort_desc_disabled.png') no-repeat center right; }
 
 /*FOOTER*/
 #version_num{
     font-family: "Courier New";
+	text-align: right;
 }
 
+#footer p{
+	text-align: center;
+}
+
+#footer p a img {
+	height: 45px; 
+	padding: 5px; 
+}
 

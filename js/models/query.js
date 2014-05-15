@@ -14,7 +14,8 @@ define([
       column: "",//year,species,genus,family,accession
       value: "",//(e.g. "Pinus taeda")
       filter: "", //so it doesn't have to be searched by the selection pane
-      table_name: "", //tgdr,sts_is,try_db,ameriflux
+      // shape: "", //for geometric queries
+      table_name: "", //tgdr,sts_is,try_db,ameriflux.....unused?
       fusion_table_query_url: "https://www.googleapis.com/fusiontables/v1/query?sql=",
      // fusion_table_key: "&key=AIzaSyA2trAEtQxoCMr9vVNxOM7LiHeUuRDVqvk",
       fusion_table_key: "&key=AIzaSyAZe9tkwFZ4EPTwed61u6wIl27KAGq81bw",
