@@ -153,6 +153,3 @@ I'm sure there are countless bugs. I only did "integration" testing, but unit te
 10. **Consider "unsyncing" the grids**, this functionality makes the various states quite convuluted...
 11. **Cron everything in the update_scripts directory**, so no manual refreshes are required for new TGDR submissions
 
-
-
-
