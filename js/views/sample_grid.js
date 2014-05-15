@@ -124,7 +124,7 @@ define([
 
           that.gridFunctions();
           //console.log("Total samples: "+that.grid.getDataLength());
-        }
+        },
       });
     },
 		

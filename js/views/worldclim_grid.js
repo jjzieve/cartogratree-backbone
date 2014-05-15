@@ -102,6 +102,10 @@ define([
           that.gridFunctions();
           // DEBUG
           //console.log("Total samples: "+that.grid.getDataLength());
+        },
+        error: function(response){
+          $("#message_display_worldclim").text('Query error, please contact the admin.');
+          that.unsetLoaderIcon();
         }
       });
     },

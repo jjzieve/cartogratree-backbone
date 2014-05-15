@@ -86,6 +86,10 @@ define([
               
               $("#phenotype_count").html(that.grid.getSelectedRows().length);// if first time rendered, set sample count off the bat
               that.listenToSelectedRows();
+            },
+            error: function(response){
+              $("#message_display_phenotype").text('Query error, please contact the admin.');
+              that.unsetLoaderIcon();
             }
           });
       },
