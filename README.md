@@ -137,19 +137,22 @@ Related topics are [closures](http://stackoverflow.com/questions/111102/how-do-j
 1. **Allow map display to reflect URI.** 
 This is a significant problem because google won't allow a GET parameter to go beyond a certain number of chars and this is how the map is currently being filtered down (see [models and collections](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#models--collections))
 1. **Merge backend scripts and general code refactoring.** 
-Example, GetCommonSNP.php and GetGenoData.php, effectively run the same query; they just return different things.
+Example, GetCommonSNP.php and GetGenoData.php, effectively run the same query; they just return different things. Again, a light-weight php framework would be relevant here.
 3. **Allow filtering in analysis tables.** 
 Because the analysis tables are linked, this will allow a user to subset their data based on knowledge of metadata (e.g. only analyze the samples with a certain genotype). See the original [cartogratree](https://dendrome.ucdavis.edu/cartogratree/) and how filtering works for the amplicon table. Also relevant is how to apply filtering in [slickgrids](http://mleibman.github.io/SlickGrid/examples/example4-model.html)
 4. **Allow phenotype search in the map display.** 
 This would go under the tree id search and allow users to only show markers with certain phenotypes. Ontology may be necessary here, along with cleaning up some data in the backend.
 5. **Integrate soil data.**
-Ameriflux is too sparse a resource to really be utilized. If we could somehow mirror what was done with the worldclim data using the same source as the soil survey ArcGIS layer this could be invaluable. I also never fully integrated ameriflux with the analysis tables, this would be a start.
+Ameriflux is too sparse a resource to really be utilized. If we could somehow mirror what was done with the worldclim data using the same source as the soil survey ArcGIS layer this could be invaluable. I also never fully integrated ameriflux with the analysis tables, this would be a start refer to "ecp_worlclim" table for more info. Also, for trydb data, as metric values I just used ecp_trydb.obsdataid, not sure if this was supposed to link out to the actual values or what??...
 6. **Include other genotype marker types**
 For instance, right now our genotype grid sort of assumes the data is SNPs but the majority of our data is actually SSRs.
 7. **TEST!!!!**
-I'm sure there are countless bugs. I only did "integration" testing, but unit testing might be in order?(frontend: [qunit.js](http://qunitjs.com/), backend: [phpunit](http://phpunit.de/)). Also, cross-browser support is important as many users will likely be using older versions of IE (which isn't supported at all yet), I recommend just a basic [user-agent plugin](http://chrispederick.com/work/user-agent-switcher/) or, if you're very thorough, using [Vagrant](http://www.vagrantup.com/) to virtualize some older Microsoft + IE environments.  
+I'm sure there are countless bugs (see last bullet). I only did "integration" testing, but unit testing might be in order?(frontend: [qunit.js](http://qunitjs.com/), backend: [phpunit](http://phpunit.de/)). Also, cross-browser support is important as many users will likely be using older versions of IE (which isn't supported at all yet), I recommend just a basic [user-agent plugin](http://chrispederick.com/work/user-agent-switcher/) or, if you're very thorough, using [Vagrant](http://www.vagrantup.com/) to virtualize some older Microsoft + IE environments.  
 8. **Reduce number of AJAX calls**, especially for the filtering map counts, slows down app quite a bit (i.e. look at network tab in firebug). Also, adding error checking to these calls is necessary, I only added an "error" callback to a couple of the grid views.
 9. **Update main.js dependencies periodically.** The require.js shim config captures most of these dependecies (most libraries need jquery) but I didn't get them all, so if you reload the page and everything is broken... firebug will tell you what dependency broke(e.g. "jQuery is undefined in slickgrid.js", so add 'slick_grid':{ deps: ['jquery'] })
 10. **Consider "unsyncing" the grids**, this functionality makes the various states quite convuluted...
 11. **Cron everything in the update_scripts directory**, so no manual refreshes are required for new TGDR submissions
-
+12. Factor out db connection scripts to utils.php
+13. **Known bugs**:
+	- Exiting a sub-grid/tab sometimes deletes the main sample grid, effectively breaking the app
+	- Counts for filter map display are sometimes inaccurate

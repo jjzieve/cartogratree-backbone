@@ -57,6 +57,14 @@ UNION
 		INNER JOIN inv_samples_sample_metrics ON inv_samples.id = inv_samples_sample_metrics.inv_samples_id
 		INNER JOIN inv_sample_metrics ON inv_samples_sample_metrics.inv_sample_metrics_id = inv_sample_metrics.id
 		WHERE inv_sample_metrics.metric_type = 'Phenotype' AND sample_barcode IN ( '".implode("','",$idArr)."' ) 
+UNION
+	SELECT
+		cast(ecp_trydb.ecp_trydb_gps_groups_id as text) as tree_identifier,
+		ecp_trydb.trait as metric_description,
+		string_agg(cast(ecp_trydb.obsdataid as text),',') as metric_value
+		FROM ecp_trydb
+		WHERE cast(ecp_trydb.ecp_trydb_gps_groups_id as text) IN ( '".implode("','",$idArr)."' )
+		GROUP BY ecp_trydb.trait, ecp_trydb.ecp_trydb_gps_groups_id
 		ORDER BY tree_identifier ASC, metric_description ASC;";
 
 $res = DBQuery($q);
