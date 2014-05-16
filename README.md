@@ -6,20 +6,19 @@ or
 treegenes (tg-help AT ucdavis DOT edu)
 
 ### Table of Contents (Users)
-1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#overview-users)
-2. [Use case](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#use-case)
+1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/master#overview-users)
+2. [Use case](https://github.com/jakeZieve/cartogratree-backbone/tree/master#use-case)
 
 ### Table of Contents (Developers)
-1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#overview-developers)
-2. [Backend/Database](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#backenddatabase)
-3. [Core frontend libraries](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#core-frontend-libraries)
-4. [Styling](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#styling)
-5. [Models & Collections](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#models--collections)
-6. [Views](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#views)
-7. [Router](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#router)
-7. [Code & design caveats](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#code--design-caveats)
-8. [TODO](https://github.com/jakeZieve/cartogratree-backbone/tree/dendrome#todo-in-order-of-importance)
-
+1. [Overview](https://github.com/jakeZieve/cartogratree-backbone/tree/master#overview-developers)
+2. [Backend/Database](https://github.com/jakeZieve/cartogratree-backbone/tree/master#backenddatabase)
+3. [Core frontend libraries](https://github.com/jakeZieve/cartogratree-backbone/tree/master#core-frontend-libraries)
+4. [Styling](https://github.com/jakeZieve/cartogratree-backbone/tree/master#styling)
+5. [Models & Collections](https://github.com/jakeZieve/cartogratree-backbone/tree/master#models--collections)
+6. [Views](https://github.com/jakeZieve/cartogratree-backbone/tree/master#views)
+7. [Router](https://github.com/jakeZieve/cartogratree-backbone/tree/master#router)
+7. [Code & design caveats](https://github.com/jakeZieve/cartogratree-backbone/tree/master#code--design-caveats)
+8. [TODO](https://github.com/jakeZieve/cartogratree-backbone/tree/master#todo-in-order-of-importance)
 
 #### Overview (Users)
 
